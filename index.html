@@ -118,6 +118,46 @@ section{padding:5rem 2.5rem;}
 
 @property --angle{syntax:'<angle>';initial-value:0deg;inherits:false;}
 
+    
+    /* ── NAV MINI VOLTA LETTERS ── */
+    .nav-letter{
+      font-family:'Syne',sans-serif;
+      font-weight:800;
+      font-size:1.1rem;
+      color:#f0b400;
+      background:linear-gradient(160deg,#2a2a2a,#111);
+      border:1.5px solid rgba(240,180,0,0.3);
+      border-radius:5px;
+      width:26px;height:30px;
+      display:flex;align-items:center;justify-content:center;
+      position:relative;
+      transform-style:preserve-3d;
+      animation:floatBlock 3s ease-in-out infinite;
+      box-shadow:
+        0 0 10px rgba(240,180,0,0.2),
+        0 4px 12px rgba(0,0,0,0.6),
+        2px 2px 0 rgba(0,0,0,0.5),
+        4px 4px 0 rgba(0,0,0,0.3);
+      text-shadow:0 0 8px rgba(240,180,0,0.8);
+      letter-spacing:-1px;
+    }
+    .nav-letter:nth-child(1){animation-delay:0s;}
+    .nav-letter:nth-child(2){animation-delay:0.15s;}
+    .nav-letter:nth-child(3){animation-delay:0.3s;}
+    .nav-letter:nth-child(4){animation-delay:0.45s;}
+    .nav-letter:nth-child(5){animation-delay:0.6s;}
+    .nav-O{
+      background:linear-gradient(160deg,#1a1400,#0a0800) !important;
+    }
+    .nav-arc{
+      position:absolute;
+      width:14px;height:14px;
+      border-radius:50%;
+      border:1.5px solid transparent;
+      border-top:1.5px solid rgba(240,180,0,0.8);
+      animation:arcSpin 1.2s linear infinite;
+      box-shadow:0 0 4px rgba(240,180,0,0.5);
+    }
     /* ── 3D VOLTA LETTERS ── */
     .v3d-letter{
       font-family:'Syne',sans-serif;
@@ -484,7 +524,47 @@ footer{background:var(--black);border-top:1px solid rgba(255,255,255,0.05);paddi
   50%{opacity:1;transform:scaleX(1.1);}
 }
 
-/* ── 3D VOLTA LETTERS ── */
+
+    /* ── NAV MINI VOLTA LETTERS ── */
+    .nav-letter{
+      font-family:'Syne',sans-serif;
+      font-weight:800;
+      font-size:1.1rem;
+      color:#f0b400;
+      background:linear-gradient(160deg,#2a2a2a,#111);
+      border:1.5px solid rgba(240,180,0,0.3);
+      border-radius:5px;
+      width:26px;height:30px;
+      display:flex;align-items:center;justify-content:center;
+      position:relative;
+      transform-style:preserve-3d;
+      animation:floatBlock 3s ease-in-out infinite;
+      box-shadow:
+        0 0 10px rgba(240,180,0,0.2),
+        0 4px 12px rgba(0,0,0,0.6),
+        2px 2px 0 rgba(0,0,0,0.5),
+        4px 4px 0 rgba(0,0,0,0.3);
+      text-shadow:0 0 8px rgba(240,180,0,0.8);
+      letter-spacing:-1px;
+    }
+    .nav-letter:nth-child(1){animation-delay:0s;}
+    .nav-letter:nth-child(2){animation-delay:0.15s;}
+    .nav-letter:nth-child(3){animation-delay:0.3s;}
+    .nav-letter:nth-child(4){animation-delay:0.45s;}
+    .nav-letter:nth-child(5){animation-delay:0.6s;}
+    .nav-O{
+      background:linear-gradient(160deg,#1a1400,#0a0800) !important;
+    }
+    .nav-arc{
+      position:absolute;
+      width:14px;height:14px;
+      border-radius:50%;
+      border:1.5px solid transparent;
+      border-top:1.5px solid rgba(240,180,0,0.8);
+      animation:arcSpin 1.2s linear infinite;
+      box-shadow:0 0 4px rgba(240,180,0,0.5);
+    }
+    /* ── 3D VOLTA LETTERS ── */
 .volta-3d-wrap{
   position:relative;
   margin:2rem auto 1.5rem;
@@ -589,12 +669,43 @@ footer{background:var(--black);border-top:1px solid rgba(255,255,255,0.05);paddi
 <nav>
   <div class="logo" style="display:flex;align-items:center;gap:0.6rem;"><div style="width:28px;height:28px;background:#f5c518;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.8rem;">⚡</div>Volt<span>a</span></div>
   <ul class="nav-links">
-    <li><a href="#categories">Brands</a></li>
-    <li><a href="#products">Phones</a></li>
-    <li><a href="#appliances">Appliances</a></li>
-    <li><a href="#why">Why Volta</a></li>
-    <li><a href="#location">Location</a></li>
+    <li><a href="#categories" id="nav-brands">Brands</a></li>
+    <li><a href="#products" id="nav-phones">Phones</a></li>
+    <li><a href="#appliances" id="nav-appliances">Appliances</a></li>
+    <li><a href="#why" id="nav-why">Why Volta</a></li>
+    <li><a href="#location" id="nav-location">Location</a></li>
   </ul>
+  <!-- Language Toggle -->
+  <button id="langBtn" onclick="toggleLang()" style="
+    background:rgba(245,197,24,0.1);
+    border:1px solid rgba(245,197,24,0.3);
+    color:var(--yellow);
+    padding:0.45rem 1rem;
+    border-radius:50px;
+    cursor:pointer;
+    font-family:'DM Sans',sans-serif;
+    font-size:0.8rem;
+    font-weight:500;
+    letter-spacing:0.05em;
+    transition:all 0.2s;
+    display:flex;align-items:center;gap:0.4rem;
+  ">🌍 <span id="langLabel">Swahili</span></button>
+  <!-- Language Toggle -->
+  <button id="langBtn" onclick="toggleLang()" style="
+    background:rgba(245,197,24,0.1);
+    border:1px solid rgba(245,197,24,0.3);
+    color:var(--yellow);
+    padding:0.5rem 1rem;
+    border-radius:50px;
+    cursor:pointer;
+    font-family:'DM Sans',sans-serif;
+    font-size:0.8rem;
+    font-weight:500;
+    letter-spacing:0.05em;
+    transition:all 0.2s;
+    display:flex;align-items:center;gap:0.4rem;
+  ">🌍 <span id="langLabel">Swahili</span></button>
+
   <a class="nav-wa" href="https://wa.me/255688058564?text=Hi%20Volta!" target="_blank">
     <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
     WhatsApp
@@ -686,40 +797,40 @@ footer{background:var(--black);border-top:1px solid rgba(255,255,255,0.05);paddi
       "></div>
     </div>
     <p style="font-size:1rem;color:#888;line-height:1.7;max-width:380px;margin-bottom:2rem;">
-      Dar es Salaam's Electronics Hub · Simu za bei nafuu, genuine quality, huduma ya haraka.
+      <span id="hero-sub">Dar es Salaam's Electronics Hub · Simu za bei nafuu, genuine quality, huduma ya haraka.</span>
     </p>
     <div class="hero-cta" style="justify-content:center;">
-      <a href="#products" class="btn-glow">Tazama Bidhaa</a>
-      <a href="https://wa.me/255688058564?text=Hi%20Volta!" target="_blank" class="btn-outline">WhatsApp Sasa →</a>
+      <a href="#products" class="btn-glow" id="hero-btn1">Tazama Bidhaa</a>
+      <a href="https://wa.me/255688058564?text=Hi%20Volta!" target="_blank" class="btn-outline" id="hero-btn2">WhatsApp Sasa →</a>
     </div>
   </div>
 </section>
 
 <div style="background:linear-gradient(135deg,#0a0a0a,#111);padding:1.5rem 2.5rem;text-align:center;border-top:1px solid rgba(240,180,0,0.2);border-bottom:1px solid rgba(240,180,0,0.2);">
-  <p style="font-size:0.78rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(240,180,0,0.7);margin:0;">⚡ Setting a new standard in the electronics hub space &nbsp;·&nbsp; Premium &amp; Reliable</p>
+  <p style="font-size:0.78rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(240,180,0,0.7);margin:0;"><span id="tagline" data-en="⚡ Setting a new standard in the electronics hub space · Premium &amp; Reliable" data-sw="⚡ Tunaweka kiwango kipya katika sekta ya electronics · Premium &amp; Ya Kuaminika">⚡ Setting a new standard in the electronics hub space · Premium &amp; Reliable</span></p>
 </div>
 <div class="stats-strip">
-  <div class="stat"><div class="stat-num">150+</div><div class="stat-label">Simu Zinapatikana</div></div>
+  <div class="stat"><div class="stat-num">150+</div><div class="stat-label" data-en="Phones Available" data-sw="Simu Zinapatikana">Simu Zinapatikana</div></div>
   <div class="stat"><div class="stat-num">6</div><div class="stat-label">Brands</div></div>
-  <div class="stat"><div class="stat-num">100%</div><div class="stat-label">Genuine</div></div>
+  <div class="stat"><div class="stat-num">100%</div><div class="stat-label" data-en="Genuine" data-sw="Genuine">Genuine</div></div>
   <div class="stat"><div class="stat-num">Fast</div><div class="stat-label">WhatsApp Response</div></div>
 </div>
 
 <section id="categories">
-  <div class="s-label">Brands Tunazo</div>
-  <h2 class="s-title">Shop by Brand</h2>
-  <p class="s-sub">Gusa brand unayotaka — inawaka na kuonyesha bidhaa zake.</p>
+  <div class="s-label" data-en="Our Brands" data-sw="Brands Tunazo">Brands Tunazo</div>
+  <h2 class="s-title" data-en="Shop by Brand" data-sw="Nunua kwa Brand">Shop by Brand</h2>
+  <p class="s-sub" data-en="Tap a brand — it lights up and shows all available products." data-sw="Gusa brand unayotaka — inawaka na kuonyesha bidhaa zake.">Gusa brand unayotaka — inawaka na kuonyesha bidhaa zake.</p>
   <div class="cat-grid" id="brandGrid"></div>
 </section>
 
 <section id="products">
-  <div class="s-label">Bei za Leo · 21 Mei 2026</div>
-  <h2 class="s-title">Bidhaa Zetu</h2>
-  <p class="s-sub">Hover kwa 3D effect. Bonyeza "Specs" kuona maelezo kamili na vipengele vya kila simu.</p>
+  <div class="s-label" id="prod-label">Bei za Leo · 21 Mei 2026</div>
+  <h2 class="s-title" id="prod-title">Bidhaa Zetu</h2>
+  <p class="s-sub" id="prod-sub">Hover kwa 3D effect. Bonyeza "Specs" kuona maelezo kamili na vipengele vya kila simu.</p>
   <div class="controls">
     <div class="search-wrap">
       <span class="si">🔍</span>
-      <input type="text" id="searchInput" placeholder="Tafuta... iPhone 13, Pixel 7, S23..." oninput="handleSearch()"/>
+      <input type="text" id="searchInput" placeholder="Tafuta... iPhone 13, Pixel 7, S23..." id="searchInput" oninput="handleSearch()"/>
     </div>
     <div class="filter-bar" id="filterBar"></div>
   </div>
@@ -729,9 +840,9 @@ footer{background:var(--black);border-top:1px solid rgba(255,255,255,0.05);paddi
 
 <!-- ── HOME APPLIANCES ── -->
 <section id="appliances" style="background:var(--black);">
-  <div class="s-label">Vifaa vya Nyumbani</div>
-  <h2 class="s-title">Home Appliances</h2>
-  <p class="s-sub">TVs, friji, washing machines, blenders, fans, microwaves na sound systems. Bei bora Dar es Salaam. Order kupitia WhatsApp.</p>
+  <div class="s-label" id="app-label">Vifaa vya Nyumbani</div>
+  <h2 class="s-title" id="app-title">Home Appliances</h2>
+  <p class="s-sub" id="app-sub">TVs, friji, washing machines, blenders, fans, microwaves na sound systems. Bei bora Dar es Salaam. Order kupitia WhatsApp.</p>
   <div class="filter-bar" style="margin-bottom:2rem;" id="appFilterBar">
     <button class="fb active" onclick="filterApps('all',this)">Zote</button>
     <button class="fb" onclick="filterApps('tv',this)">📺 TVs</button>
@@ -746,20 +857,20 @@ footer{background:var(--black);border-top:1px solid rgba(255,255,255,0.05);paddi
 </section>
 
 <section id="why">
-  <div class="s-label">Ahadi Yetu</div>
-  <h2 class="s-title">Kwa Nini Volta?</h2>
-  <p class="s-sub">Tunajua unachohitaji — simu nzuri, bei ya haki, huduma ya haraka.</p>
+  <div class="s-label" id="why-label">Ahadi Yetu</div>
+  <h2 class="s-title" id="why-title">Kwa Nini Volta?</h2>
+  <p class="s-sub" id="why-sub">Tunajua unachohitaji — simu nzuri, bei ya haki, huduma ya haraka.</p>
   <div class="why-grid">
-    <div class="why-card"><div class="wi">✅</div><div class="wt">100% Genuine</div><div class="wd">Hakuna feki. Kila simu imepimwa kabla ya kuuzwa.</div></div>
-    <div class="why-card"><div class="wi">💬</div><div class="wt">WhatsApp Direct</div><div class="wd">Message tu — tunamaliza kila kitu haraka bila shida.</div></div>
-    <div class="why-card"><div class="wi">💰</div><div class="wt">Bei ya Haki</div><div class="wd">Bei zetu ni za ushindani. Mazungumzo ya wazi yanakubalika.</div></div>
-    <div class="why-card"><div class="wi">🚀</div><div class="wt">Huduma ya Haraka</div><div class="wd">Tunajibu haraka na tunaweza kupanga delivery Dar es Salaam.</div></div>
+    <div class="why-card"><div class="wi">✅</div><div class="wt" id="why1-t">100% Genuine</div><div class="wd" id="why1-d">Hakuna feki. Kila simu imepimwa kabla ya kuuzwa.</div></div>
+    <div class="why-card"><div class="wi">💬</div><div class="wt" id="why2-t">WhatsApp Direct</div><div class="wd" id="why2-d">Message tu — tunamaliza kila kitu haraka bila shida.</div></div>
+    <div class="why-card"><div class="wi">💰</div><div class="wt" id="why3-t">Bei ya Haki</div><div class="wd" id="why3-d">Bei zetu ni za ushindani. Mazungumzo ya wazi yanakubalika.</div></div>
+    <div class="why-card"><div class="wi">🚀</div><div class="wt" id="why4-t">Huduma ya Haraka</div><div class="wd" id="why4-d">Tunajibu haraka na tunaweza kupanga delivery Dar es Salaam.</div></div>
   </div>
 </section>
 
 <div class="cta">
-  <h2>Una Maswali?<br>Tupigie Sasa!</h2>
-  <p>Chat nasi WhatsApp — tunajibu haraka na tuko tayari kukusaidia kupata simu yako bora.</p>
+  <h2 id="cta-title">Una Maswali?<br>Tupigie Sasa!</h2>
+  <p id="cta-sub">Chat nasi WhatsApp — tunajibu haraka na tuko tayari kukusaidia kupata simu yako bora.</p>
   <a class="cta-wa" href="https://wa.me/255688058564?text=Hi%20Volta!%20Nataka%20kufanya%20order." target="_blank">
     <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
     Anza Chat WhatsApp
@@ -769,9 +880,9 @@ footer{background:var(--black);border-top:1px solid rgba(255,255,255,0.05);paddi
 
 <!-- ── LOCATION SECTION ── -->
 <section id="location" style="background:var(--gray);padding:5rem 2.5rem;">
-  <div class="s-label">Mahali Tulipo</div>
-  <h2 class="s-title">Find Us</h2>
-  <p class="s-sub">Tuko Dar es Salaam — karibu uje au tupigie WhatsApp tukufikishie.</p>
+  <div class="s-label" id="loc-label">Mahali Tulipo</div>
+  <h2 class="s-title" id="loc-title">Find Us</h2>
+  <p class="s-sub" id="loc-sub">Tuko Dar es Salaam — karibu uje au tupigie WhatsApp tukufikishie.</p>
 
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start;">
 
@@ -795,8 +906,8 @@ footer{background:var(--black);border-top:1px solid rgba(255,255,255,0.05);paddi
       <div style="background:var(--gray2);border:1px solid rgba(245,197,24,0.15);border-radius:14px;padding:1.5rem;display:flex;gap:1rem;align-items:flex-start;">
         <div style="width:44px;height:44px;background:rgba(245,197,24,0.1);border:1px solid rgba(245,197,24,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;">📍</div>
         <div>
-          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.92rem;margin-bottom:0.3rem;color:var(--white);">Address</div>
-          <div style="font-size:0.84rem;color:var(--muted);line-height:1.6;">1110 Uhuru Street<br>Dar es Salaam, Tanzania</div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.92rem;margin-bottom:0.3rem;color:var(--white);" id="loc-addr-t">Address</div>
+          <div style="font-size:0.84rem;color:var(--muted);line-height:1.6;" id="loc-addr">1110 Uhuru Street<br>Dar es Salaam, Tanzania</div>
         </div>
       </div>
 
@@ -804,7 +915,7 @@ footer{background:var(--black);border-top:1px solid rgba(255,255,255,0.05);paddi
       <div style="background:var(--gray2);border:1px solid rgba(245,197,24,0.15);border-radius:14px;padding:1.5rem;display:flex;gap:1rem;align-items:flex-start;">
         <div style="width:44px;height:44px;background:rgba(245,197,24,0.1);border:1px solid rgba(245,197,24,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;">🕐</div>
         <div>
-          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.92rem;margin-bottom:0.3rem;color:var(--white);">Working Hours</div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.92rem;margin-bottom:0.3rem;color:var(--white);" id="loc-hours-t">Working Hours</div>
           <div style="font-size:0.84rem;color:var(--muted);line-height:1.8;">
             Mon – Fri &nbsp;&nbsp;· &nbsp;&nbsp;8:00 AM – 7:00 PM<br>
             Saturday &nbsp;· &nbsp;&nbsp;8:00 AM – 6:00 PM<br>
@@ -817,8 +928,8 @@ footer{background:var(--black);border-top:1px solid rgba(255,255,255,0.05);paddi
       <div style="background:var(--gray2);border:1px solid rgba(245,197,24,0.15);border-radius:14px;padding:1.5rem;display:flex;gap:1rem;align-items:flex-start;">
         <div style="width:44px;height:44px;background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;">📞</div>
         <div>
-          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.92rem;margin-bottom:0.3rem;color:var(--white);">Contact</div>
-          <div style="font-size:0.84rem;color:var(--muted);line-height:1.6;">+255 688 058 564<br>Available on WhatsApp</div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.92rem;margin-bottom:0.3rem;color:var(--white);" id="loc-contact-t">Contact</div>
+          <div style="font-size:0.84rem;color:var(--muted);line-height:1.6;" id="loc-contact">+255 688 058 564<br>Available on WhatsApp</div>
         </div>
       </div>
 
@@ -851,9 +962,9 @@ footer{background:var(--black);border-top:1px solid rgba(255,255,255,0.05);paddi
 
 <footer>
   <div class="fl">Volta</div>
-  <div class="fc">© 2026 Volta. Dar es Salaam, Tanzania 🇹🇿</div>
+  <div class="fc" id="footer-copy">© 2026 Volta. Dar es Salaam, Tanzania 🇹🇿</div>
   <ul class="flinks">
-    <li><a href="#categories">Brands</a></li>
+    <li><a href="#categories" id="nav-brands">Brands</a></li>
     <li><a href="#products">Bidhaa</a></li>
     <li><a href="https://wa.me/255688058564" target="_blank">WhatsApp</a></li>
   </ul>
@@ -1386,6 +1497,267 @@ function filterApps(cat,btn){
   });
 }
 filterApps('all',document.querySelector('#appFilterBar .fb'));
+
+// ── LANGUAGE SYSTEM ──
+const LANG = {
+  en: {
+    // Nav
+    nav_brands:"Brands", nav_phones:"Phones", nav_appliances:"Appliances", nav_why:"Why Volta", nav_location:"Location", nav_wa:"WhatsApp",
+    // Hero
+    hero_tag:"⚡ Dar es Salaam's Electronics Hub",
+    hero_sub:"Affordable phones, genuine quality, fast service. Order directly via WhatsApp.",
+    hero_btn1:"Browse Products", hero_btn2:"WhatsApp Now →",
+    // Stats
+    stat1:"Phones Available", stat2:"Brands", stat3:"Genuine", stat4:"WhatsApp Response",
+    // Brand section
+    brand_label:"Our Brands", brand_title:"Shop by Brand", brand_sub:"Tap a brand to see all available products.",
+    // Products section
+    prod_label:"Today's Prices · 21 May 2026",
+    prod_title:"Our Products",
+    prod_sub:"Tap 📋 Specs to see full details and features of each phone.",
+    search_ph:"Search... iPhone 13, Pixel 7, S23...",
+    filter_all:"All", filter_new:"📦 New", filter_used:"Used",
+    // Appliances
+    app_label:"Home Appliances",
+    app_title:"Home Appliances",
+    app_sub:"TVs, fridges, washing machines, blenders, fans, microwaves and sound systems. Best prices in Dar es Salaam.",
+    app_all:"All", app_tv:"📺 TVs", app_fridge:"❄️ Fridge", app_wash:"🫧 Washing", app_blend:"🍹 Blenders", app_fan:"💨 Fans", app_micro:"📡 Microwave", app_sound:"🔊 Sound",
+    // Why Volta
+    why_label:"Our Promise",
+    why_title:"Why Volta?",
+    why_sub:"We know what you need — great phones, fair prices, fast service.",
+    why1_t:"100% Genuine", why1_d:"No fakes. Every device is tested before sale.",
+    why2_t:"WhatsApp Direct", why2_d:"Just message us — we handle everything fast.",
+    why3_t:"Fair Prices", why3_d:"Competitive prices. Open to fair negotiation.",
+    why4_t:"Fast Service", why4_d:"Quick replies and delivery available in Dar es Salaam.",
+    // CTA
+    cta_title:"Questions? Call Us!", cta_sub:"Chat with us on WhatsApp — we reply fast and are ready to help you get the best phone.", cta_btn:"Start WhatsApp Chat",
+    // Location
+    loc_label:"Where We Are",
+    loc_title:"Find Us",
+    loc_sub:"We are in Dar es Salaam — come visit or WhatsApp us and we'll deliver.",
+    loc_addr_t:"Address", loc_addr:"1110 Uhuru Street
+Dar es Salaam, Tanzania",
+    loc_hours_t:"Working Hours",
+    loc_hours:"Mon – Fri  ·  8:00 AM – 7:00 PM
+Saturday  ·  8:00 AM – 6:00 PM
+Sunday    ·  10:00 AM – 4:00 PM",
+    loc_contact_t:"Contact", loc_contact:"+255 688 058 564
+Available on WhatsApp",
+    loc_dir_btn:"🗺️ Get Directions", loc_wa_btn:"Ask for Directions on WhatsApp",
+    // Footer
+    footer_copy:"© 2026 Volta. Dar es Salaam, Tanzania 🇹🇿",
+    // Spec modal
+    spec_title:"📱 Specifications", cap_title:"⚡ Capabilities", order_btn:"Order on WhatsApp",
+    badge_new:"📦 New", badge_used:"Used",
+    // Brand strip
+    brand_strip:"⚡ Setting a new standard in the electronics hub space · Premium & Reliable",
+  },
+  sw: {
+    // Nav
+    nav_brands:"Brands", nav_phones:"Simu", nav_appliances:"Vifaa", nav_why:"Kwa Nini Volta", nav_location:"Mahali", nav_wa:"WhatsApp",
+    // Hero
+    hero_tag:"⚡ Kituo cha Elektroniki Dar es Salaam",
+    hero_sub:"Simu za bei nafuu, genuine quality, huduma ya haraka. Order moja kwa moja kupitia WhatsApp.",
+    hero_btn1:"Tazama Bidhaa", hero_btn2:"WhatsApp Sasa →",
+    // Stats
+    stat1:"Simu Zinapatikana", stat2:"Brands", stat3:"Genuine", stat4:"Majibu ya Haraka",
+    // Brand section
+    brand_label:"Brands Tunazo", brand_title:"Nunua kwa Brand", brand_sub:"Gusa brand unayotaka — tutakuonyesha bidhaa zote zinazopatikana.",
+    // Products section
+    prod_label:"Bei za Leo · 21 Mei 2026",
+    prod_title:"Bidhaa Zetu",
+    prod_sub:"Bonyeza 📋 Specs kuona maelezo kamili na vipengele vya kila simu.",
+    search_ph:"Tafuta... iPhone 13, Pixel 7, S23...",
+    filter_all:"Zote", filter_new:"📦 Mpya", filter_used:"Used",
+    // Appliances
+    app_label:"Vifaa vya Nyumbani",
+    app_title:"Home Appliances",
+    app_sub:"TVs, friji, washing machines, blenders, fans, microwaves na sound systems. Bei bora Dar es Salaam.",
+    app_all:"Zote", app_tv:"📺 TVs", app_fridge:"❄️ Friji", app_wash:"🫧 Washing", app_blend:"🍹 Blenders", app_fan:"💨 Fans", app_micro:"📡 Microwave", app_sound:"🔊 Sound",
+    // Why Volta
+    why_label:"Ahadi Yetu",
+    why_title:"Kwa Nini Volta?",
+    why_sub:"Tunajua unachohitaji — simu nzuri, bei ya haki, huduma ya haraka.",
+    why1_t:"100% Genuine", why1_d:"Hakuna feki. Kila simu imepimwa kabla ya kuuzwa.",
+    why2_t:"WhatsApp Direct", why2_d:"Message tu — tunamaliza kila kitu haraka bila shida.",
+    why3_t:"Bei ya Haki", why3_d:"Bei zetu ni za ushindani. Mazungumzo ya wazi yanakubalika.",
+    why4_t:"Huduma ya Haraka", why4_d:"Tunajibu haraka na tunaweza kupanga delivery Dar es Salaam.",
+    // CTA
+    cta_title:"Una Maswali? Tupigie!", cta_sub:"Chat nasi WhatsApp — tunajibu haraka na tuko tayari kukusaidia kupata simu yako bora.", cta_btn:"Anza Chat WhatsApp",
+    // Location
+    loc_label:"Mahali Tulipo",
+    loc_title:"Tupate",
+    loc_sub:"Tuko Dar es Salaam — karibu uje au tupigie WhatsApp tukufikishie.",
+    loc_addr_t:"Anwani", loc_addr:"1110 Uhuru Street
+Dar es Salaam, Tanzania",
+    loc_hours_t:"Masaa ya Kazi",
+    loc_hours:"Juma Mosi–Ijumaa  ·  8:00 AM – 7:00 PM
+Jumamosi  ·  8:00 AM – 6:00 PM
+Jumapili  ·  10:00 AM – 4:00 PM",
+    loc_contact_t:"Mawasiliano", loc_contact:"+255 688 058 564
+Inapatikana WhatsApp",
+    loc_dir_btn:"🗺️ Pata Maelekezo", loc_wa_btn:"Uliza Maelekezo WhatsApp",
+    // Footer
+    footer_copy:"© 2026 Volta. Dar es Salaam, Tanzania 🇹🇿",
+    // Spec modal
+    spec_title:"📱 Vipimo", cap_title:"⚡ Vipengele", order_btn:"Order WhatsApp",
+    badge_new:"📦 Mpya", badge_used:"Used",
+    // Brand strip
+    brand_strip:"⚡ Tunaweka kiwango kipya katika sekta ya elektroniki · Premium na Kuaminika",
+  }
+};
+
+let currentLang = 'sw';
+
+function applyLang(lang) {
+  const t = LANG[lang];
+  currentLang = lang;
+
+  // Update lang button
+  document.getElementById('langLabel').textContent = lang === 'sw' ? 'English' : 'Swahili';
+
+  // Nav links
+  safeText('nav-brands', t.nav_brands);
+  safeText('nav-phones', t.nav_phones);
+  safeText('nav-appliances', t.nav_appliances);
+  safeText('nav-why', t.nav_why);
+  safeText('nav-location', t.nav_location);
+
+  // Hero
+  safeText('hero-tag', t.hero_tag);
+  safeText('hero-sub', t.hero_sub);
+  safeText('hero-btn1', t.hero_btn1);
+  safeText('hero-btn2', t.hero_btn2);
+
+  // Stats
+  const statLabels = document.querySelectorAll('.stat-label');
+  const statKeys = [t.stat1, t.stat2, t.stat3, t.stat4];
+  statLabels.forEach((el, i) => { if(statKeys[i]) el.textContent = statKeys[i]; });
+
+  // Brand section
+  safeText('brand-label', t.brand_label);
+  safeText('brand-title', t.brand_title);
+  safeText('brand-sub', t.brand_sub);
+
+  // Products
+  safeText('prod-label', t.prod_label);
+  safeText('prod-title', t.prod_title);
+  safeText('prod-sub', t.prod_sub);
+  const si = document.getElementById('searchInput');
+  if(si) si.placeholder = t.search_ph;
+
+  // Appliances
+  safeText('app-label', t.app_label);
+  safeText('app-title', t.app_title);
+  safeText('app-sub', t.app_sub);
+
+  // Why Volta
+  safeText('why-label', t.why_label);
+  safeText('why-title', t.why_title);
+  safeText('why-sub', t.why_sub);
+  safeText('why1-t', t.why1_t); safeText('why1-d', t.why1_d);
+  safeText('why2-t', t.why2_t); safeText('why2-d', t.why2_d);
+  safeText('why3-t', t.why3_t); safeText('why3-d', t.why3_d);
+  safeText('why4-t', t.why4_t); safeText('why4-d', t.why4_d);
+
+  // CTA
+  safeText('cta-title', t.cta_title);
+  safeText('cta-sub', t.cta_sub);
+  safeText('cta-btn', t.cta_btn);
+
+  // Location
+  safeText('loc-label', t.loc_label);
+  safeText('loc-title', t.loc_title);
+  safeText('loc-sub', t.loc_sub);
+  safeText('loc-addr-t', t.loc_addr_t);
+  safeHTML('loc-addr', t.loc_addr.replace(/\n/g,'<br>'));
+  safeText('loc-hours-t', t.loc_hours_t);
+  safeHTML('loc-hours', t.loc_hours.replace(/\n/g,'<br>'));
+  safeText('loc-contact-t', t.loc_contact_t);
+  safeHTML('loc-contact', t.loc_contact.replace(/\n/g,'<br>'));
+  safeText('loc-dir-btn', t.loc_dir_btn);
+  safeText('loc-wa-btn', t.loc_wa_btn);
+
+  // Footer
+  safeText('footer-copy', t.footer_copy);
+
+  // Brand strip
+  safeText('brand-strip', t.brand_strip);
+
+  // Filter buttons
+  safeText('fb-all', t.filter_all);
+  safeText('fb-new', t.filter_new);
+  safeText('fb-used', t.filter_used);
+  safeText('app-all', t.app_all);
+  safeText('app-tv', t.app_tv);
+  safeText('app-fridge', t.app_fridge);
+  safeText('app-wash', t.app_wash);
+  safeText('app-blend', t.app_blend);
+  safeText('app-fan', t.app_fan);
+  safeText('app-micro', t.app_micro);
+  safeText('app-sound', t.app_sound);
+
+  // Save preference
+  try { localStorage.setItem('volta_lang', lang); } catch(e){}
+}
+
+function safeText(id, text) {
+  const el = document.getElementById(id);
+  if(el && text !== undefined) el.textContent = text;
+}
+function safeHTML(id, html) {
+  const el = document.getElementById(id);
+  if(el && html !== undefined) el.innerHTML = html;
+}
+
+function toggleLang() {
+  applyLang(currentLang === 'sw' ? 'en' : 'sw');
+}
+
+// Apply on load
+window.addEventListener('DOMContentLoaded', () => {
+  try {
+    const saved = localStorage.getItem('volta_lang') || 'sw';
+    applyLang(saved);
+  } catch(e) { applyLang('sw'); }
+});
+
+
+// ── LANGUAGE TOGGLE ──
+let currentLang = 'sw';
+
+function toggleLang() {
+  currentLang = currentLang === 'sw' ? 'en' : 'sw';
+  const isEn = currentLang === 'en';
+
+  // Update toggle button
+  document.getElementById('langLabel').textContent = isEn ? 'Kiswahili' : 'English';
+
+  // Update all elements with data-en / data-sw
+  document.querySelectorAll('[data-en][data-sw]').forEach(el => {
+    const text = isEn ? el.getAttribute('data-en') : el.getAttribute('data-sw');
+    if (el.tagName === 'INPUT') {
+      el.placeholder = text;
+    } else {
+      el.innerHTML = text;
+    }
+  });
+
+  // Update search placeholder
+  const si = document.getElementById('searchInput');
+  if (si) si.placeholder = isEn ? 'Search... iPhone 13, Pixel 7, S23...' : 'Tafuta... iPhone 13, Pixel 7, S23...';
+
+  // Update filter buttons
+  const filterMap = {
+    'Zote': 'All', 'Mpya': 'New',
+  };
+
+  // Flash effect
+  document.body.style.opacity = '0.7';
+  setTimeout(() => document.body.style.opacity = '1', 200);
+}
+
 </script>
 </body>
 </html>
