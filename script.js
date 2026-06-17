@@ -1,243 +1,747 @@
 // ── HERO CANVAS ──
-const canvas = document.getElementById('heroCanvas');
-const ctx = canvas.getContext('2d');
-let W, H, mouse = { x: 0, y: 0 };
-
-function resize() {
-  W = canvas.width = window.innerWidth;
-  H = canvas.height = window.innerHeight;
-}
-
-resize();
-window.addEventListener('resize', resize);
-document.addEventListener('mousemove', e => {
-  mouse.x = e.clientX;
-  mouse.y = e.clientY;
-});
-
-const brandNames = ['Apple', 'SAMSUNG', 'Google', 'SONY', 'Sharp', 'Xiaomi'];
-const floaters = [];
-for (let i = 0; i < 20; i++) {
-  floaters.push({
-    bx: Math.random(),
-    by: Math.random(),
-    z: Math.random() * 300 + 50,
-    rot: Math.random() * Math.PI * 2,
-    rotV: (Math.random() - 0.5) * 0.008,
-    t: Math.random() * Math.PI * 2,
-    speed: 0.005 + Math.random() * 0.008
+const canvas=document.getElementById('heroCanvas'),ctx=canvas.getContext('2d');
+let W,H,mouse={x:0,y:0};
+function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}
+resize();window.addEventListener('resize',resize);
+document.addEventListener('mousemove',e=>{mouse.x=e.clientX;mouse.y=e.clientY;});
+const brandNames=['Apple','SAMSUNG','Google','SONY','Sharp','Xiaomi'];
+const floaters=[];
+for(let i=0;i<20;i++){floaters.push({bx:Math.random(),by:Math.random(),z:Math.random()*300+50,rot:Math.random()*Math.PI*2,rotV:(Math.random()-0.5)*0.008,t:Math.random()*Math.PI*2,speed:0.005+Math.random()*0.005,nameIdx:i%6,size:Math.random()*22+10});}
+const energyLines=[];
+for(let i=0;i<8;i++)energyLines.push({x1:Math.random(),y1:Math.random(),x2:Math.random(),y2:Math.random(),t:Math.random()*Math.PI*2,speed:0.004+Math.random()*0.008,alpha:0.08+Math.random()*0.1});
+const dots=[];
+for(let r=0;r<18;r++)for(let c=0;c<28;c++)dots.push({bx:c/27,by:r/17});
+let t=0;
+function drawHero(){
+  t+=0.008;ctx.clearRect(0,0,W,H);
+  const bg=ctx.createRadialGradient(W*0.7,H*0.3,0,W*0.7,H*0.3,W*0.8);
+  bg.addColorStop(0,'rgba(28,22,4,0.97)');bg.addColorStop(1,'rgba(5,5,5,1)');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  const px=(mouse.x/W-0.5)*0.3,py=(mouse.y/H-0.5)*0.3;
+  dots.forEach(d=>{
+    const wx=d.bx*W,wy=d.by*H,dx=(mouse.x-wx)/W,dy=(mouse.y-wy)/H;
+    const dist=Math.sqrt(dx*dx+dy*dy),push=Math.max(0,1-dist*3)*12;
+    const depth=(1+Math.sin(d.bx*8+t)*0.5)*0.5;
+    ctx.beginPath();ctx.arc(wx+dx*push,wy+dy*push,1+depth*1.5,0,Math.PI*2);
+    ctx.fillStyle=`rgba(245,197,24,${0.05+depth*0.1})`;ctx.fill();
   });
-}
-
-const energyLines = [];
-for (let i = 0; i < 8; i++) {
-  energyLines.push({
-    x1: Math.random(),
-    y1: Math.random(),
-    x2: Math.random(),
-    y2: Math.random(),
-    t: Math.random() * Math.PI * 2,
-    speed: 0.004 + Math.random() * 0.008,
-    alpha: 0.08 + Math.random() * 0.1
+  energyLines.forEach(l=>{
+    l.t+=l.speed;
+    const x1=l.x1*W+Math.sin(l.t)*60*px,y1=l.y1*H+Math.cos(l.t)*60*py;
+    const x2=l.x2*W+Math.cos(l.t)*50*px,y2=l.y2*H+Math.sin(l.t)*50*py;
+    const g=ctx.createLinearGradient(x1,y1,x2,y2);
+    g.addColorStop(0,'rgba(245,197,24,0)');g.addColorStop(0.5,`rgba(245,197,24,${l.alpha})`);g.addColorStop(1,'rgba(245,197,24,0)');
+    ctx.beginPath();ctx.moveTo(x1,y1);ctx.quadraticCurveTo((x1+x2)/2+Math.sin(l.t*0.7)*80,(y1+y2)/2+Math.cos(l.t*0.7)*60,x2,y2);
+    ctx.strokeStyle=g;ctx.lineWidth=1;ctx.stroke();
   });
-}
-
-const dots = [];
-for (let r = 0; r < 18; r++) {
-  for (let c = 0; c < 28; c++) {
-    dots.push({ bx: c / 27, by: r / 17 });
-  }
-}
-
-let t = 0;
-
-function drawHero() {
-  t += 0.008;
-  ctx.clearRect(0, 0, W, H);
-
-  const bg = ctx.createRadialGradient(W * 0.7, H * 0.3, 0, W * 0.7, H * 0.3, W * 0.8);
-  bg.addColorStop(0, 'rgba(28,22,4,0.97)');
-  bg.addColorStop(1, 'rgba(5,5,5,1)');
-  ctx.fillStyle = bg;
-  ctx.fillRect(0, 0, W, H);
-
-  dots.forEach(dot => {
-    let x = dot.bx * W;
-    let y = dot.by * H;
-    let d = Math.hypot(x - mouse.x, y - mouse.y);
-    if (d < 150) {
-      x += (x - mouse.x) * 0.05;
-      y += (y - mouse.y) * 0.05;
-    }
-    ctx.fillStyle = `rgba(240,180,0,${0.08 * Math.sin(t + dot.bx + dot.by)})`;
-    ctx.fillRect(x, y, 1, 1);
+  floaters.forEach(f=>{
+    f.t+=f.speed;f.rot+=f.rotV;
+    const fx=f.bx*W+Math.sin(f.t)*50+px*f.z*0.4,fy=f.by*H+Math.cos(f.t*0.7)*35+py*f.z*0.4;
+    const scale=280/(280+f.z);
+    ctx.save();ctx.translate(fx,fy);ctx.rotate(f.rot);ctx.scale(scale,scale);
+    ctx.globalAlpha=scale*0.45+0.05;
+    ctx.font=`bold ${f.size}px Syne,Arial`;ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillStyle='rgba(245,197,24,0.8)';ctx.shadowColor='rgba(245,197,24,0.4)';ctx.shadowBlur=12;
+    ctx.fillText(brandNames[f.nameIdx],0,0);ctx.shadowBlur=0;ctx.restore();
   });
-
-  energyLines.forEach(line => {
-    line.t += line.speed;
-    const x1 = Math.cos(line.t + line.x1) * W * 0.3 + W * 0.5;
-    const y1 = Math.sin(line.t + line.y1) * H * 0.3 + H * 0.5;
-    const x2 = Math.cos(line.t + 1 + line.x2) * W * 0.3 + W * 0.5;
-    const y2 = Math.sin(line.t + 1 + line.y2) * H * 0.3 + H * 0.5;
-    ctx.strokeStyle = `rgba(240,180,0,${line.alpha * Math.sin(t)})`;
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(x2, y2);
-    ctx.stroke();
-  });
-
-  floaters.forEach(f => {
-    f.t += f.speed;
-    f.rot += f.rotV;
-    const depth = 300 - f.z;
-    const scale = depth / 300;
-    const x = W * 0.5 + Math.cos(f.t) * W * 0.3 * scale;
-    const y = H * 0.5 + Math.sin(f.t) * H * 0.3 * scale;
-    const alpha = 0.3 * scale;
-    ctx.save();
-    ctx.globalAlpha = alpha;
-    ctx.font = `${20 * scale}px 'Syne'`;
-    ctx.fillStyle = 'rgba(240,180,0,0.5)';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.rotate(f.rot);
-    ctx.fillText(brandNames[Math.floor(f.t / Math.PI) % brandNames.length], x, y);
-    ctx.restore();
-  });
-
   requestAnimationFrame(drawHero);
 }
-
 drawHero();
+const pcont=document.getElementById('particles');
+setInterval(()=>{
+  const p=document.createElement('div');p.className='particle';
+  const s=Math.random()*3+1;
+  p.style.cssText=`width:${s}px;height:${s}px;left:${Math.random()*100}%;background:rgba(245,197,24,${0.15+Math.random()*0.4});animation-duration:${4+Math.random()*6}s;animation-delay:${Math.random()}s;`;
+  pcont.appendChild(p);setTimeout(()=>p.remove(),8000);
+},450);
 
-// ── LANGUAGE TOGGLE ──
-let currentLang = 'sw';
+// ── DATA ──
+const WA='255688058564';
+const waLink=n=>`https://wa.me/${WA}?text=${encodeURIComponent(`Hi Volta! 👋 Ninataka kujua zaidi kuhusu *${n}*. Je, inapatikana?`)}`;
 
-function toggleLang() {
-  currentLang = currentLang === 'en' ? 'sw' : 'en';
-  document.querySelectorAll('[data-en]').forEach(el => {
-    el.textContent = el.getAttribute(`data-${currentLang}`);
+// Brand definitions with color theming
+const brands=[
+  {key:'iphone',label:'Apple iPhone',count:'11 · 12 · 13 Series',color:'#a8a8a8',glow:'rgba(168,168,168,0.2)',
+   svg:`<svg viewBox="0 0 814 1000" fill="white"><path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105-57.8-155.5-127.4C46 790.7 0 663 0 541.8c0-207.4 130.3-317.4 260.6-317.4 70.7 0 130.3 46.4 174.4 46.4 42.8 0 109.7-49.1 188.8-49.1 30.5 0 133.5 2.6 208.9 104.5zm-262.9-168.2c31.8-38.3 54.4-91.2 54.4-144 0-7.7-.6-15.4-1.9-21.8C523.7 12.2 467.5 44.4 431.6 89.5c-30.5 38.3-59.7 91.2-59.7 145.8 0 8.3 1.3 16.6 1.9 19.2 3.2.6 8.4 1.3 13.6 1.3 43.4 0 97.7-29.9 140.8-82.1z"/></svg>`},
+  {key:'samsung',label:'Samsung',count:'S · Note · A Series',color:'#1428A0',glow:'rgba(20,40,160,0.3)',
+   svg:`<svg viewBox="0 0 370 55" fill="white"><text x="0" y="46" font-family="Arial" font-weight="700" font-size="48" letter-spacing="-1">SAMSUNG</text></svg>`},
+  {key:'pixel',label:'Google Pixel',count:'Pixel 3 — Pixel 9',color:'#4285F4',glow:'rgba(66,133,244,0.25)',
+   svg:`<svg viewBox="0 0 130 45" fill="white"><circle cx="15" cy="22" r="12" fill="#EA4335"/><circle cx="40" cy="22" r="12" fill="#4285F4"/><circle cx="65" cy="22" r="12" fill="#FBBC05"/><circle cx="90" cy="22" r="12" fill="#34A853"/><text x="108" y="28" font-family="Arial" font-size="11" fill="white" font-weight="600">Pixel</text></svg>`},
+  {key:'sony',label:'Sony Xperia',count:'XZ · 1 · 5 Series',color:'#ffffff',glow:'rgba(255,255,255,0.15)',
+   svg:`<svg viewBox="0 0 200 55" fill="white"><text x="0" y="46" font-family="Arial" font-weight="700" font-size="52" letter-spacing="2">SONY</text></svg>`},
+  {key:'japanese',label:'Sharp / Aquos',count:'Aquos · Arrow · Digno',color:'#e60026',glow:'rgba(230,0,38,0.25)',
+   svg:`<svg viewBox="0 0 240 55" fill="white"><text x="0" y="46" font-family="Arial" font-weight="700" font-size="46" letter-spacing="1">SHARP</text></svg>`},
+  {key:'redmi',label:'Xiaomi Redmi',count:'10A · 14C · 15C',color:'#ff6900',glow:'rgba(255,105,0,0.25)',
+   svg:`<svg viewBox="0 0 80 55" fill="white"><rect x="2" y="5" width="7" height="45" rx="3.5"/><rect x="13" y="5" width="7" height="45" rx="3.5"/><path d="M24 5 Q52 5 52 27.5 Q52 50 24 50" stroke="white" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M35 5 Q72 5 72 27.5 Q72 50 35 50" stroke="white" stroke-width="7" fill="none" stroke-linecap="round"/></svg>`},
+];
+
+// Phone designs per brand — screen colors, body colors, camera styles
+const phoneDesigns={
+  iphone:{body:'#2a2a2a',screen:'#000',screenH:120,w:60,notch:{w:22,h:7},border:'#444',camera:'circle',camColor:'#111',accent:'#888'},
+  samsung:{body:'#1a1a2e',screen:'#050510',screenH:118,w:58,notch:{w:0,h:0},border:'#2a3a7a',camera:'triple',camColor:'#0a0a20',accent:'#1428A0'},
+  pixel:{body:'#1a1a1a',screen:'#000',screenH:115,w:58,notch:{w:0,h:0},border:'#333',camera:'bar',camColor:'#0d0d0d',accent:'#4285F4'},
+  sony:{body:'#1c1c1c',screen:'#000',screenH:130,w:52,notch:{w:0,h:0},border:'#3a3a3a',camera:'single',camColor:'#111',accent:'#888'},
+  japanese:{body:'#202020',screen:'#000',screenH:122,w:56,notch:{w:0,h:0},border:'#3a3a3a',camera:'single',camColor:'#111',accent:'#e60026'},
+  redmi:{body:'#1e1e1e',screen:'#000',screenH:118,w:58,notch:{w:16,h:6},border:'#333',camera:'dual',camColor:'#111',accent:'#ff6900'},
+};
+
+// Generate CSS phone SVG for each brand
+function makePhoneSVG(cat, scale=1, angle='front'){
+  const d=phoneDesigns[cat]||phoneDesigns.iphone;
+  const w=d.w*scale, sh=d.screenH*scale, margin=3*scale, notchW=(d.notch.w||0)*scale, notchH=(d.notch.h||0)*scale;
+  const totalH=sh+(margin*2)+(notchH)+(8*scale);
+  const br=10*scale, sr=7*scale;
+
+  // Camera module based on brand
+  let camModule='';
+  const cs=8*scale;
+  if(d.camera==='triple'){
+    camModule=`<rect x="${w-cs*2-4*scale}" y="${sh*0.05}" width="${cs*1.6}" height="${cs*2.8}" rx="${cs*0.4}" fill="${d.camColor}" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/>
+    <circle cx="${w-cs*1.5-4*scale}" cy="${sh*0.11}" r="${cs*0.35}" fill="#222"/><circle cx="${w-cs*1.5-4*scale}" cy="${sh*0.19}" r="${cs*0.35}" fill="#222"/><circle cx="${w-cs*1.5-4*scale}" cy="${sh*0.27}" r="${cs*0.35}" fill="#222"/>`;
+  } else if(d.camera==='bar'){
+    camModule=`<rect x="${w*0.2}" y="${sh*0.02+margin}" width="${w*0.6}" height="${cs*1.4}" rx="${cs*0.6}" fill="${d.camColor}" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
+    <circle cx="${w*0.38}" cy="${sh*0.02+margin+cs*0.7}" r="${cs*0.38}" fill="#222"/><circle cx="${w*0.62}" cy="${sh*0.02+margin+cs*0.7}" r="${cs*0.32}" fill="#222"/>`;
+  } else if(d.camera==='dual'){
+    camModule=`<rect x="${w-cs*2-3*scale}" y="${sh*0.05}" width="${cs*1.5}" height="${cs*2}" rx="${cs*0.4}" fill="${d.camColor}"/>
+    <circle cx="${w-cs*1.4-3*scale}" cy="${sh*0.1}" r="${cs*0.36}" fill="#222"/><circle cx="${w-cs*1.4-3*scale}" cy="${sh*0.18}" r="${cs*0.28}" fill="#222"/>`;
+  } else {
+    camModule=`<circle cx="${w-cs*0.9-3*scale}" cy="${sh*0.1+margin}" r="${cs*0.5}" fill="${d.camColor}" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/><circle cx="${w-cs*0.9-3*scale}" cy="${sh*0.1+margin}" r="${cs*0.3}" fill="#1a1a1a"/>`;
+  }
+
+  // Screen gradient
+  const screenGrad=`linear-gradient(180deg, ${d.accent}22 0%, #00000088 40%, #000000aa 100%)`;
+
+  const transform = angle==='back'?`scale(-1,1) translate(-${w},0)`:angle==='side'?`skewX(-10)`:'';
+
+  return `<svg viewBox="0 0 ${w} ${totalH}" xmlns="http://www.w3.org/2000/svg" style="transform:${transform};overflow:visible">
+    <defs>
+      <linearGradient id="bodyG_${cat}" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="${d.border}"/>
+        <stop offset="100%" stop-color="${d.body}"/>
+      </linearGradient>
+      <linearGradient id="screenG_${cat}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="${d.accent}" stop-opacity="0.15"/>
+        <stop offset="100%" stop-color="#000" stop-opacity="0.9"/>
+      </linearGradient>
+      <filter id="glow_${cat}">
+        <feGaussianBlur stdDeviation="2" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    <!-- Body -->
+    <rect x="0" y="0" width="${w}" height="${totalH}" rx="${br}" fill="url(#bodyG_${cat})" />
+    <!-- Body highlight -->
+    <rect x="1" y="1" width="${w*0.5}" height="${totalH-2}" rx="${br-1}" fill="rgba(255,255,255,0.04)" />
+    <!-- Screen -->
+    <rect x="${margin}" y="${margin+notchH}" width="${w-margin*2}" height="${sh}" rx="${sr}" fill="${d.screen}" />
+    <rect x="${margin}" y="${margin+notchH}" width="${w-margin*2}" height="${sh}" rx="${sr}" fill="url(#screenG_${cat})" />
+    <!-- Screen shine -->
+    <rect x="${margin+2*scale}" y="${margin+notchH+2*scale}" width="${(w-margin*2)*0.4}" height="${sh-4*scale}" rx="${sr-1}" fill="rgba(255,255,255,0.02)" />
+    <!-- Notch -->
+    ${notchW>0?`<rect x="${(w-notchW)/2}" y="${margin}" width="${notchW}" height="${notchH+sr}" rx="${notchH*0.4}" fill="${d.body}" />`:''}
+    <!-- Status bar dots -->
+    ${notchW===0?`<circle cx="${w*0.5}" cy="${margin+notchH+8*scale}" r="${1.5*scale}" fill="rgba(255,255,255,0.15)"/>`:''}
+    <!-- Camera module -->
+    ${camModule}
+    <!-- Home bar -->
+    <rect x="${w*0.3}" y="${margin+notchH+sh+4*scale}" width="${w*0.4}" height="${2.5*scale}" rx="${1.5*scale}" fill="rgba(255,255,255,0.2)" />
+    <!-- Side buttons -->
+    <rect x="-${2*scale}" y="${totalH*0.3}" width="${2*scale}" height="${12*scale}" rx="${scale}" fill="rgba(255,255,255,0.15)" />
+    <rect x="${w}" y="${totalH*0.25}" width="${2*scale}" height="${8*scale}" rx="${scale}" fill="rgba(255,255,255,0.12)" />
+    <rect x="${w}" y="${totalH*0.36}" width="${2*scale}" height="${8*scale}" rx="${scale}" fill="rgba(255,255,255,0.12)" />
+  </svg>`;
+}
+
+// ── SPECS ──
+const specsDB={
+  'iPhone 11':{specs:{'Display':'6.1" LCD IPS, 1792×828','Chip':'Apple A13 Bionic','RAM':'4 GB','Battery':'3110 mAh','Camera':'12MP Wide + 12MP Ultra','Selfie':'12MP TrueDepth','OS':'iOS 13 → 16','Charging':'18W Fast','5G':'No (LTE)','Weight':'194g'},caps:['Face ID','Dual Camera','4K Video','Dolby Atmos','NFC','Wi-Fi 6']},
+  'iPhone 11 Pro Max':{specs:{'Display':'6.5" OLED Super Retina XDR','Chip':'Apple A13 Bionic','RAM':'4 GB','Battery':'3969 mAh','Camera':'Triple 12MP Wide+Ultra+Tele','Selfie':'12MP TrueDepth','OS':'iOS 13 → 16','Charging':'18W Fast','5G':'No (LTE)','Weight':'226g'},caps:['Face ID','Triple Camera','4K 60fps','Night Mode','Portrait Mode','NFC']},
+  'iPhone 12 Pro':{specs:{'Display':'6.1" OLED Super Retina XDR','Chip':'Apple A14 Bionic','RAM':'6 GB','Battery':'2815 mAh','Camera':'Triple 12MP + LiDAR','Selfie':'12MP TrueDepth','OS':'iOS 14 → 17','Charging':'20W MagSafe','5G':'Yes','Weight':'189g'},caps:['Face ID','LiDAR Scanner','5G','MagSafe','ProRAW','Night Mode']},
+  'iPhone 12 Pro Max':{specs:{'Display':'6.7" OLED Super Retina XDR','Chip':'Apple A14 Bionic','RAM':'6 GB','Battery':'3687 mAh','Camera':'Triple 12MP + LiDAR','Selfie':'12MP TrueDepth','OS':'iOS 14 → 17','Charging':'20W MagSafe','5G':'Yes','Weight':'226g'},caps:['Face ID','LiDAR','5G','MagSafe','ProRAW','Dolby Vision']},
+  'iPhone 13':{specs:{'Display':'6.1" OLED Super Retina XDR','Chip':'Apple A15 Bionic','RAM':'4 GB','Battery':'3227 mAh','Camera':'Dual 12MP Wide+Ultra','Selfie':'12MP','OS':'iOS 15 → 17','Charging':'20W MagSafe','5G':'Yes','Weight':'174g'},caps:['5G','MagSafe','Cinematic Mode','Face ID','Night Mode','Dolby Vision']},
+  'iPhone 13 Pro Max':{specs:{'Display':'6.7" ProMotion 120Hz OLED','Chip':'Apple A15 Bionic','RAM':'6 GB','Battery':'4352 mAh','Camera':'Triple 12MP+LiDAR+3x Tele','Selfie':'12MP TrueDepth','OS':'iOS 15 → 17','Charging':'27W MagSafe','5G':'Yes','Weight':'240g'},caps:['ProMotion 120Hz','LiDAR','5G','MagSafe','ProRAW','ProRes Video','Macro Photo']},
+  'Samsung S23':{specs:{'Display':'6.1" Dynamic AMOLED 120Hz','Chip':'Snapdragon 8 Gen 2','RAM':'8 GB','Battery':'3900 mAh','Camera':'Triple 50+12+10MP','Selfie':'12MP','OS':'Android 13 → 15','Charging':'25W','5G':'Yes','Weight':'168g'},caps:['5G','120Hz Display','Night Mode','100x Zoom','Wi-Fi 6E','Bixby AI','DeX']},
+  'Samsung S22':{specs:{'Display':'6.1" Dynamic AMOLED 120Hz','Chip':'Snapdragon 8 Gen 1','RAM':'8 GB','Battery':'3700 mAh','Camera':'Triple 50+12+10MP','Selfie':'10MP','OS':'Android 12 → 14','Charging':'25W','5G':'Yes','Weight':'167g'},caps:['5G','120Hz Adaptive','Expert RAW','30x Zoom','Wi-Fi 6E','NFC Pay']},
+  'Samsung S21':{specs:{'Display':'6.2" Dynamic AMOLED 120Hz','Chip':'Snapdragon 888','RAM':'8 GB','Battery':'4000 mAh','Camera':'Triple 64+12+10MP','Selfie':'10MP','OS':'Android 11 → 14','Charging':'25W','5G':'Yes','Weight':'169g'},caps:['5G','120Hz','8K Video','Director View','Wi-Fi 6','NFC','DeX']},
+  'Samsung S21 Ultra':{specs:{'Display':'6.8" Dynamic AMOLED 120Hz','Chip':'Snapdragon 888','RAM':'12 GB','Battery':'5000 mAh','Camera':'Quad 108+12+10+10MP','Selfie':'40MP','OS':'Android 11 → 14','Charging':'45W','5G':'Yes','Weight':'229g'},caps:['S Pen','108MP Camera','100x Zoom','8K Video','5G','Wi-Fi 6E']},
+  'Samsung Note 20 Ultra':{specs:{'Display':'6.9" Dynamic AMOLED 120Hz','Chip':'Snapdragon 865+','RAM':'12 GB','Battery':'4500 mAh','Camera':'Triple 108+12+12MP','Selfie':'10MP','OS':'Android 10 → 13','Charging':'45W','5G':'Yes','Weight':'208g'},caps:['S Pen','108MP Camera','100x Zoom','8K Video','Wi-Fi 6','DeX']},
+  'Samsung A54':{specs:{'Display':'6.4" Super AMOLED 120Hz','Chip':'Exynos 1380','RAM':'8 GB','Battery':'5000 mAh','Camera':'Triple 50+12+5MP','Selfie':'32MP','OS':'Android 13 → 16','Charging':'25W','5G':'Yes','Weight':'202g'},caps:['5G','120Hz AMOLED','IP67','OIS Camera','Wi-Fi 6','NFC','4yr Updates']},
+  'Samsung A34':{specs:{'Display':'6.6" Super AMOLED 120Hz','Chip':'Dimensity 1080','RAM':'8 GB','Battery':'5000 mAh','Camera':'Triple 48+8+5MP','Selfie':'13MP','OS':'Android 13 → 16','Charging':'25W','5G':'Yes','Weight':'199g'},caps:['5G','120Hz AMOLED','IP67','OIS Camera','NFC','4yr Updates']},
+  'Google Pixel 6a':{specs:{'Display':'6.1" OLED 60Hz','Chip':'Google Tensor G1','RAM':'6 GB','Battery':'4410 mAh','Camera':'Dual 12.2+12MP','Selfie':'8MP','OS':'Android 12 → 15','Charging':'18W','5G':'Yes','Weight':'178g'},caps:['Tensor AI','Magic Eraser','Real Tone','5G','Live Translate','Call Screen']},
+  'Google Pixel 7':{specs:{'Display':'6.3" OLED 90Hz','Chip':'Google Tensor G2','RAM':'8 GB','Battery':'4355 mAh','Camera':'Dual 50+12MP','Selfie':'10.8MP','OS':'Android 13 → 16','Charging':'20W','5G':'Yes','Weight':'197g'},caps:['Tensor G2','Photo Unblur','Real Tone','5G','Call Screen','Macro Focus']},
+  'Google Pixel 7 Pro':{specs:{'Display':'6.7" LTPO OLED 120Hz','Chip':'Google Tensor G2','RAM':'12 GB','Battery':'5000 mAh','Camera':'Triple 50+48+12MP','Selfie':'10.8MP','OS':'Android 13 → 16','Charging':'30W','5G':'Yes','Weight':'212g'},caps:['5x Optical Zoom','30x Super Res','Tensor G2','Photo Unblur','5G','Wi-Fi 6E']},
+  'Google Pixel 8':{specs:{'Display':'6.2" OLED 120Hz','Chip':'Google Tensor G3','RAM':'8 GB','Battery':'4575 mAh','Camera':'Dual 50+12MP','Selfie':'10.5MP','OS':'Android 14 → 17','Charging':'27W','5G':'Yes','Weight':'187g'},caps:['Tensor G3','Best Take','Magic Eraser','Audio Eraser','5G','Wi-Fi 6E']},
+  'Google Pixel 8 Pro':{specs:{'Display':'6.7" LTPO OLED 1-120Hz','Chip':'Google Tensor G3','RAM':'12 GB','Battery':'5050 mAh','Camera':'Triple 50+48+48MP','Selfie':'10.5MP','OS':'Android 14 → 17','Charging':'30W','5G':'Yes','Weight':'213g'},caps:['Pro Camera','Tensor G3','Best Take','Video Boost','5G','Wi-Fi 6E','IP68','7yr Updates']},
+  'Google Pixel 9':{specs:{'Display':'6.3" OLED 120Hz','Chip':'Google Tensor G4','RAM':'12 GB','Battery':'4700 mAh','Camera':'Dual 50+48MP','Selfie':'10.5MP','OS':'Android 14 → 18','Charging':'27W','5G':'Yes','Weight':'198g'},caps:['Tensor G4','Gemini AI','Add Me Feature','Video Boost','5G','Wi-Fi 7','Satellite SOS']},
+  'Google Pixel 9 Pro XL':{specs:{'Display':'6.8" LTPO OLED 1-120Hz','Chip':'Google Tensor G4','RAM':'16 GB','Battery':'5060 mAh','Camera':'Triple 50+48+48MP','Selfie':'42MP','OS':'Android 14 → 18','Charging':'37W','5G':'Yes','Weight':'221g'},caps:['Tensor G4','Gemini AI','48MP Tele','Video Boost','5G','Wi-Fi 7','IP68','7yr Updates']},
+  'Sony Xperia 1 IV':{specs:{'Display':'6.5" 4K OLED 120Hz','Chip':'Snapdragon 8 Gen 1','RAM':'12 GB','Battery':'5000 mAh','Camera':'Triple 12MP Variable Tele','Selfie':'12MP','OS':'Android 12 → 14','Charging':'30W','5G':'Yes','Weight':'185g'},caps:['4K OLED','Variable Zoom','ProCinema','5G','3.5mm Jack','Hi-Res Audio','IP68']},
+  'Sony Xperia 5 IV':{specs:{'Display':'6.1" FHD+ OLED 120Hz','Chip':'Snapdragon 8 Gen 1','RAM':'8 GB','Battery':'5000 mAh','Camera':'Triple 12MP W+U+T','Selfie':'12MP','OS':'Android 12 → 14','Charging':'30W','5G':'Yes','Weight':'172g'},caps:['Compact Flagship','120Hz OLED','5G','3.5mm Jack','Hi-Res Audio','IP68','Eye AF']},
+  'Aquos R7':{specs:{'Display':'6.6" Pro IGZO OLED 240Hz','Chip':'Snapdragon 8 Gen 1','RAM':'12 GB','Battery':'5000 mAh','Camera':'50MP Leica 1-inch','Selfie':'12.6MP','OS':'Android 12','Charging':'65W','5G':'Yes','Weight':'207g'},caps:['Leica Camera','1-inch Sensor','240Hz Display','5G','IP68','Wi-Fi 6E','15W Wireless']},
+  'Redmi 14C':{specs:{'Display':'6.88" IPS LCD 90Hz','Chip':'MediaTek Helio G85','RAM':'16 GB','Battery':'5160 mAh','Camera':'50MP + 0.08MP','Selfie':'13MP','OS':'Android 14 + MIUI 14','Charging':'18W','5G':'No (LTE)','Weight':'211g'},caps:['90Hz Display','Large Battery','AI Camera','Face Unlock','Dual SIM','MicroSD']},
+  'Redmi 15C':{specs:{'Display':'6.88" IPS LCD 90Hz','Chip':'Snapdragon 4 Gen 2','RAM':'16 GB','Battery':'5160 mAh','Camera':'50MP AI','Selfie':'13MP','OS':'Android 14 + MIUI 14','Charging':'18W','5G':'No (LTE)','Weight':'210g'},caps:['Snapdragon 4 Gen 2','90Hz Display','50MP AI Camera','Large Battery','Dual SIM','MicroSD']},
+};
+
+const products=[
+  {id:0,cat:'iphone',cond:'used',name:'iPhone 11 64GB',short:'Used · Dual SIM · Black',price:'TZS 510,000',specKey:'iPhone 11'},
+  {id:1,cat:'iphone',cond:'used',name:'iPhone 11 128GB',short:'Used · Dual SIM · White',price:'TZS 560,000',specKey:'iPhone 11'},
+  {id:2,cat:'iphone',cond:'used',name:'iPhone 11 Pro Max 64GB',short:'Used · DM · Midnight Green',price:'TZS 690,000',specKey:'iPhone 11 Pro Max'},
+  {id:3,cat:'iphone',cond:'used',name:'iPhone 11 Pro Max 256GB',short:'Used · DM · Space Grey',price:'TZS 750,000',specKey:'iPhone 11 Pro Max'},
+  {id:4,cat:'iphone',cond:'used',name:'iPhone 12 Pro 128GB',short:'Used · DM · Pacific Blue',price:'TZS 760,000',specKey:'iPhone 12 Pro'},
+  {id:5,cat:'iphone',cond:'used',name:'iPhone 12 Pro 256GB',short:'Used · DM · Gold',price:'TZS 810,000',specKey:'iPhone 12 Pro'},
+  {id:6,cat:'iphone',cond:'used',name:'iPhone 12 Pro Max 128GB',short:'Used · DM · Silver',price:'TZS 840,000',specKey:'iPhone 12 Pro Max'},
+  {id:7,cat:'iphone',cond:'used',name:'iPhone 12 Pro Max 256GB',short:'Used · Clean · Graphite',price:'TZS 930,000',specKey:'iPhone 12 Pro Max'},
+  {id:8,cat:'iphone',cond:'used',name:'iPhone 13 128GB',short:'Used · DM · Midnight',price:'TZS 790,000',specKey:'iPhone 13'},
+  {id:9,cat:'iphone',cond:'used',name:'iPhone 13 Pro Max 128GB',short:'Used · DM · Alpine Green',price:'TZS 970,000',specKey:'iPhone 13 Pro Max'},
+  {id:10,cat:'samsung',cond:'new',name:'Samsung Note 20 5G',short:'Boxed 📦 · Mystic Black',price:'TZS 570,000',specKey:'Samsung Note 20 Ultra'},
+  {id:11,cat:'samsung',cond:'new',name:'Samsung A32 128GB',short:'Boxed · 2 SIMs 📦',price:'TZS 385,000',specKey:'Samsung A34'},
+  {id:12,cat:'samsung',cond:'new',name:'Samsung A34 128GB',short:'Boxed 📦 · Awesome Graphite',price:'TZS 570,000',specKey:'Samsung A34'},
+  {id:13,cat:'samsung',cond:'used',name:'Samsung S23 256GB',short:'Used · Clean · Phantom Black',price:'TZS 880,000',specKey:'Samsung S23'},
+  {id:14,cat:'samsung',cond:'used',name:'Samsung S22 256GB',short:'Used · Clean · Green',price:'TZS 610,000',specKey:'Samsung S22'},
+  {id:15,cat:'samsung',cond:'used',name:'Samsung S21 128GB',short:'Used · Clean · Phantom Grey',price:'TZS 510,000',specKey:'Samsung S21'},
+  {id:16,cat:'samsung',cond:'used',name:'Samsung S21 Ultra 128GB',short:'Used · Phantom Black',price:'TZS 625,000',specKey:'Samsung S21 Ultra'},
+  {id:17,cat:'samsung',cond:'used',name:'Samsung Note 20 Ultra 256GB',short:'Used · Mystic Bronze',price:'TZS 545,000',specKey:'Samsung Note 20 Ultra'},
+  {id:18,cat:'samsung',cond:'used',name:'Samsung A54 128GB',short:'Used · Awesome Graphite',price:'TZS 490,000',specKey:'Samsung A54'},
+  {id:19,cat:'samsung',cond:'used',name:'Samsung A34 128GB',short:'Used · Awesome Graphite',price:'TZS 450,000',specKey:'Samsung A34'},
+  {id:20,cat:'pixel',cond:'used',name:'Google Pixel 6a 128GB',short:'Used · Chalk',price:'TZS 440,000',specKey:'Google Pixel 6a'},
+  {id:21,cat:'pixel',cond:'used',name:'Google Pixel 7 256GB',short:'Used · Snow',price:'TZS 580,000',specKey:'Google Pixel 7'},
+  {id:22,cat:'pixel',cond:'used',name:'Google Pixel 7 Pro 512GB',short:'Used · Clean · Obsidian',price:'TZS 800,000',specKey:'Google Pixel 7 Pro'},
+  {id:23,cat:'pixel',cond:'used',name:'Google Pixel 8 128GB',short:'Used · Hazel',price:'TZS 770,000',specKey:'Google Pixel 8'},
+  {id:24,cat:'pixel',cond:'used',name:'Google Pixel 8 Pro 256GB',short:'Used · Porcelain',price:'TZS 1,020,000',specKey:'Google Pixel 8 Pro'},
+  {id:25,cat:'pixel',cond:'used',name:'Google Pixel 9 128GB',short:'Used · Obsidian',price:'TZS 1,170,000',specKey:'Google Pixel 9'},
+  {id:26,cat:'pixel',cond:'new',name:'Google Pixel 8 Pro 128GB',short:'Brand New 📦 · Bay',price:'TZS 1,080,000',specKey:'Google Pixel 8 Pro'},
+  {id:27,cat:'pixel',cond:'new',name:'Google Pixel 9 Pro XL 256GB',short:'Brand New 📦 · Obsidian',price:'TZS 1,720,000',specKey:'Google Pixel 9 Pro XL'},
+  {id:28,cat:'sony',cond:'used',name:'Sony Xperia 5 IV 128GB',short:'Used · Black',price:'TZS 425,000',specKey:'Sony Xperia 5 IV'},
+  {id:29,cat:'sony',cond:'used',name:'Sony Xperia 1 IV 256GB',short:'Used · Frosted Black',price:'TZS 570,000',specKey:'Sony Xperia 1 IV'},
+  {id:30,cat:'japanese',cond:'used',name:'Aquos R7 256GB',short:'Used · Clean · Black',price:'TZS 410,000',specKey:'Aquos R7'},
+  {id:31,cat:'redmi',cond:'new',name:'Redmi 14C 256GB',short:'Brand New · 16GB RAM 📦',price:'TZS 310,000',specKey:'Redmi 14C'},
+  {id:32,cat:'redmi',cond:'new',name:'Redmi 15C 256GB',short:'Brand New · 16GB RAM 📦',price:'TZS 340,000',specKey:'Redmi 15C'},
+];
+
+function getBrand(cat){return brands.find(b=>b.key===cat);}
+
+// ── RENDER BRAND CARDS ──
+function renderBrands(){
+  document.getElementById('brandGrid').innerHTML=brands.map(b=>`
+    <div class="brand-card" style="--brand-color:${b.color};--brand-glow:${b.glow};" onclick="filterAndScroll('${b.key}')">
+      <div class="sweep"></div>
+      <div class="burst"></div>
+      <div class="brand-card-inner">
+        <div class="logo-3d-wrap">${b.svg}</div>
+        <div class="brand-name">${b.label}</div>
+        <div class="brand-count">${b.count}</div>
+      </div>
+      <div class="brand-arrow">→</div>
+    </div>`).join('');
+
+  document.querySelectorAll('.brand-card').forEach(c=>{
+    c.addEventListener('mousemove',e=>{
+      const r=c.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-0.5,y=(e.clientY-r.top)/r.height-0.5;
+      c.style.transform=`perspective(700px) rotateY(${x*18}deg) rotateX(${-y*18}deg) translateZ(10px) translateY(-6px)`;
+    });
+    c.addEventListener('mouseleave',()=>{c.style.transform='';});
   });
-  document.getElementById('langLabel').textContent = currentLang === 'en' ? 'English' : 'Swahili';
+}
+
+// ── FILTER BAR ──
+function renderFilterBar(){
+  document.getElementById('filterBar').innerHTML=
+    `<button class="fb active" onclick="setFilter('all',this)">Zote</button>`+
+    brands.map(b=>`<button class="fb" data-key="${b.key}" onclick="setFilter('${b.key}',this)"><span class="fb-logo">${b.svg}</span>${b.label.split(' ')[0]}</button>`).join('')+
+    `<button class="fb" onclick="setFilter('new',this)">📦 Mpya</button><button class="fb" onclick="setFilter('used',this)">Used</button>`;
+}
+
+// ── CARD HTML — Three angle views of CSS phone ──
+function phoneAngles(cat, small=true){
+  const sc=small?0.55:0.9;
+  return `
+    <div class="phone-angles" style="perspective:400px">
+      <div class="angle-phone" style="opacity:0.55;transform:rotateY(20deg) scale(0.82)">${makePhoneSVG(cat,sc,'back')}</div>
+      <div class="angle-phone">${makePhoneSVG(cat,sc,'front')}</div>
+      <div class="angle-phone" style="opacity:0.55;transform:rotateY(-20deg) scale(0.82)">${makePhoneSVG(cat,sc,'side')}</div>
+    </div>
+    <div class="angle-label">
+      <span class="albl">Back</span><span class="albl" style="color:rgba(245,197,24,0.6)">Front</span><span class="albl">Side</span>
+    </div>`;
+}
+
+function cardHTML(p){
+  const brand=getBrand(p.cat);
+  const badge=p.cond==='new'?'<span class="pbadge bn">📦 Mpya</span>':'<span class="pbadge bu">Used</span>';
+  const d=phoneDesigns[p.cat]||phoneDesigns.iphone;
+  return `<div class="pc-wrap"><div class="product-card" id="pc${p.id}">
+    <div style="position:relative">
+      <div class="p-img" style="background:linear-gradient(135deg,${d.body}44,${d.camColor}88)">
+        ${phoneAngles(p.cat,true)}
+        <div class="brand-wm">${brand?brand.svg:''}</div>
+        <div class="shine"></div>
+        ${badge}
+      </div>
+    </div>
+    <div class="p-body">
+      <div class="p-cat-logo">${brand?brand.svg:''}</div>
+      <div class="p-name">${p.name}</div>
+      <div class="p-specs-short">${p.short}</div>
+      <div class="p-foot">
+        <div class="p-price">${p.price}</div>
+        <div class="p-actions">
+          <button class="spec-btn" onclick="openModal(${p.id})">📋 Specs</button>
+          <a class="wa-btn" href="${waLink(p.name)}" target="_blank">
+            <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            Order
+          </a>
+        </div>
+      </div>
+    </div>
+  </div></div>`;
 }
 
 // ── MODAL ──
-const modalOverlay = document.getElementById('modalOverlay');
-const modal = document.getElementById('modal');
-const modalBody = document.getElementById('modalBody');
+let currentAngle='front';
+function openModal(id){
+  const p=products.find(x=>x.id===id);if(!p)return;
+  const brand=getBrand(p.cat);
+  const sp=specsDB[p.specKey]||{specs:{},caps:[]};
+  const {caps,...specs}=sp;
+  const d=phoneDesigns[p.cat]||phoneDesigns.iphone;
+  const specRows=Object.entries(specs.specs||{}).map(([k,v])=>`<div class="spec-row"><span class="spec-key">${k}</span><span class="spec-val">${v}</span></div>`).join('');
+  const capTags=(caps||[]).map(c=>`<span class="cap-tag">${c}</span>`).join('');
+  currentAngle='front';
 
-function openModal(content) {
-  modalBody.innerHTML = content;
-  modalOverlay.classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-
-function closeModal() {
-  modalOverlay.classList.remove('open');
-  document.body.style.overflow = 'auto';
-}
-
-modalOverlay.addEventListener('click', e => {
-  if (e.target === modalOverlay) closeModal();
-});
-
-// ── SEARCH & FILTER ──
-function handleSearch() {
-  const query = document.getElementById('searchInput').value.toLowerCase();
-  const products = document.querySelectorAll('[data-product]');
-  let visibleCount = 0;
-
-  products.forEach(product => {
-    const name = product.getAttribute('data-product').toLowerCase();
-    if (name.includes(query)) {
-      product.style.display = '';
-      visibleCount++;
-    } else {
-      product.style.display = 'none';
-    }
-  });
-
-  document.getElementById('noResults').style.display = visibleCount === 0 ? 'block' : 'none';
-}
-
-function filterApps(category, button) {
-  document.querySelectorAll('.fb').forEach(btn => btn.classList.remove('active'));
-  button.classList.add('active');
-
-  const apps = document.querySelectorAll('[data-app-category]');
-  apps.forEach(app => {
-    if (category === 'all' || app.getAttribute('data-app-category') === category) {
-      app.style.display = '';
-    } else {
-      app.style.display = 'none';
-    }
-  });
-}
-
-// ── PRODUCT SPECIFICATIONS MODAL ──
-function showSpecs(productId) {
-  const specs = {
-    'iphone-13': {
-      name: 'iPhone 13',
-      brand: 'Apple',
-      price: '850,000 TZS',
-      condition: 'New',
-      specs: {
-        'Screen': '6.1" OLED',
-        'Processor': 'A15 Bionic',
-        'RAM': '4GB',
-        'Storage': '128GB',
-        'Camera': '12MP Dual',
-        'Battery': '3,240 mAh',
-        'OS': 'iOS 15'
-      },
-      capabilities: ['5G', 'Face ID', 'Wireless Charging', 'Water Resistant']
-    }
-  };
-
-  const product = specs[productId] || { name: 'Product', price: 'Price on Request' };
-
-  let html = `
-    <div class="m-phone-stage">
-      <div class="m-phone-large">📱</div>
+  document.getElementById('modalBody').innerHTML=`
+    <div>
+      <div class="m-phone-stage" id="mStage">
+        <div class="m-phone-large" id="mPhone">${makePhoneSVG(p.cat,0.9,'front')}</div>
+      </div>
+      <div class="m-angle-btns">
+        <button class="m-angle-btn active" onclick="switchAngle('front','${p.cat}',this)">Front</button>
+        <button class="m-angle-btn" onclick="switchAngle('back','${p.cat}',this)">Back</button>
+        <button class="m-angle-btn" onclick="switchAngle('side','${p.cat}',this)">Side</button>
+      </div>
     </div>
     <div class="m-info">
-      <div class="m-name">${product.name}</div>
-      ${product.condition ? `<span class="m-cond ${product.condition === 'New' ? 'new' : 'used'}">${product.condition}</span>` : ''}
-      <div class="m-price">${product.price}</div>
-      
-      ${product.specs ? `
-        <div class="m-specs-title">Specifications</div>
-        ${Object.entries(product.specs).map(([key, val]) => `
-          <div class="spec-row">
-            <div class="spec-key">${key}</div>
-            <div class="spec-val">${val}</div>
-          </div>
-        `).join('')}
-      ` : ''}
-
-      ${product.capabilities ? `
-        <div class="m-caps">
-          <div class="m-cap-title">Capabilities</div>
-          <div class="cap-tags">
-            ${product.capabilities.map(cap => `<span class="cap-tag">${cap}</span>`).join('')}
-          </div>
-        </div>
-      ` : ''}
-
-      <a href="https://wa.me/255688058564?text=Hi%20Volta!%20Interested%20in%20${product.name}" target="_blank" class="m-wa-btn">
-        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.57.15-.197-.073-.656-.236-.727-.49-.071-.254-.071-.678.227-1.035.297-.356.787-.47 1.112-.5.325-.029.598.015.843.296.244.281.908.95 1.044 1.122.136.172.227.45.168.708-.058.257-.327.507-.704.706zm-4.47 1.226c-2.156-1.09-3.527-3.316-3.527-5.608 0-3.575 2.913-6.488 6.488-6.488.857 0 1.693.169 2.483.502 1.564.7 2.872 1.907 3.627 3.41.755 1.502 1.04 3.201.802 4.869-.237 1.668-1.04 3.197-2.24 4.397-1.2 1.2-2.729 2.003-4.397 2.24-1.668.237-3.367-.047-4.869-.802zm7.296-10.04c-.54-.978-1.437-1.777-2.526-2.226-1.088-.45-2.267-.534-3.41-.248-1.143.286-2.164.93-2.928 1.82-.764.89-1.236 2.01-1.356 3.166-.12 1.156.175 2.308.87 3.286.695.978 1.692 1.756 2.86 2.15.587.197 1.185.296 1.78.296 1.175 0 2.334-.3 3.375-.88 1.04-.58 1.945-1.425 2.613-2.448.668-1.023 1.046-2.214 1.102-3.425.057-1.21-.229-2.408-.852-3.491z"/></svg>
+      <div class="m-brand-logo">${brand?brand.svg:''}</div>
+      <div class="m-name">${p.name}</div>
+      <span class="m-cond ${p.cond==='new'?'new':'used'}">${p.cond==='new'?'📦 Brand New':'Used'}</span>
+      <div class="m-price">${p.price}</div>
+      <div class="m-specs-title">📱 Specifications</div>
+      <div>${specRows||'<div style="color:#666;font-size:0.8rem">Maelezo zaidi kwenye WhatsApp</div>'}</div>
+      ${capTags?`<div class="m-caps"><div class="m-cap-title">⚡ Capabilities</div><div class="cap-tags">${capTags}</div></div>`:''}
+      <a class="m-wa-btn" href="${waLink(p.name)}" target="_blank">
+        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
         Order on WhatsApp
       </a>
-    </div>
-  `;
-
-  openModal(html);
+    </div>`;
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
 }
 
-// ── INITIALIZATION ──
-document.addEventListener('DOMContentLoaded', () => {
-  // Load product data if needed
-  console.log('Volta Store loaded successfully');
+function switchAngle(angle,cat,btn){
+  document.getElementById('mPhone').innerHTML=makePhoneSVG(cat,0.9,angle);
+  document.querySelectorAll('.m-angle-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function closeModal(){
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+document.getElementById('modalOverlay').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
+// ── TILT ──
+function apply3DTilt(){
+  document.querySelectorAll('.product-card').forEach(c=>{
+    c.addEventListener('mousemove',e=>{
+      const r=c.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-0.5,y=(e.clientY-r.top)/r.height-0.5;
+      c.style.transform=`perspective(800px) rotateY(${x*12}deg) rotateX(${-y*12}deg) translateZ(8px)`;
+    });
+    c.addEventListener('mouseleave',()=>{c.style.transform='';});
+  });
+}
+
+let cf='all',cs='';
+function renderProducts(list){
+  const grid=document.getElementById('productsGrid'),none=document.getElementById('noResults');
+  if(!list.length){grid.innerHTML='';none.style.display='block';return;}
+  none.style.display='none';grid.innerHTML=list.map(cardHTML).join('');apply3DTilt();
+}
+function applyFilters(){
+  let list=products;
+  if(cf==='new')list=list.filter(p=>p.cond==='new');
+  else if(cf==='used')list=list.filter(p=>p.cond==='used');
+  else if(cf!=='all')list=list.filter(p=>p.cat===cf);
+  if(cs){const q=cs.toLowerCase();list=list.filter(p=>p.name.toLowerCase().includes(q)||p.short.toLowerCase().includes(q));}
+  renderProducts(list);
+}
+function setFilter(f,btn){cf=f;document.querySelectorAll('.fb').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');applyFilters();}
+function handleSearch(){cs=document.getElementById('searchInput').value;applyFilters();}
+function filterAndScroll(key){setFilter(key,null);document.querySelector(`.fb[data-key="${key}"]`)?.classList.add('active');document.getElementById('products').scrollIntoView({behavior:'smooth'});}
+
+const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)';}});},{threshold:0.1});
+// Init handled by DOMContentLoaded
+
+// ── HOME APPLIANCES ──
+// Pricing: market price from Jiji/Impala TZ + profit margin
+// Products under 500k → +90,000 to 100,000 TZS profit
+// Products above 700k → +250,000 TZS profit
+
+const appliances=[
+  // TVs
+  {cat:'tv',icon:'📺',name:'Hisense 32" Smart TV',brand:'Hisense',specs:'HD Ready · VIDAA OS · Wi-Fi · YouTube/Netflix',price:'TZS 540,000',badge:'📦 New'},
+  {cat:'tv',icon:'📺',name:'Hisense 40" Full HD Smart TV',brand:'Hisense',specs:'1080p · VIDAA OS · Wi-Fi · Bluetooth · HDMI×2',price:'TZS 730,000',badge:'📦 New'},
+  {cat:'tv',icon:'📺',name:'Hisense 43" 4K UHD Smart TV',brand:'Hisense',specs:'4K Ultra HD · VIDAA OS · Dolby Vision · Wi-Fi',price:'TZS 1,150,000',badge:'📦 New'},
+  {cat:'tv',icon:'📺',name:'Hisense 50" 4K QLED Smart TV',brand:'Hisense',specs:'4K QLED · Quantum Dot · HDR · Wi-Fi · Bluetooth',price:'TZS 1,450,000',badge:'📦 New'},
+  {cat:'tv',icon:'📺',name:'Hisense 55" 4K UHD Smart TV',brand:'Hisense',specs:'4K Ultra HD · VIDAA · Dolby Audio · 3×HDMI',price:'TZS 1,800,000',badge:'📦 New'},
+  {cat:'tv',icon:'📺',name:'Samsung 43" Full HD Smart TV',brand:'Samsung',specs:'Full HD · Tizen OS · PurColor · HDR · Wi-Fi',price:'TZS 980,000',badge:'📦 New'},
+  {cat:'tv',icon:'📺',name:'Samsung 55" 4K QLED Smart TV',brand:'Samsung',specs:'4K QLED · Quantum Processor · HDR10+ · Tizen',price:'TZS 2,150,000',badge:'📦 New'},
+  {cat:'tv',icon:'📺',name:'LG 43" Full HD Smart TV',brand:'LG',specs:'Full HD · WebOS · ThinQ AI · Bluetooth · Wi-Fi',price:'TZS 920,000',badge:'📦 New'},
+  {cat:'tv',icon:'📺',name:'LG 55" 4K UHD Smart TV',brand:'LG',specs:'4K UHD · WebOS · Filmmaker Mode · Dolby Vision',price:'TZS 2,250,000',badge:'📦 New'},
+  {cat:'tv',icon:'📺',name:'TCL 32" Smart TV',brand:'TCL',specs:'HD · Android TV · Google Assistant · Wi-Fi',price:'TZS 490,000',badge:'📦 New'},
+  {cat:'tv',icon:'📺',name:'TCL 43" 4K Android TV',brand:'TCL',specs:'4K UHD · Android 11 · Google Play · Dolby Audio',price:'TZS 970,000',badge:'📦 New'},
+
+  // Fridges
+  {cat:'fridge',icon:'❄️',name:'Hisense 90L Single Door Fridge',brand:'Hisense',specs:'90L · Direct Cool · Energy Saving · Low Noise',price:'TZS 590,000',badge:'📦 New'},
+  {cat:'fridge',icon:'❄️',name:'Hisense 150L Single Door Fridge',brand:'Hisense',specs:'150L · Direct Cool · Mechanical Control · LED Light',price:'TZS 700,000',badge:'📦 New'},
+  {cat:'fridge',icon:'❄️',name:'Hisense 175L Double Door Fridge',brand:'Hisense',specs:'175L · No Frost · LED · Bottom Freezer',price:'TZS 870,000',badge:'📦 New'},
+  {cat:'fridge',icon:'❄️',name:'Hisense 245L Double Door Fridge',brand:'Hisense',specs:'245L · No Frost · Total No Frost · Humidity Control',price:'TZS 1,070,000',badge:'📦 New'},
+  {cat:'fridge',icon:'❄️',name:'Samsung 300L Double Door Fridge',brand:'Samsung',specs:'300L · Twin Cooling · No Frost · Digital Inverter',price:'TZS 1,450,000',badge:'📦 New'},
+  {cat:'fridge',icon:'❄️',name:'Samsung 400L Side-by-Side Fridge',brand:'Samsung',specs:'400L · Twin Cooling Plus · No Frost · Ice Maker',price:'TZS 2,250,000',badge:'📦 New'},
+  {cat:'fridge',icon:'❄️',name:'LG 190L Double Door Fridge',brand:'LG',specs:'190L · Smart Inverter · No Frost · Moist Balance Crisper',price:'TZS 980,000',badge:'📦 New'},
+  {cat:'fridge',icon:'❄️',name:'Midea 80L Bar Fridge',brand:'Midea',specs:'80L · Compact · Reversible Door · Quiet Operation',price:'TZS 480,000',badge:'📦 New'},
+
+  // Washing Machines
+  {cat:'washing',icon:'🫧',name:'Hisense 7KG Top Load Washer',brand:'Hisense',specs:'7KG · Fully Automatic · Bubble Clean · Smart Diagnosis',price:'TZS 760,000',badge:'📦 New'},
+  {cat:'washing',icon:'🫧',name:'Hisense 8KG Front Load Washer',brand:'Hisense',specs:'8KG · Front Load · 1200RPM · Inverter Motor · Steam',price:'TZS 1,100,000',badge:'📦 New'},
+  {cat:'washing',icon:'🫧',name:'Hisense 10KG Top Load Washer',brand:'Hisense',specs:'10KG · Fully Auto · 8 Wash Programs · Child Lock',price:'TZS 1,050,000',badge:'📦 New'},
+  {cat:'washing',icon:'🫧',name:'Midea 7KG Manual Twin Tub',brand:'Midea',specs:'7KG · Semi-Auto · Twin Tub · Drain Pump · Spin',price:'TZS 570,000',badge:'📦 New'},
+  {cat:'washing',icon:'🫧',name:'Midea 8KG Auto Top Load',brand:'Midea',specs:'8KG · Fully Automatic · 8 Programs · LED Display',price:'TZS 840,000',badge:'📦 New'},
+  {cat:'washing',icon:'🫧',name:'Midea 10KG Automatic Top Load',brand:'Midea',specs:'10KG · Fully Auto · Inverter · Auto Restart · Steam',price:'TZS 1,170,000',badge:'📦 New'},
+  {cat:'washing',icon:'🫧',name:'Samsung 7KG Front Load Washer',brand:'Samsung',specs:'7KG · Front Load · AddWash · Eco Bubble · 1400RPM',price:'TZS 1,250,000',badge:'📦 New'},
+  {cat:'washing',icon:'🫧',name:'LG 8KG Front Load Washer',brand:'LG',specs:'8KG · AI DD Technology · Steam · ThinQ Wi-Fi · A+++',price:'TZS 1,450,000',badge:'📦 New'},
+
+  // Blenders & Juicers
+  {cat:'blender',icon:'🍹',name:'Kenwood Heavy Duty Blender 3.5L',brand:'Kenwood',specs:'3.5L · 1500W · Stainless Steel Blade · 3 Speeds',price:'TZS 195,000',badge:'📦 New'},
+  {cat:'blender',icon:'🍹',name:'Philips Daily Blender 2L',brand:'Philips',specs:'2L · 700W · 2 Speeds + Pulse · Ice Crushing',price:'TZS 180,000',badge:'📦 New'},
+  {cat:'blender',icon:'🍹',name:'Philips Viva Blender 2L',brand:'Philips',specs:'2L · 1200W · ProBlend Tech · 3 Speeds · BPA Free',price:'TZS 225,000',badge:'📦 New'},
+  {cat:'blender',icon:'🍹',name:'Kenwood 4-in-1 Juicer Extractor',brand:'Kenwood',specs:'Juicer + Mincer + Grinder + Blender · 800W · 2L',price:'TZS 260,000',badge:'📦 New'},
+  {cat:'blender',icon:'🍹',name:'Moulinex Easy Blender 1.5L',brand:'Moulinex',specs:'1.5L · 500W · Compact · Easy Clean · 2 Speeds',price:'TZS 145,000',badge:'📦 New'},
+  {cat:'blender',icon:'🍹',name:'Decakila Slow Juicer 500W',brand:'Decakila',specs:'500W · Cold Press · 75RPM · Preserves Nutrients',price:'TZS 310,000',badge:'📦 New'},
+  {cat:'blender',icon:'🍹',name:'Sokany Commercial Blender 2L',brand:'Sokany',specs:'2L · 2200W · Heavy Duty · 9500W Copper Motor',price:'TZS 185,000',badge:'📦 New'},
+
+  // Fans
+  {cat:'fan',icon:'💨',name:'Dolphin 16" Stand Fan',brand:'Dolphin',specs:'16" · 3 Speed · Oscillating · Adjustable Height · 55W',price:'TZS 115,000',badge:'📦 New'},
+  {cat:'fan',icon:'💨',name:'Dolphin 18" Pedestal Stand Fan',brand:'Dolphin',specs:'18" · 5 Speed · Remote Control · Timer · 85W',price:'TZS 205,000',badge:'📦 New'},
+  {cat:'fan',icon:'💨',name:'Nikai Tower Fan 40" Remote',brand:'Nikai',specs:'40" · 45W · Remote · 3 Speeds · 59dB Silent · Timer',price:'TZS 250,000',badge:'📦 New'},
+  {cat:'fan',icon:'💨',name:'Dolphin Ceiling Fan 36"',brand:'Dolphin',specs:'36" · 5 Blades · Copper Motor · Low Voltage · Silent',price:'TZS 165,000',badge:'📦 New'},
+  {cat:'fan',icon:'💨',name:'Midea Rechargeable Stand Fan',brand:'Midea',specs:'16" · Rechargeable · AC/DC · Remote · 8hr Battery',price:'TZS 230,000',badge:'📦 New'},
+  {cat:'fan',icon:'💨',name:'Mewe Rechargeable Stand Fan 18"',brand:'Mewe',specs:'18" · Remote Control · Solar Compatible · AC/DC',price:'TZS 195,000',badge:'📦 New'},
+  {cat:'fan',icon:'💨',name:'Dolphin 30" Wall Fan Industrial',brand:'Dolphin',specs:'30" · Super Quiet Motor · 3 Speeds · Heavy Duty',price:'TZS 280,000',badge:'📦 New'},
+
+  // Microwaves
+  {cat:'microwave',icon:'📡',name:'Midea 20L Microwave Oven',brand:'Midea',specs:'20L · 700W · Reheat · Defrost · 5 Power Levels',price:'TZS 295,000',badge:'📦 New'},
+  {cat:'microwave',icon:'📡',name:'Hisense 20L Microwave Oven',brand:'Hisense',specs:'20L · 700W · 5 Power Levels · Defrost · Child Lock',price:'TZS 310,000',badge:'📦 New'},
+  {cat:'microwave',icon:'📡',name:'Midea 25L Digital Microwave',brand:'Midea',specs:'25L · 900W · Digital Display · 10 Power Levels · Grill',price:'TZS 380,000',badge:'📦 New'},
+  {cat:'microwave',icon:'📡',name:'Samsung 28L Convection Microwave',brand:'Samsung',specs:'28L · 900W · Convection · Grill · Slim Fry · LED',price:'TZS 750,000',badge:'📦 New'},
+  {cat:'microwave',icon:'📡',name:'LG 25L NeoChef Microwave',brand:'LG',specs:'25L · 1000W · Smart Inverter · EasyClean · Anti-Bacteria',price:'TZS 680,000',badge:'📦 New'},
+  {cat:'microwave',icon:'📡',name:'Kenwood 20L Microwave Oven',brand:'Kenwood',specs:'20L · 800W · 5 Power Levels · Defrost · Timer',price:'TZS 330,000',badge:'📦 New'},
+
+  // Sound Systems
+  {cat:'sound',icon:'🔊',name:'Sony Mini Hi-Fi System',brand:'Sony',specs:'80W · Bluetooth · USB · CD · FM Radio · LED Display',price:'TZS 450,000',badge:'📦 New'},
+  {cat:'sound',icon:'🔊',name:'LG XBoom 360 Portable Speaker',brand:'LG',specs:'120W · 360° Sound · Bluetooth 5.0 · IPX4 · LED',price:'TZS 650,000',badge:'📦 New'},
+  {cat:'sound',icon:'🔊',name:'Samsung Soundbar HW-T420',brand:'Samsung',specs:'150W · 2.1ch · Bluetooth · DTS Virtual:X · USB',price:'TZS 850,000',badge:'📦 New'},
+  {cat:'sound',icon:'🔊',name:'JBL PartyBox 110 Speaker',brand:'JBL',specs:'160W · Bluetooth · IPX4 · Dynamic Light Show · 12hr',price:'TZS 1,200,000',badge:'📦 New'},
+  {cat:'sound',icon:'🔊',name:'Philips Party Speaker TAX4207',brand:'Philips',specs:'700W · Bluetooth · USB · FM · Karaoke Ready · LED',price:'TZS 580,000',badge:'📦 New'},
+  {cat:'sound',icon:'🔊',name:'Nikai 3-in-1 Home Theatre 5.1',brand:'Nikai',specs:'5.1ch · 1000W · Bluetooth · USB · HDMI · FM Radio',price:'TZS 750,000',badge:'📦 New'},
+  {cat:'sound',icon:'🔊',name:'Hisense Soundbar HS214',brand:'Hisense',specs:'120W · 2.1ch · Bluetooth · Optical · HDMI ARC',price:'TZS 480,000',badge:'📦 New'},
+];
+
+// Brand colors per appliance brand
+const appBrandColors={
+  'Hisense':'linear-gradient(135deg,#0a1628,#1a3a6e)',
+  'Samsung':'linear-gradient(135deg,#0a0e2a,#1428A0)',
+  'LG':'linear-gradient(135deg,#1a0010,#8b001a)',
+  'TCL':'linear-gradient(135deg,#001a10,#003d22)',
+  'Midea':'linear-gradient(135deg,#0a1a2a,#004080)',
+  'Sony':'linear-gradient(135deg,#1a1a1a,#333)',
+  'Kenwood':'linear-gradient(135deg,#1a1000,#3d2800)',
+  'Philips':'linear-gradient(135deg,#001a1a,#003d3d)',
+  'Moulinex':'linear-gradient(135deg,#1a0a00,#3d1f00)',
+  'Decakila':'linear-gradient(135deg,#0a1a0a,#1a3d1a)',
+  'Sokany':'linear-gradient(135deg,#1a0a0a,#3d1414)',
+  'Dolphin':'linear-gradient(135deg,#001028,#00255c)',
+  'Nikai':'linear-gradient(135deg,#1a1428,#2d225c)',
+  'Mewe':'linear-gradient(135deg,#001a10,#004025)',
+  'JBL':'linear-gradient(135deg,#1a0800,#3d1a00)',
+};
+
+function appCardHTML(a){
+  const grad=appBrandColors[a.brand]||'linear-gradient(135deg,#181818,#222)';
+  return `<div class="pc-wrap"><div class="product-card" style="cursor:default">
+    <div style="position:relative">
+      <div class="p-img" style="background:${grad};flex-direction:column;gap:6px;">
+        <div style="font-size:3rem;filter:drop-shadow(0 0 15px rgba(245,197,24,0.4))">${a.icon}</div>
+        <div style="font-size:0.65rem;color:rgba(255,255,255,0.4);letter-spacing:0.1em;text-transform:uppercase">${a.brand}</div>
+      </div>
+      <span class="pbadge bn">${a.badge}</span>
+    </div>
+    <div class="p-body">
+      <div style="font-size:0.62rem;color:var(--yellow);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.35rem">${a.cat.toUpperCase()}</div>
+      <div class="p-name">${a.name}</div>
+      <div class="p-specs-short">${a.specs}</div>
+      <div class="p-foot">
+        <div class="p-price">${a.price}</div>
+        <a class="wa-btn" href="${waLink(a.name)}" target="_blank">
+          <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Order
+        </a>
+      </div>
+    </div>
+  </div></div>`;
+}
+
+function filterApps(cat,btn){
+  const list=cat==='all'?appliances:appliances.filter(a=>a.cat===cat);
+  document.getElementById('appGrid').innerHTML=list.map(appCardHTML).join('');
+  document.querySelectorAll('#appFilterBar .fb').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  // apply 3D tilt to new cards
+  document.querySelectorAll('#appGrid .product-card').forEach(c=>{
+    c.addEventListener('mousemove',e=>{
+      const r=c.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-0.5,y=(e.clientY-r.top)/r.height-0.5;
+      c.style.transform=`perspective(800px) rotateY(${x*12}deg) rotateX(${-y*12}deg) translateZ(8px)`;
+    });
+    c.addEventListener('mouseleave',()=>{c.style.transform='';});
+  });
+}
+filterApps('all',document.querySelector('#appFilterBar .fb'));
+
+// ── LANGUAGE SYSTEM ──
+const LANG = {
+  en: {
+    // Nav
+    nav_brands:"Brands", nav_phones:"Phones", nav_appliances:"Appliances", nav_why:"Why Volta", nav_location:"Location", nav_wa:"WhatsApp",
+    // Hero
+    hero_tag:"⚡ Dar es Salaam's Electronics Hub",
+    hero_sub:"Affordable phones, genuine quality, fast service. Order directly via WhatsApp.",
+    hero_btn1:"Browse Products", hero_btn2:"WhatsApp Now →",
+    // Stats
+    stat1:"Phones Available", stat2:"Brands", stat3:"Genuine", stat4:"WhatsApp Response",
+    // Brand section
+    brand_label:"Our Brands", brand_title:"Shop by Brand", brand_sub:"Tap a brand to see all available products.",
+    // Products section
+    prod_label:"Today's Prices · 21 May 2026",
+    prod_title:"Our Products",
+    prod_sub:"Tap 📋 Specs to see full details and features of each phone.",
+    search_ph:"Search... iPhone 13, Pixel 7, S23...",
+    filter_all:"All", filter_new:"📦 New", filter_used:"Used",
+    // Appliances
+    app_label:"Home Appliances",
+    app_title:"Home Appliances",
+    app_sub:"TVs, fridges, washing machines, blenders, fans, microwaves and sound systems. Best prices in Dar es Salaam.",
+    app_all:"All", app_tv:"📺 TVs", app_fridge:"❄️ Fridge", app_wash:"🫧 Washing", app_blend:"🍹 Blenders", app_fan:"💨 Fans", app_micro:"📡 Microwave", app_sound:"🔊 Sound",
+    // Why Volta
+    why_label:"Our Promise",
+    why_title:"Why Volta?",
+    why_sub:"We know what you need — great phones, fair prices, fast service.",
+    why1_t:"100% Genuine", why1_d:"No fakes. Every device is tested before sale.",
+    why2_t:"WhatsApp Direct", why2_d:"Just message us — we handle everything fast.",
+    why3_t:"Fair Prices", why3_d:"Competitive prices. Open to fair negotiation.",
+    why4_t:"Fast Service", why4_d:"Quick replies and delivery available in Dar es Salaam.",
+    // CTA
+    cta_title:"Questions? Call Us!", cta_sub:"Chat with us on WhatsApp — we reply fast and are ready to help you get the best phone.", cta_btn:"Start WhatsApp Chat",
+    // Location
+    loc_label:"Where We Are",
+    loc_title:"Find Us",
+    loc_sub:"We are in Dar es Salaam — come visit or WhatsApp us and we'll deliver.",
+    loc_addr_t:"Address", loc_addr:"1110 Uhuru Street\nDar es Salaam, Tanzania",
+    loc_hours_t:"Working Hours",
+    loc_hours:"Mon – Fri  ·  8:00 AM – 7:00 PM\nSaturday  ·  8:00 AM – 6:00 PM\nSunday    ·  10:00 AM – 4:00 PM",
+    loc_contact_t:"Contact", loc_contact:"+255 688 058 564\nAvailable on WhatsApp",
+    loc_dir_btn:"🗺️ Get Directions", loc_wa_btn:"Ask for Directions on WhatsApp",
+    // Footer
+    footer_copy:"© 2026 Volta. Dar es Salaam, Tanzania 🇹🇿",
+    // Spec modal
+    spec_title:"📱 Specifications", cap_title:"⚡ Capabilities", order_btn:"Order on WhatsApp",
+    badge_new:"📦 New", badge_used:"Used",
+    // Brand strip
+    brand_strip:"⚡ Setting a new standard in the electronics hub space · Premium & Reliable",
+  },
+  sw: {
+    // Nav
+    nav_brands:"Brands", nav_phones:"Simu", nav_appliances:"Vifaa", nav_why:"Kwa Nini Volta", nav_location:"Mahali", nav_wa:"WhatsApp",
+    // Hero
+    hero_tag:"⚡ Kituo cha Elektroniki Dar es Salaam",
+    hero_sub:"Simu za bei nafuu, genuine quality, huduma ya haraka. Order moja kwa moja kupitia WhatsApp.",
+    hero_btn1:"Tazama Bidhaa", hero_btn2:"WhatsApp Sasa →",
+    // Stats
+    stat1:"Simu Zinapatikana", stat2:"Brands", stat3:"Genuine", stat4:"Majibu ya Haraka",
+    // Brand section
+    brand_label:"Brands Tunazo", brand_title:"Nunua kwa Brand", brand_sub:"Gusa brand unayotaka — tutakuonyesha bidhaa zote zinazopatikana.",
+    // Products section
+    prod_label:"Bei za Leo · 21 Mei 2026",
+    prod_title:"Bidhaa Zetu",
+    prod_sub:"Bonyeza 📋 Specs kuona maelezo kamili na vipengele vya kila simu.",
+    search_ph:"Tafuta... iPhone 13, Pixel 7, S23...",
+    filter_all:"Zote", filter_new:"📦 Mpya", filter_used:"Used",
+    // Appliances
+    app_label:"Vifaa vya Nyumbani",
+    app_title:"Home Appliances",
+    app_sub:"TVs, friji, washing machines, blenders, fans, microwaves na sound systems. Bei bora Dar es Salaam.",
+    app_all:"Zote", app_tv:"📺 TVs", app_fridge:"❄️ Friji", app_wash:"🫧 Washing", app_blend:"🍹 Blenders", app_fan:"💨 Fans", app_micro:"📡 Microwave", app_sound:"🔊 Sound",
+    // Why Volta
+    why_label:"Ahadi Yetu",
+    why_title:"Kwa Nini Volta?",
+    why_sub:"Tunajua unachohitaji — simu nzuri, bei ya haki, huduma ya haraka.",
+    why1_t:"100% Genuine", why1_d:"Hakuna feki. Kila simu imepimwa kabla ya kuuzwa.",
+    why2_t:"WhatsApp Direct", why2_d:"Message tu — tunamaliza kila kitu haraka bila shida.",
+    why3_t:"Bei ya Haki", why3_d:"Bei zetu ni za ushindani. Mazungumzo ya wazi yanakubalika.",
+    why4_t:"Huduma ya Haraka", why4_d:"Tunajibu haraka na tunaweza kupanga delivery Dar es Salaam.",
+    // CTA
+    cta_title:"Una Maswali? Tupigie!", cta_sub:"Chat nasi WhatsApp — tunajibu haraka na tuko tayari kukusaidia kupata simu yako bora.", cta_btn:"Anza Chat WhatsApp",
+    // Location
+    loc_label:"Mahali Tulipo",
+    loc_title:"Tupate",
+    loc_sub:"Tuko Dar es Salaam — karibu uje au tupigie WhatsApp tukufikishie.",
+    loc_addr_t:"Anwani", loc_addr:"1110 Uhuru Street\nDar es Salaam, Tanzania",
+    loc_hours_t:"Masaa ya Kazi",
+    loc_hours:"Juma Mosi–Ijumaa  ·  8:00 AM – 7:00 PM\nJumamosi  ·  8:00 AM – 6:00 PM\nJumapili  ·  10:00 AM – 4:00 PM",
+    loc_contact_t:"Mawasiliano", loc_contact:"+255 688 058 564\nInapatikana WhatsApp",
+    loc_dir_btn:"🗺️ Pata Maelekezo", loc_wa_btn:"Uliza Maelekezo WhatsApp",
+    // Footer
+    footer_copy:"© 2026 Volta. Dar es Salaam, Tanzania 🇹🇿",
+    // Spec modal
+    spec_title:"📱 Vipimo", cap_title:"⚡ Vipengele", order_btn:"Order WhatsApp",
+    badge_new:"📦 Mpya", badge_used:"Used",
+    // Brand strip
+    brand_strip:"⚡ Tunaweka kiwango kipya katika sekta ya elektroniki · Premium na Kuaminika",
+  }
+};
+
+let currentLang = 'sw';
+
+function applyLang(lang) {
+  const t = LANG[lang];
+  currentLang = lang;
+
+  // Update lang button
+  document.getElementById('langLabel').textContent = lang === 'sw' ? 'English' : 'Swahili';
+
+  // Nav links
+  safeText('nav-brands', t.nav_brands);
+  safeText('nav-phones', t.nav_phones);
+  safeText('nav-appliances', t.nav_appliances);
+  safeText('nav-why', t.nav_why);
+  safeText('nav-location', t.nav_location);
+
+  // Hero
+  safeText('hero-tag', t.hero_tag);
+  safeText('hero-sub', t.hero_sub);
+  safeText('hero-btn1', t.hero_btn1);
+  safeText('hero-btn2', t.hero_btn2);
+
+  // Stats
+  const statLabels = document.querySelectorAll('.stat-label');
+  const statKeys = [t.stat1, t.stat2, t.stat3, t.stat4];
+  statLabels.forEach((el, i) => { if(statKeys[i]) el.textContent = statKeys[i]; });
+
+  // Brand section
+  safeText('brand-label', t.brand_label);
+  safeText('brand-title', t.brand_title);
+  safeText('brand-sub', t.brand_sub);
+
+  // Products
+  safeText('prod-label', t.prod_label);
+  safeText('prod-title', t.prod_title);
+  safeText('prod-sub', t.prod_sub);
+  const si = document.getElementById('searchInput');
+  if(si) si.placeholder = t.search_ph;
+
+  // Appliances
+  safeText('app-label', t.app_label);
+  safeText('app-title', t.app_title);
+  safeText('app-sub', t.app_sub);
+
+  // Why Volta
+  safeText('why-label', t.why_label);
+  safeText('why-title', t.why_title);
+  safeText('why-sub', t.why_sub);
+  safeText('why1-t', t.why1_t); safeText('why1-d', t.why1_d);
+  safeText('why2-t', t.why2_t); safeText('why2-d', t.why2_d);
+  safeText('why3-t', t.why3_t); safeText('why3-d', t.why3_d);
+  safeText('why4-t', t.why4_t); safeText('why4-d', t.why4_d);
+
+  // CTA
+  safeText('cta-title', t.cta_title);
+  safeText('cta-sub', t.cta_sub);
+  safeText('cta-btn', t.cta_btn);
+
+  // Location
+  safeText('loc-label', t.loc_label);
+  safeText('loc-title', t.loc_title);
+  safeText('loc-sub', t.loc_sub);
+  safeText('loc-addr-t', t.loc_addr_t);
+  safeHTML('loc-addr', t.loc_addr.replace(/\n/g,'<br>'));
+  safeText('loc-hours-t', t.loc_hours_t);
+  safeHTML('loc-hours', t.loc_hours.replace(/\n/g,'<br>'));
+  safeText('loc-contact-t', t.loc_contact_t);
+  safeHTML('loc-contact', t.loc_contact.replace(/\n/g,'<br>'));
+  safeText('loc-dir-btn', t.loc_dir_btn);
+  safeText('loc-wa-btn', t.loc_wa_btn);
+
+  // Footer
+  safeText('footer-copy', t.footer_copy);
+
+  // Brand strip
+  safeText('brand-strip', t.brand_strip);
+
+  // Filter buttons
+  safeText('fb-all', t.filter_all);
+  safeText('fb-new', t.filter_new);
+  safeText('fb-used', t.filter_used);
+  safeText('app-all', t.app_all);
+  safeText('app-tv', t.app_tv);
+  safeText('app-fridge', t.app_fridge);
+  safeText('app-wash', t.app_wash);
+  safeText('app-blend', t.app_blend);
+  safeText('app-fan', t.app_fan);
+  safeText('app-micro', t.app_micro);
+  safeText('app-sound', t.app_sound);
+
+  // Save preference
+  try { localStorage.setItem('volta_lang', lang); } catch(e){}
+}
+
+function safeText(id, text) {
+  const el = document.getElementById(id);
+  if(el && text !== undefined) el.textContent = text;
+}
+function safeHTML(id, html) {
+  const el = document.getElementById(id);
+  if(el && html !== undefined) el.innerHTML = html;
+}
+
+function toggleLang() {
+  applyLang(currentLang === 'sw' ? 'en' : 'sw');
+}
+
+// Apply on load
+window.addEventListener('DOMContentLoaded', () => {
+  // Render all sections
+  renderBrands();
+  renderFilterBar();
+  applyFilters();
+  filterApps('all', document.querySelector('#appFilterBar .fb'));
+
+  // Scroll reveal
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if(e.isIntersecting){ e.target.style.opacity='1'; e.target.style.transform='translateY(0)'; }
+    });
+  }, {threshold:0.1});
+  document.querySelectorAll('.why-card').forEach(el => {
+    el.style.opacity='0'; el.style.transform='translateY(30px)';
+    el.style.transition='opacity 0.6s ease, transform 0.6s ease';
+    obs.observe(el);
+  });
 });
+
+
