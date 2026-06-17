@@ -118,46 +118,6 @@ section{padding:5rem 2.5rem;}
 
 @property --angle{syntax:'<angle>';initial-value:0deg;inherits:false;}
 
-    
-    /* ── NAV MINI VOLTA LETTERS ── */
-    .nav-letter{
-      font-family:'Syne',sans-serif;
-      font-weight:800;
-      font-size:1.1rem;
-      color:#f0b400;
-      background:linear-gradient(160deg,#2a2a2a,#111);
-      border:1.5px solid rgba(240,180,0,0.3);
-      border-radius:5px;
-      width:26px;height:30px;
-      display:flex;align-items:center;justify-content:center;
-      position:relative;
-      transform-style:preserve-3d;
-      animation:floatBlock 3s ease-in-out infinite;
-      box-shadow:
-        0 0 10px rgba(240,180,0,0.2),
-        0 4px 12px rgba(0,0,0,0.6),
-        2px 2px 0 rgba(0,0,0,0.5),
-        4px 4px 0 rgba(0,0,0,0.3);
-      text-shadow:0 0 8px rgba(240,180,0,0.8);
-      letter-spacing:-1px;
-    }
-    .nav-letter:nth-child(1){animation-delay:0s;}
-    .nav-letter:nth-child(2){animation-delay:0.15s;}
-    .nav-letter:nth-child(3){animation-delay:0.3s;}
-    .nav-letter:nth-child(4){animation-delay:0.45s;}
-    .nav-letter:nth-child(5){animation-delay:0.6s;}
-    .nav-O{
-      background:linear-gradient(160deg,#1a1400,#0a0800) !important;
-    }
-    .nav-arc{
-      position:absolute;
-      width:14px;height:14px;
-      border-radius:50%;
-      border:1.5px solid transparent;
-      border-top:1.5px solid rgba(240,180,0,0.8);
-      animation:arcSpin 1.2s linear infinite;
-      box-shadow:0 0 4px rgba(240,180,0,0.5);
-    }
     /* ── 3D VOLTA LETTERS ── */
     .v3d-letter{
       font-family:'Syne',sans-serif;
@@ -524,47 +484,7 @@ footer{background:var(--black);border-top:1px solid rgba(255,255,255,0.05);paddi
   50%{opacity:1;transform:scaleX(1.1);}
 }
 
-
-    /* ── NAV MINI VOLTA LETTERS ── */
-    .nav-letter{
-      font-family:'Syne',sans-serif;
-      font-weight:800;
-      font-size:1.1rem;
-      color:#f0b400;
-      background:linear-gradient(160deg,#2a2a2a,#111);
-      border:1.5px solid rgba(240,180,0,0.3);
-      border-radius:5px;
-      width:26px;height:30px;
-      display:flex;align-items:center;justify-content:center;
-      position:relative;
-      transform-style:preserve-3d;
-      animation:floatBlock 3s ease-in-out infinite;
-      box-shadow:
-        0 0 10px rgba(240,180,0,0.2),
-        0 4px 12px rgba(0,0,0,0.6),
-        2px 2px 0 rgba(0,0,0,0.5),
-        4px 4px 0 rgba(0,0,0,0.3);
-      text-shadow:0 0 8px rgba(240,180,0,0.8);
-      letter-spacing:-1px;
-    }
-    .nav-letter:nth-child(1){animation-delay:0s;}
-    .nav-letter:nth-child(2){animation-delay:0.15s;}
-    .nav-letter:nth-child(3){animation-delay:0.3s;}
-    .nav-letter:nth-child(4){animation-delay:0.45s;}
-    .nav-letter:nth-child(5){animation-delay:0.6s;}
-    .nav-O{
-      background:linear-gradient(160deg,#1a1400,#0a0800) !important;
-    }
-    .nav-arc{
-      position:absolute;
-      width:14px;height:14px;
-      border-radius:50%;
-      border:1.5px solid transparent;
-      border-top:1.5px solid rgba(240,180,0,0.8);
-      animation:arcSpin 1.2s linear infinite;
-      box-shadow:0 0 4px rgba(240,180,0,0.5);
-    }
-    /* ── 3D VOLTA LETTERS ── */
+/* ── 3D VOLTA LETTERS ── */
 .volta-3d-wrap{
   position:relative;
   margin:2rem auto 1.5rem;
@@ -675,38 +595,7 @@ footer{background:var(--black);border-top:1px solid rgba(255,255,255,0.05);paddi
     <li><a href="#why" id="nav-why">Why Volta</a></li>
     <li><a href="#location" id="nav-location">Location</a></li>
   </ul>
-  <!-- Language Toggle -->
-  <button id="langBtn" onclick="toggleLang()" style="
-    background:rgba(245,197,24,0.1);
-    border:1px solid rgba(245,197,24,0.3);
-    color:var(--yellow);
-    padding:0.45rem 1rem;
-    border-radius:50px;
-    cursor:pointer;
-    font-family:'DM Sans',sans-serif;
-    font-size:0.8rem;
-    font-weight:500;
-    letter-spacing:0.05em;
-    transition:all 0.2s;
-    display:flex;align-items:center;gap:0.4rem;
-  ">🌍 <span id="langLabel">Swahili</span></button>
-  <!-- Language Toggle -->
-  <button id="langBtn" onclick="toggleLang()" style="
-    background:rgba(245,197,24,0.1);
-    border:1px solid rgba(245,197,24,0.3);
-    color:var(--yellow);
-    padding:0.5rem 1rem;
-    border-radius:50px;
-    cursor:pointer;
-    font-family:'DM Sans',sans-serif;
-    font-size:0.8rem;
-    font-weight:500;
-    letter-spacing:0.05em;
-    transition:all 0.2s;
-    display:flex;align-items:center;gap:0.4rem;
-  ">🌍 <span id="langLabel">Swahili</span></button>
-
-  <a class="nav-wa" href="https://wa.me/255688058564?text=Hi%20Volta!" target="_blank">
+      <a class="nav-wa" href="https://wa.me/255688058564?text=Hi%20Volta!" target="_blank">
     <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
     WhatsApp
   </a>
@@ -807,19 +696,19 @@ footer{background:var(--black);border-top:1px solid rgba(255,255,255,0.05);paddi
 </section>
 
 <div style="background:linear-gradient(135deg,#0a0a0a,#111);padding:1.5rem 2.5rem;text-align:center;border-top:1px solid rgba(240,180,0,0.2);border-bottom:1px solid rgba(240,180,0,0.2);">
-  <p style="font-size:0.78rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(240,180,0,0.7);margin:0;"><span id="tagline" data-en="⚡ Setting a new standard in the electronics hub space · Premium &amp; Reliable" data-sw="⚡ Tunaweka kiwango kipya katika sekta ya electronics · Premium &amp; Ya Kuaminika">⚡ Setting a new standard in the electronics hub space · Premium &amp; Reliable</span></p>
+  <p style="font-size:0.78rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(240,180,0,0.7);margin:0;"><span>⚡ Setting a new standard in the electronics hub space · Premium &amp; Reliable</span></p>
 </div>
 <div class="stats-strip">
-  <div class="stat"><div class="stat-num">150+</div><div class="stat-label" data-en="Phones Available" data-sw="Simu Zinapatikana">Simu Zinapatikana</div></div>
+  <div class="stat"><div class="stat-num">150+</div><div class="stat-label">Simu Zinapatikana</div></div>
   <div class="stat"><div class="stat-num">6</div><div class="stat-label">Brands</div></div>
-  <div class="stat"><div class="stat-num">100%</div><div class="stat-label" data-en="Genuine" data-sw="Genuine">Genuine</div></div>
+  <div class="stat"><div class="stat-num">100%</div><div class="stat-label">Genuine</div></div>
   <div class="stat"><div class="stat-num">Fast</div><div class="stat-label">WhatsApp Response</div></div>
 </div>
 
 <section id="categories">
-  <div class="s-label" data-en="Our Brands" data-sw="Brands Tunazo">Brands Tunazo</div>
-  <h2 class="s-title" data-en="Shop by Brand" data-sw="Nunua kwa Brand">Shop by Brand</h2>
-  <p class="s-sub" data-en="Tap a brand — it lights up and shows all available products." data-sw="Gusa brand unayotaka — inawaka na kuonyesha bidhaa zake.">Gusa brand unayotaka — inawaka na kuonyesha bidhaa zake.</p>
+  <div class="s-label">Brands Tunazo</div>
+  <h2 class="s-title">Shop by Brand</h2>
+  <p class="s-sub">Gusa brand unayotaka — inawaka na kuonyesha bidhaa zake.</p>
   <div class="cat-grid" id="brandGrid"></div>
 </section>
 
@@ -1723,40 +1612,6 @@ window.addEventListener('DOMContentLoaded', () => {
   } catch(e) { applyLang('sw'); }
 });
 
-
-// ── LANGUAGE TOGGLE ──
-let currentLang = 'sw';
-
-function toggleLang() {
-  currentLang = currentLang === 'sw' ? 'en' : 'sw';
-  const isEn = currentLang === 'en';
-
-  // Update toggle button
-  document.getElementById('langLabel').textContent = isEn ? 'Kiswahili' : 'English';
-
-  // Update all elements with data-en / data-sw
-  document.querySelectorAll('[data-en][data-sw]').forEach(el => {
-    const text = isEn ? el.getAttribute('data-en') : el.getAttribute('data-sw');
-    if (el.tagName === 'INPUT') {
-      el.placeholder = text;
-    } else {
-      el.innerHTML = text;
-    }
-  });
-
-  // Update search placeholder
-  const si = document.getElementById('searchInput');
-  if (si) si.placeholder = isEn ? 'Search... iPhone 13, Pixel 7, S23...' : 'Tafuta... iPhone 13, Pixel 7, S23...';
-
-  // Update filter buttons
-  const filterMap = {
-    'Zote': 'All', 'Mpya': 'New',
-  };
-
-  // Flash effect
-  document.body.style.opacity = '0.7';
-  setTimeout(() => document.body.style.opacity = '1', 200);
-}
 
 </script>
 </body>
