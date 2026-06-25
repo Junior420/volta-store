@@ -745,3 +745,8 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 
+
+// LIVE BACKEND SYNC
+const VOLTA_API="https://volta-backend-94tq.onrender.com/api";
+function syncLiveProducts(){fetch(VOLTA_API+"/products/").then(r=>{if(!r.ok)throw 0;return r.json();}).then(data=>{if(!Array.isArray(data)||!data.length)return;const lp=[],la=[];data.forEach(p=>{if(p.product_type==="phone"){lp.push({id:p.id,cat:p.category,cond:p.condition,name:p.name,short:p.short_description,price:p.price_display,specKey:p.spec_key});}else{la.push({cat:p.category,icon:p.icon_emoji,name:p.name,brand:p.brand,specs:p.specs,price:p.price_display,badge:p.badge});}});if(lp.length){products.length=0;products.push(...lp);}if(la.length){appliances.length=0;appliances.push(...la);}applyFilters();filterApps("all",document.querySelector("#appFilterBar .fb"));}).catch(()=>{});}
+window.addEventListener("DOMContentLoaded",syncLiveProducts);
