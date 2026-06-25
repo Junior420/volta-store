@@ -4,14 +4,6 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Volta — Power Your World</title>
-<!-- PWA: makes the site installable to the home screen -->
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#f5c518">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Volta">
-<link rel="apple-touch-icon" href="icon-192.png">
-<link rel="icon" type="image/png" href="icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="styles.css">
@@ -57,30 +49,46 @@
           width:clamp(44px,10vw,95px);
           height:clamp(44px,10vw,95px);
           border-radius:50%;
-          border:clamp(5px,1.2vw,10px) solid #f0b400;
+          border:clamp(5px,1.2vw,10px) solid #ffc41a;
           display:flex;align-items:center;justify-content:center;
+          overflow:visible;
           box-shadow:
-            0 0 20px rgba(240,180,0,0.9),
-            0 0 40px rgba(240,180,0,0.5),
-            0 0 80px rgba(240,180,0,0.2),
-            inset 0 0 20px rgba(240,180,0,0.15);
+            0 0 24px rgba(255,196,26,1),
+            0 0 50px rgba(255,196,26,0.7),
+            0 0 90px rgba(255,196,26,0.35),
+            inset 0 0 24px rgba(255,196,26,0.25);
           animation:ringPulse 1.8s ease-in-out infinite;
         ">
-          <!-- Lightning bolt THROUGH the O -->
+          <!-- Lightning bolt PIERCING through the O -->
           <div style="
             position:absolute;
             top:50%;left:50%;
-            transform:translate(-50%,-50%);
-            font-size:clamp(1.4rem,4vw,3rem);
+            transform:translate(-50%,-50%) rotate(18deg) scale(1.9);
+            font-size:clamp(1.8rem,5vw,4rem);
             filter:
-              drop-shadow(0 0 6px #fff)
-              drop-shadow(0 0 12px #f0b400)
-              drop-shadow(0 0 24px #f0b400)
-              drop-shadow(0 0 40px rgba(240,180,0,0.8));
-            animation:boltFlash 2s ease-in-out infinite;
-            z-index:3;
+              drop-shadow(0 0 4px #fff)
+              drop-shadow(0 0 10px #fff)
+              drop-shadow(0 0 18px #ffe23a)
+              drop-shadow(0 0 32px #ffc41a)
+              drop-shadow(0 0 60px rgba(255,196,26,0.9));
+            animation:boltPierce 1.4s ease-in-out infinite;
+            z-index:5;
             line-height:1;
+            pointer-events:none;
           ">⚡</div>
+
+          <!-- Electric streak along the bolt path -->
+          <div style="
+            position:absolute;
+            top:50%;left:50%;
+            width:clamp(70px,16vw,150px);height:3px;
+            transform:translate(-50%,-50%) rotate(108deg);
+            background:linear-gradient(90deg,transparent,#fff,#ffe23a,#fff,transparent);
+            filter:blur(1px) drop-shadow(0 0 8px #ffc41a);
+            animation:streakFlash 1.4s ease-in-out infinite;
+            z-index:4;
+            pointer-events:none;
+          "></div>
 
           <!-- Electric arc 1 -->
           <div class="arc" style="animation-delay:0s;"></div>
@@ -117,12 +125,14 @@
         animation:glowPulse 3s ease-in-out infinite;
       "></div>
     </div>
-    <p style="font-size:1rem;color:#888;line-height:1.7;max-width:380px;margin-bottom:2rem;">
-      <span id="hero-sub">Dar es Salaam's Electronics Hub · Simu za bei nafuu, genuine quality, huduma ya haraka.</span>
+    <!-- ELECTRONICS HUB tagline -->
+    <div class="hub-tagline">Electronics Hub</div>
+    <p style="font-size:1.02rem;color:#9a9aa2;line-height:1.7;max-width:400px;margin:1.4rem auto 2rem;">
+      <span id="hero-sub">Dar es Salaam's home for phones, appliances &amp; electronics — genuine quality, fast service.</span>
     </p>
     <div class="hero-cta" style="justify-content:center;">
-      <a href="#products" class="btn-glow" id="hero-btn1">Tazama Bidhaa</a>
-      <a href="https://wa.me/255688058564?text=Hi%20Volta!" target="_blank" class="btn-outline" id="hero-btn2">WhatsApp Sasa →</a>
+      <a href="#products" class="btn-glow" id="hero-btn1">View Products</a>
+      <a href="https://wa.me/255688058564?text=Hi%20Volta!" target="_blank" class="btn-outline" id="hero-btn2">WhatsApp Now →</a>
     </div>
   </div>
 </section>
@@ -144,30 +154,38 @@
   <div class="cat-grid" id="brandGrid"></div>
 </section>
 
+<!-- ── CATEGORY TABS ── -->
+<div class="cat-tabs-wrap">
+  <div class="cat-tabs">
+    <button class="cat-tab active" id="tab-phones" onclick="switchTab('phones')">📱 Phones</button>
+    <button class="cat-tab" id="tab-appliances" onclick="switchTab('appliances')">🏠 Appliances</button>
+  </div>
+</div>
+
 <section id="products">
-  <div class="s-label" id="prod-label">Bei za Leo · 21 Mei 2026</div>
-  <h2 class="s-title" id="prod-title">Bidhaa Zetu</h2>
-  <p class="s-sub" id="prod-sub">Hover kwa 3D effect. Bonyeza "Specs" kuona maelezo kamili na vipengele vya kila simu.</p>
+  <div class="s-label" id="prod-label">Our Catalogue</div>
+  <h2 class="s-title" id="prod-title">Our Products</h2>
+  <p class="s-sub" id="prod-sub">Hover for the 3D effect. Tap "Specs" to see full details and features of each phone.</p>
   <div class="controls">
     <div class="search-wrap">
       <span class="si">🔍</span>
-      <input type="text" id="searchInput" placeholder="Tafuta... iPhone 13, Pixel 7, S23..." id="searchInput" oninput="handleSearch()"/>
+      <input type="text" id="searchInput" placeholder="Search... iPhone 13, Pixel 7, S23..." id="searchInput" oninput="handleSearch()"/>
     </div>
     <div class="filter-bar" id="filterBar"></div>
   </div>
   <div class="products-grid" id="productsGrid"></div>
-  <div id="noResults" class="no-r" style="display:none">Hakuna bidhaa zinazolingana. Jaribu tena.</div>
+  <div id="noResults" class="no-r" style="display:none">No matching products. Try again.</div>
 </section>
 
 <!-- ── HOME APPLIANCES ── -->
 <section id="appliances" style="background:var(--black);">
-  <div class="s-label" id="app-label">Vifaa vya Nyumbani</div>
+  <div class="s-label" id="app-label">Home Appliances</div>
   <h2 class="s-title" id="app-title">Home Appliances</h2>
-  <p class="s-sub" id="app-sub">TVs, friji, washing machines, blenders, fans, microwaves na sound systems. Bei bora Dar es Salaam. Order kupitia WhatsApp.</p>
+  <p class="s-sub" id="app-sub">TVs, fridges, washing machines, blenders, fans, microwaves and sound systems. Best prices in Dar es Salaam. Order via WhatsApp.</p>
   <div class="filter-bar" style="margin-bottom:2rem;" id="appFilterBar">
-    <button class="fb active" onclick="filterApps('all',this)">Zote</button>
+    <button class="fb active" onclick="filterApps('all',this)">All</button>
     <button class="fb" onclick="filterApps('tv',this)">📺 TVs</button>
-    <button class="fb" onclick="filterApps('fridge',this)">❄️ Friji</button>
+    <button class="fb" onclick="filterApps('fridge',this)">❄️ Fridges</button>
     <button class="fb" onclick="filterApps('washing',this)">🫧 Washing</button>
     <button class="fb" onclick="filterApps('blender',this)">🍹 Blenders</button>
     <button class="fb" onclick="filterApps('fan',this)">💨 Fans</button>
@@ -178,20 +196,20 @@
 </section>
 
 <section id="why">
-  <div class="s-label" id="why-label">Ahadi Yetu</div>
-  <h2 class="s-title" id="why-title">Kwa Nini Volta?</h2>
-  <p class="s-sub" id="why-sub">Tunajua unachohitaji — simu nzuri, bei ya haki, huduma ya haraka.</p>
+  <div class="s-label" id="why-label">Our Promise</div>
+  <h2 class="s-title" id="why-title">Why Volta?</h2>
+  <p class="s-sub" id="why-sub">We know what you need — great phones, fair prices, fast service.</p>
   <div class="why-grid">
-    <div class="why-card"><div class="wi">✅</div><div class="wt" id="why1-t">100% Genuine</div><div class="wd" id="why1-d">Hakuna feki. Kila simu imepimwa kabla ya kuuzwa.</div></div>
-    <div class="why-card"><div class="wi">💬</div><div class="wt" id="why2-t">WhatsApp Direct</div><div class="wd" id="why2-d">Message tu — tunamaliza kila kitu haraka bila shida.</div></div>
-    <div class="why-card"><div class="wi">💰</div><div class="wt" id="why3-t">Bei ya Haki</div><div class="wd" id="why3-d">Bei zetu ni za ushindani. Mazungumzo ya wazi yanakubalika.</div></div>
-    <div class="why-card"><div class="wi">🚀</div><div class="wt" id="why4-t">Huduma ya Haraka</div><div class="wd" id="why4-d">Tunajibu haraka na tunaweza kupanga delivery Dar es Salaam.</div></div>
+    <div class="why-card"><div class="wi">✅</div><div class="wt" id="why1-t">100% Genuine</div><div class="wd" id="why1-d">No fakes. Every phone is tested before it's sold.</div></div>
+    <div class="why-card"><div class="wi">💬</div><div class="wt" id="why2-t">WhatsApp Direct</div><div class="wd" id="why2-d">Just message — we handle everything fast, no hassle.</div></div>
+    <div class="why-card"><div class="wi">💰</div><div class="wt" id="why3-t">Fair Prices</div><div class="wd" id="why3-d">Our prices are competitive. Open, honest negotiation welcome.</div></div>
+    <div class="why-card"><div class="wi">🚀</div><div class="wt" id="why4-t">Fast Service</div><div class="wd" id="why4-d">We reply fast and can arrange delivery across Dar es Salaam.</div></div>
   </div>
 </section>
 
 <div class="cta">
-  <h2 id="cta-title">Una Maswali?<br>Tupigie Sasa!</h2>
-  <p id="cta-sub">Chat nasi WhatsApp — tunajibu haraka na tuko tayari kukusaidia kupata simu yako bora.</p>
+  <h2 id="cta-title">Got Questions?<br>Message Us Now!</h2>
+  <p id="cta-sub">Chat with us on WhatsApp — we reply fast and are ready to help you find your perfect phone.</p>
   <a class="cta-wa" href="https://wa.me/255688058564?text=Hi%20Volta!%20Nataka%20kufanya%20order." target="_blank">
     <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
     Anza Chat WhatsApp
@@ -201,7 +219,7 @@
 
 <!-- ── LOCATION SECTION ── -->
 <section id="location" style="background:var(--gray);padding:5rem 2.5rem;">
-  <div class="s-label" id="loc-label">Mahali Tulipo</div>
+  <div class="s-label" id="loc-label">Find Us</div>
   <h2 class="s-title" id="loc-title">Find Us</h2>
   <p class="s-sub" id="loc-sub">Tuko Dar es Salaam — karibu uje au tupigie WhatsApp tukufikishie.</p>
 
@@ -279,7 +297,7 @@
   <div class="fc" id="footer-copy">© 2026 Volta. Dar es Salaam, Tanzania 🇹🇿</div>
   <ul class="flinks">
     <li><a href="#categories" id="nav-brands">Brands</a></li>
-    <li><a href="#products">Bidhaa</a></li>
+    <li><a href="#products">Products</a></li>
     <li><a href="https://wa.me/255688058564" target="_blank">WhatsApp</a></li>
   </ul>
 </footer>
@@ -293,13 +311,5 @@
 </div>
 
 <script src="script.js" defer></script>
-<script>
-// Register the service worker to enable installability + offline support.
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').catch(() => {});
-  });
-}
-</script>
 </body>
 </html>

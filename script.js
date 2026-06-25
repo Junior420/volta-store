@@ -363,6 +363,33 @@ function renderProducts(list){
   const grid=document.getElementById('productsGrid'),none=document.getElementById('noResults');
   if(!list.length){grid.innerHTML='';none.style.display='block';return;}
   none.style.display='none';grid.innerHTML=list.map(cardHTML).join('');apply3DTilt();
+  observeFloat('#productsGrid .pc-wrap');
+}
+
+// ── ZERO-GRAVITY FLOAT-IN ──
+// Cards start pushed back in 3D space and drift forward into place as they
+// scroll into view, staggered so they appear to pile in one after another.
+let floatObserver;
+function observeFloat(selector){
+  if(!floatObserver){
+    floatObserver=new IntersectionObserver(entries=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){
+          const el=e.target;
+          const delay=(parseInt(el.dataset.floatIndex||'0',10)%6)*0.09;
+          el.style.transitionDelay=delay+'s';
+          el.classList.add('floated');
+          floatObserver.unobserve(el);
+        }
+      });
+    },{threshold:0.08,rootMargin:'0px 0px -40px 0px'});
+  }
+  document.querySelectorAll(selector).forEach((el,i)=>{
+    if(el.classList.contains('float-init'))return;
+    el.classList.add('float-init');
+    el.dataset.floatIndex=i;
+    floatObserver.observe(el);
+  });
 }
 function applyFilters(){
   let list=products;
@@ -499,11 +526,30 @@ function appCardHTML(a){
 }
 
 function filterApps(cat,btn){
-  const list=cat==='all'?appliances:appliances.filter(a=>a.cat===cat);
-  document.getElementById('appGrid').innerHTML=list.map(appCardHTML).join('');
+  const grid=document.getElementById('appGrid');
+  const groupLabels={tv:'Televisions',fridge:'Refrigerators',washing:'Washing Machines',fan:'Fans & Cooling',blender:'Blenders & Juicers',sound:'Sound Systems',microwave:'Microwaves'};
+  const order=['tv','fridge','washing','blender','sound','fan','microwave'];
+
+  if(cat==='all'){
+    // Grouped view: each sub-category under its own labelled header
+    let html='';
+    order.forEach(c=>{
+      const items=appliances.filter(a=>a.cat===c);
+      if(!items.length) return;
+      html+=`<div class="app-group"><h3 class="app-group-title">${groupLabels[c]||c} <span>(${items.length})</span></h3>`;
+      html+=`<div class="products-grid app-group-grid">${items.map(appCardHTML).join('')}</div></div>`;
+    });
+    grid.innerHTML=html;
+  } else {
+    // Single category view
+    const list=appliances.filter(a=>a.cat===cat);
+    grid.innerHTML=`<div class="products-grid app-group-grid">${list.map(appCardHTML).join('')}</div>`;
+  }
+
   document.querySelectorAll('#appFilterBar .fb').forEach(b=>b.classList.remove('active'));
   if(btn) btn.classList.add('active');
-  // apply 3D tilt to new cards
+
+  // apply 3D tilt + zero-gravity float-in to new cards
   document.querySelectorAll('#appGrid .product-card').forEach(c=>{
     c.addEventListener('mousemove',e=>{
       const r=c.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-0.5,y=(e.clientY-r.top)/r.height-0.5;
@@ -511,6 +557,7 @@ function filterApps(cat,btn){
     });
     c.addEventListener('mouseleave',()=>{c.style.transform='';});
   });
+  observeFloat('#appGrid .pc-wrap');
 }
 filterApps('all',document.querySelector('#appFilterBar .fb'));
 
@@ -528,7 +575,7 @@ const LANG = {
     // Brand section
     brand_label:"Our Brands", brand_title:"Shop by Brand", brand_sub:"Tap a brand to see all available products.",
     // Products section
-    prod_label:"Today's Prices · 21 May 2026",
+    prod_label:"Our Catalogue",
     prod_title:"Our Products",
     prod_sub:"Tap 📋 Specs to see full details and features of each phone.",
     search_ph:"Search... iPhone 13, Pixel 7, S23...",
@@ -577,7 +624,7 @@ const LANG = {
     // Brand section
     brand_label:"Brands Tunazo", brand_title:"Nunua kwa Brand", brand_sub:"Gusa brand unayotaka — tutakuonyesha bidhaa zote zinazopatikana.",
     // Products section
-    prod_label:"Bei za Leo · 21 Mei 2026",
+    prod_label:"Katalogi Yetu",
     prod_title:"Bidhaa Zetu",
     prod_sub:"Bonyeza 📋 Specs kuona maelezo kamili na vipengele vya kila simu.",
     search_ph:"Tafuta... iPhone 13, Pixel 7, S23...",
@@ -616,7 +663,7 @@ const LANG = {
   }
 };
 
-let currentLang = 'sw';
+let currentLang = 'en';
 
 function applyLang(lang) {
   const t = LANG[lang];
@@ -725,6 +772,8 @@ function toggleLang() {
 
 // Apply on load
 window.addEventListener('DOMContentLoaded', () => {
+  // Force English as the default language
+  applyLang('en');
   // Render all sections
   renderBrands();
   renderFilterBar();
@@ -750,3 +799,24 @@ window.addEventListener('DOMContentLoaded', () => {
 const VOLTA_API="https://volta-backend-94tq.onrender.com/api";
 function syncLiveProducts(){fetch(VOLTA_API+"/products/").then(r=>{if(!r.ok)throw 0;return r.json();}).then(data=>{if(!Array.isArray(data)||!data.length)return;const lp=[],la=[];data.forEach(p=>{if(p.product_type==="phone"){lp.push({id:p.id,cat:p.category,cond:p.condition,name:p.name,short:p.short_description,price:p.price_display,specKey:p.spec_key});}else{la.push({cat:p.category,icon:p.icon_emoji,name:p.name,brand:p.brand,specs:p.specs,price:p.price_display,badge:p.badge});}});if(lp.length){products.length=0;products.push(...lp);}if(la.length){appliances.length=0;appliances.push(...la);}applyFilters();filterApps("all",document.querySelector("#appFilterBar .fb"));}).catch(()=>{});}
 window.addEventListener("DOMContentLoaded",syncLiveProducts);
+
+// ── CATEGORY TABS (Phones / Appliances) ──
+function switchTab(which){
+  const phones=document.getElementById('products');
+  const appliances=document.getElementById('appliances');
+  const tp=document.getElementById('tab-phones');
+  const ta=document.getElementById('tab-appliances');
+  if(which==='phones'){
+    phones.style.display='';
+    appliances.style.display='none';
+    tp.classList.add('active');ta.classList.remove('active');
+  }else{
+    phones.style.display='none';
+    appliances.style.display='';
+    ta.classList.add('active');tp.classList.remove('active');
+    // ensure appliances are rendered + floated when first shown
+    filterApps('all',document.querySelector('#appFilterBar .fb'));
+  }
+}
+// Default to phones view on load
+window.addEventListener('DOMContentLoaded',()=>{ switchTab('phones'); });
