@@ -12,6 +12,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .nav-links a:hover{color:var(--yellow);}
 .nav-wa{display:flex;align-items:center;gap:0.5rem;background:var(--wa);color:#fff;padding:0.55rem 1.2rem;border-radius:50px;text-decoration:none;font-size:0.82rem;font-weight:500;transition:all 0.2s;box-shadow:0 0 20px rgba(37,211,102,0.3);}
 .nav-wa:hover{transform:scale(1.05);}
+.lang-btn{background:transparent;border:1px solid rgba(245,197,24,0.35);color:var(--yellow);padding:0.45rem 0.9rem;border-radius:50px;font-size:0.75rem;font-family:'DM Sans',sans-serif;letter-spacing:0.05em;cursor:pointer;transition:all 0.2s;}
+.lang-btn:hover{background:rgba(245,197,24,0.1);border-color:var(--yellow);}
+.api-toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:#1e1200;border:1px solid rgba(245,197,24,0.4);color:var(--yellow);padding:0.7rem 1.4rem;border-radius:8px;font-size:0.82rem;z-index:999;transition:opacity 0.6s;box-shadow:0 4px 20px rgba(0,0,0,0.5);}
 
 /* HERO */
 .hero{position:relative;min-height:100vh;display:flex;align-items:center;overflow:hidden;padding-top:5rem;}

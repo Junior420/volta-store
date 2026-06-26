@@ -4,6 +4,7 @@ let W,H,mouse={x:0,y:0};
 function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}
 resize();window.addEventListener('resize',resize);
 document.addEventListener('mousemove',e=>{mouse.x=e.clientX;mouse.y=e.clientY;});
+document.addEventListener('touchmove',e=>{const t=e.touches[0];mouse.x=t.clientX;mouse.y=t.clientY;},{passive:true});
 const brandNames=['Apple','SAMSUNG','Google','SONY','Sharp','Xiaomi'];
 const floaters=[];
 for(let i=0;i<20;i++){floaters.push({bx:Math.random(),by:Math.random(),z:Math.random()*300+50,rot:Math.random()*Math.PI*2,rotV:(Math.random()-0.5)*0.008,t:Math.random()*Math.PI*2,speed:0.005+Math.random()*0.005,nameIdx:i%6,size:Math.random()*22+10});}
@@ -218,6 +219,7 @@ const products=[
 ];
 
 function getBrand(cat){return brands.find(b=>b.key===cat);}
+function updatePhoneStat(){const el=document.querySelector('.stat-num');if(el)el.textContent=products.length+'+';}
 
 // ── RENDER BRAND CARDS ──
 function renderBrands(){
@@ -774,6 +776,7 @@ function toggleLang() {
 window.addEventListener('DOMContentLoaded', () => {
   // Force English as the default language
   applyLang('en');
+  updatePhoneStat();
   // Render all sections
   renderBrands();
   renderFilterBar();
@@ -797,7 +800,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
 // LIVE BACKEND SYNC
 const VOLTA_API="https://volta-backend-94tq.onrender.com/api";
-function syncLiveProducts(){fetch(VOLTA_API+"/products/").then(r=>{if(!r.ok)throw 0;return r.json();}).then(data=>{if(!Array.isArray(data)||!data.length)return;const lp=[],la=[];data.forEach(p=>{if(p.product_type==="phone"){lp.push({id:p.id,cat:p.category,cond:p.condition,name:p.name,short:p.short_description,price:p.price_display,specKey:p.spec_key});}else{la.push({cat:p.category,icon:p.icon_emoji,name:p.name,brand:p.brand,specs:p.specs,price:p.price_display,badge:p.badge});}});if(lp.length){products.length=0;products.push(...lp);}if(la.length){appliances.length=0;appliances.push(...la);}applyFilters();filterApps("all",document.querySelector("#appFilterBar .fb"));}).catch(()=>{});}
+function showApiToast(){const t=document.getElementById('apiToast');if(!t)return;t.style.display='block';setTimeout(()=>{t.style.opacity='0';setTimeout(()=>{t.style.display='none';t.style.opacity='';},600);},5000);}
+function syncLiveProducts(){fetch(VOLTA_API+"/products/").then(r=>{if(!r.ok)throw 0;return r.json();}).then(data=>{if(!Array.isArray(data)||!data.length)return;const lp=[],la=[];data.forEach(p=>{if(p.product_type==="phone"){lp.push({id:p.id,cat:p.category,cond:p.condition,name:p.name,short:p.short_description,price:p.price_display,specKey:p.spec_key});}else{la.push({cat:p.category,icon:p.icon_emoji,name:p.name,brand:p.brand,specs:p.specs,price:p.price_display,badge:p.badge});}});if(lp.length){products.length=0;products.push(...lp);}if(la.length){appliances.length=0;appliances.push(...la);}updatePhoneStat();applyFilters();filterApps("all",document.querySelector("#appFilterBar .fb"));}).catch(()=>{showApiToast();});}
 window.addEventListener("DOMContentLoaded",syncLiveProducts);
 
 // ── CATEGORY TABS (Phones / Appliances) ──
