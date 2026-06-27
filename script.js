@@ -1,59 +1,75 @@
-// ── HERO CANVAS ──
+// ── 3D wordmark mouse tilt ──
+const v3d=document.getElementById('volta3d');
+if(v3d){
+  document.addEventListener('mousemove',e=>{
+    const rx=(e.clientY/window.innerHeight-0.5)*-35;
+    const ry=(e.clientX/window.innerWidth-0.5)*50;
+    v3d.style.transform=`rotateX(${rx}deg) rotateY(${ry}deg)`;
+  });
+}
+
+// ── HERO CANVAS: quiet ambient glow ──
 const canvas=document.getElementById('heroCanvas'),ctx=canvas.getContext('2d');
 let W,H,mouse={x:0,y:0};
 function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}
 resize();window.addEventListener('resize',resize);
 document.addEventListener('mousemove',e=>{mouse.x=e.clientX;mouse.y=e.clientY;});
-const brandNames=['Apple','SAMSUNG','Google','SONY','Sharp','Xiaomi'];
-const floaters=[];
-for(let i=0;i<20;i++){floaters.push({bx:Math.random(),by:Math.random(),z:Math.random()*300+50,rot:Math.random()*Math.PI*2,rotV:(Math.random()-0.5)*0.008,t:Math.random()*Math.PI*2,speed:0.005+Math.random()*0.005,nameIdx:i%6,size:Math.random()*22+10});}
-const energyLines=[];
-for(let i=0;i<8;i++)energyLines.push({x1:Math.random(),y1:Math.random(),x2:Math.random(),y2:Math.random(),t:Math.random()*Math.PI*2,speed:0.004+Math.random()*0.008,alpha:0.08+Math.random()*0.1});
-const dots=[];
-for(let r=0;r<18;r++)for(let c=0;c<28;c++)dots.push({bx:c/27,by:r/17});
+
+// A few soft drifting light orbs — ambient
+const orbs=[
+  {x:0.28,y:0.34,r:0.42,t:0,sp:0.0015,col:[232,162,61],a:0.18},
+  {x:0.72,y:0.62,r:0.5,t:2,sp:0.0011,col:[232,162,61],a:0.12},
+  {x:0.5,y:0.5,r:0.35,t:4,sp:0.0018,col:[200,120,40],a:0.09},
+];
+// Floating depth particles for motion
+const parts=[];
+for(let i=0;i<70;i++)parts.push({
+  x:Math.random(),y:Math.random(),z:Math.random(),
+  t:Math.random()*Math.PI*2,sp:0.0004+Math.random()*0.0010,
+  drift:(Math.random()-0.5)*0.0003
+});
 let t=0;
 function drawHero(){
-  t+=0.008;ctx.clearRect(0,0,W,H);
-  const bg=ctx.createRadialGradient(W*0.7,H*0.3,0,W*0.7,H*0.3,W*0.8);
-  bg.addColorStop(0,'rgba(28,22,4,0.97)');bg.addColorStop(1,'rgba(5,5,5,1)');
-  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
-  const px=(mouse.x/W-0.5)*0.3,py=(mouse.y/H-0.5)*0.3;
-  dots.forEach(d=>{
-    const wx=d.bx*W,wy=d.by*H,dx=(mouse.x-wx)/W,dy=(mouse.y-wy)/H;
-    const dist=Math.sqrt(dx*dx+dy*dy),push=Math.max(0,1-dist*3)*12;
-    const depth=(1+Math.sin(d.bx*8+t)*0.5)*0.5;
-    ctx.beginPath();ctx.arc(wx+dx*push,wy+dy*push,1+depth*1.5,0,Math.PI*2);
-    ctx.fillStyle=`rgba(245,197,24,${0.05+depth*0.1})`;ctx.fill();
+  t+=0.005;ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#0c0d11';ctx.fillRect(0,0,W,H);
+  const px=(mouse.x/W-0.5),py=(mouse.y/H-0.5);
+  orbs.forEach(o=>{
+    o.t+=o.sp;
+    const ox=(o.x+Math.sin(o.t)*0.05+px*0.04)*W;
+    const oy=(o.y+Math.cos(o.t*0.8)*0.05+py*0.04)*H;
+    const rad=o.r*Math.max(W,H);
+    const g=ctx.createRadialGradient(ox,oy,0,ox,oy,rad);
+    g.addColorStop(0,`rgba(${o.col[0]},${o.col[1]},${o.col[2]},${o.a})`);
+    g.addColorStop(1,`rgba(${o.col[0]},${o.col[1]},${o.col[2]},0)`);
+    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
   });
-  energyLines.forEach(l=>{
-    l.t+=l.speed;
-    const x1=l.x1*W+Math.sin(l.t)*60*px,y1=l.y1*H+Math.cos(l.t)*60*py;
-    const x2=l.x2*W+Math.cos(l.t)*50*px,y2=l.y2*H+Math.sin(l.t)*50*py;
-    const g=ctx.createLinearGradient(x1,y1,x2,y2);
-    g.addColorStop(0,'rgba(245,197,24,0)');g.addColorStop(0.5,`rgba(245,197,24,${l.alpha})`);g.addColorStop(1,'rgba(245,197,24,0)');
-    ctx.beginPath();ctx.moveTo(x1,y1);ctx.quadraticCurveTo((x1+x2)/2+Math.sin(l.t*0.7)*80,(y1+y2)/2+Math.cos(l.t*0.7)*60,x2,y2);
-    ctx.strokeStyle=g;ctx.lineWidth=1;ctx.stroke();
+  // depth particles
+  parts.forEach(p=>{
+    p.t+=p.sp;p.y-=p.sp*0.5;p.x+=p.drift;
+    if(p.y<-0.05){p.y=1.05;p.x=Math.random();}
+    const depth=0.4+p.z*0.6;
+    const wx=(p.x+px*0.03*depth)*W;
+    const wy=(p.y+py*0.03*depth)*H;
+    const r=depth*2.2;
+    const a=(0.15+Math.sin(p.t)*0.12)*depth;
+    ctx.beginPath();ctx.arc(wx,wy,r,0,Math.PI*2);
+    ctx.fillStyle=`rgba(245,200,120,${a})`;ctx.fill();
   });
-  floaters.forEach(f=>{
-    f.t+=f.speed;f.rot+=f.rotV;
-    const fx=f.bx*W+Math.sin(f.t)*50+px*f.z*0.4,fy=f.by*H+Math.cos(f.t*0.7)*35+py*f.z*0.4;
-    const scale=280/(280+f.z);
-    ctx.save();ctx.translate(fx,fy);ctx.rotate(f.rot);ctx.scale(scale,scale);
-    ctx.globalAlpha=scale*0.45+0.05;
-    ctx.font=`bold ${f.size}px Syne,Arial`;ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillStyle='rgba(245,197,24,0.8)';ctx.shadowColor='rgba(245,197,24,0.4)';ctx.shadowBlur=12;
-    ctx.fillText(brandNames[f.nameIdx],0,0);ctx.shadowBlur=0;ctx.restore();
-  });
+  const v=ctx.createRadialGradient(W*0.5,H*0.45,H*0.3,W*0.5,H*0.5,H*0.9);
+  v.addColorStop(0,'rgba(12,13,17,0)');v.addColorStop(1,'rgba(8,9,12,0.7)');
+  ctx.fillStyle=v;ctx.fillRect(0,0,W,H);
   requestAnimationFrame(drawHero);
 }
 drawHero();
 const pcont=document.getElementById('particles');
+if(pcont){
 setInterval(()=>{
   const p=document.createElement('div');p.className='particle';
   const s=Math.random()*3+1;
   p.style.cssText=`width:${s}px;height:${s}px;left:${Math.random()*100}%;background:rgba(245,197,24,${0.15+Math.random()*0.4});animation-duration:${4+Math.random()*6}s;animation-delay:${Math.random()}s;`;
   pcont.appendChild(p);setTimeout(()=>p.remove(),8000);
 },450);
+}
 
 // ── DATA ──
 const WA='255688058564';
@@ -245,7 +261,7 @@ function renderBrands(){
 // ── FILTER BAR ──
 function renderFilterBar(){
   document.getElementById('filterBar').innerHTML=
-    `<button class="fb active" onclick="setFilter('all',this)">Zote</button>`+
+    `<button class="fb active" onclick="setFilter('all',this)">All</button>`+
     brands.map(b=>`<button class="fb" data-key="${b.key}" onclick="setFilter('${b.key}',this)"><span class="fb-logo">${b.svg}</span>${b.label.split(' ')[0]}</button>`).join('')+
     `<button class="fb" onclick="setFilter('new',this)">📦 Mpya</button><button class="fb" onclick="setFilter('used',this)">Used</button>`;
 }
@@ -363,33 +379,6 @@ function renderProducts(list){
   const grid=document.getElementById('productsGrid'),none=document.getElementById('noResults');
   if(!list.length){grid.innerHTML='';none.style.display='block';return;}
   none.style.display='none';grid.innerHTML=list.map(cardHTML).join('');apply3DTilt();
-  observeFloat('#productsGrid .pc-wrap');
-}
-
-// ── ZERO-GRAVITY FLOAT-IN ──
-// Cards start pushed back in 3D space and drift forward into place as they
-// scroll into view, staggered so they appear to pile in one after another.
-let floatObserver;
-function observeFloat(selector){
-  if(!floatObserver){
-    floatObserver=new IntersectionObserver(entries=>{
-      entries.forEach(e=>{
-        if(e.isIntersecting){
-          const el=e.target;
-          const delay=(parseInt(el.dataset.floatIndex||'0',10)%6)*0.09;
-          el.style.transitionDelay=delay+'s';
-          el.classList.add('floated');
-          floatObserver.unobserve(el);
-        }
-      });
-    },{threshold:0.08,rootMargin:'0px 0px -40px 0px'});
-  }
-  document.querySelectorAll(selector).forEach((el,i)=>{
-    if(el.classList.contains('float-init'))return;
-    el.classList.add('float-init');
-    el.dataset.floatIndex=i;
-    floatObserver.observe(el);
-  });
 }
 function applyFilters(){
   let list=products;
@@ -526,30 +515,11 @@ function appCardHTML(a){
 }
 
 function filterApps(cat,btn){
-  const grid=document.getElementById('appGrid');
-  const groupLabels={tv:'Televisions',fridge:'Refrigerators',washing:'Washing Machines',fan:'Fans & Cooling',blender:'Blenders & Juicers',sound:'Sound Systems',microwave:'Microwaves'};
-  const order=['tv','fridge','washing','blender','sound','fan','microwave'];
-
-  if(cat==='all'){
-    // Grouped view: each sub-category under its own labelled header
-    let html='';
-    order.forEach(c=>{
-      const items=appliances.filter(a=>a.cat===c);
-      if(!items.length) return;
-      html+=`<div class="app-group"><h3 class="app-group-title">${groupLabels[c]||c} <span>(${items.length})</span></h3>`;
-      html+=`<div class="products-grid app-group-grid">${items.map(appCardHTML).join('')}</div></div>`;
-    });
-    grid.innerHTML=html;
-  } else {
-    // Single category view
-    const list=appliances.filter(a=>a.cat===cat);
-    grid.innerHTML=`<div class="products-grid app-group-grid">${list.map(appCardHTML).join('')}</div>`;
-  }
-
+  const list=cat==='all'?appliances:appliances.filter(a=>a.cat===cat);
+  document.getElementById('appGrid').innerHTML=list.map(appCardHTML).join('');
   document.querySelectorAll('#appFilterBar .fb').forEach(b=>b.classList.remove('active'));
   if(btn) btn.classList.add('active');
-
-  // apply 3D tilt + zero-gravity float-in to new cards
+  // apply 3D tilt to new cards
   document.querySelectorAll('#appGrid .product-card').forEach(c=>{
     c.addEventListener('mousemove',e=>{
       const r=c.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-0.5,y=(e.clientY-r.top)/r.height-0.5;
@@ -557,7 +527,6 @@ function filterApps(cat,btn){
     });
     c.addEventListener('mouseleave',()=>{c.style.transform='';});
   });
-  observeFloat('#appGrid .pc-wrap');
 }
 filterApps('all',document.querySelector('#appFilterBar .fb'));
 
@@ -575,7 +544,7 @@ const LANG = {
     // Brand section
     brand_label:"Our Brands", brand_title:"Shop by Brand", brand_sub:"Tap a brand to see all available products.",
     // Products section
-    prod_label:"Our Catalogue",
+    prod_label:"In stock now",
     prod_title:"Our Products",
     prod_sub:"Tap 📋 Specs to see full details and features of each phone.",
     search_ph:"Search... iPhone 13, Pixel 7, S23...",
@@ -624,7 +593,7 @@ const LANG = {
     // Brand section
     brand_label:"Brands Tunazo", brand_title:"Nunua kwa Brand", brand_sub:"Gusa brand unayotaka — tutakuonyesha bidhaa zote zinazopatikana.",
     // Products section
-    prod_label:"Katalogi Yetu",
+    prod_label:"In stock now",
     prod_title:"Bidhaa Zetu",
     prod_sub:"Bonyeza 📋 Specs kuona maelezo kamili na vipengele vya kila simu.",
     search_ph:"Tafuta... iPhone 13, Pixel 7, S23...",
@@ -670,7 +639,7 @@ function applyLang(lang) {
   currentLang = lang;
 
   // Update lang button
-  document.getElementById('langLabel').textContent = lang === 'sw' ? 'English' : 'Swahili';
+  { const ll=document.getElementById('langLabel'); if(ll) ll.textContent = lang === 'sw' ? 'English' : 'Swahili'; }
 
   // Nav links
   safeText('nav-brands', t.nav_brands);
@@ -772,7 +741,6 @@ function toggleLang() {
 
 // Apply on load
 window.addEventListener('DOMContentLoaded', () => {
-  // Force English as the default language
   applyLang('en');
   // Render all sections
   renderBrands();
@@ -800,23 +768,75 @@ const VOLTA_API="https://volta-backend-94tq.onrender.com/api";
 function syncLiveProducts(){fetch(VOLTA_API+"/products/").then(r=>{if(!r.ok)throw 0;return r.json();}).then(data=>{if(!Array.isArray(data)||!data.length)return;const lp=[],la=[];data.forEach(p=>{if(p.product_type==="phone"){lp.push({id:p.id,cat:p.category,cond:p.condition,name:p.name,short:p.short_description,price:p.price_display,specKey:p.spec_key});}else{la.push({cat:p.category,icon:p.icon_emoji,name:p.name,brand:p.brand,specs:p.specs,price:p.price_display,badge:p.badge});}});if(lp.length){products.length=0;products.push(...lp);}if(la.length){appliances.length=0;appliances.push(...la);}applyFilters();filterApps("all",document.querySelector("#appFilterBar .fb"));}).catch(()=>{});}
 window.addEventListener("DOMContentLoaded",syncLiveProducts);
 
-// ── CATEGORY TABS (Phones / Appliances) ──
-function switchTab(which){
-  const phones=document.getElementById('products');
-  const appliances=document.getElementById('appliances');
-  const tp=document.getElementById('tab-phones');
-  const ta=document.getElementById('tab-appliances');
-  if(which==='phones'){
-    phones.style.display='';
-    appliances.style.display='none';
-    tp.classList.add('active');ta.classList.remove('active');
-  }else{
-    phones.style.display='none';
-    appliances.style.display='';
-    ta.classList.add('active');tp.classList.remove('active');
-    // ensure appliances are rendered + floated when first shown
-    filterApps('all',document.querySelector('#appFilterBar .fb'));
-  }
+// ═══════════════════════════════════════════
+//  NEXT-GEN ENHANCEMENTS
+// ═══════════════════════════════════════════
+
+// 1. Universal scroll-reveal — sections rise & fade in as you scroll
+function initScrollReveal(){
+  const revealObs = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        e.target.classList.add('revealed');
+        revealObs.unobserve(e.target);
+      }
+    });
+  },{threshold:0.12, rootMargin:'0px 0px -60px 0px'});
+  document.querySelectorAll('.reveal').forEach(el=>revealObs.observe(el));
 }
-// Default to phones view on load
-window.addEventListener('DOMContentLoaded',()=>{ switchTab('phones'); });
+
+// 2. Interactive 3D tilt on product cards (and any .tilt element)
+function initTilt(){
+  const damp=32;
+  document.addEventListener('pointermove',e=>{
+    const card=e.target.closest('.product-card, .app-card, .why-card');
+    if(!card)return;
+    const r=card.getBoundingClientRect();
+    const cx=e.clientX-r.left, cy=e.clientY-r.top;
+    const rx=((cy/r.height)-0.5)*-damp;
+    const ry=((cx/r.width)-0.5)*damp;
+    card.style.transform=`perspective(700px) rotateX(${rx}deg) rotateY(${ry}deg) translateZ(24px) scale(1.04)`;
+    card.style.transition='transform 0.06s ease';
+  });
+  document.addEventListener('pointerout',e=>{
+    const card=e.target.closest('.product-card, .app-card, .why-card');
+    if(card){card.style.transform='';card.style.transition='transform 0.5s cubic-bezier(0.16,1,0.3,1)';}
+  });
+}
+
+// 3. Scroll progress bar at top
+function initScrollProgress(){
+  const bar=document.createElement('div');
+  bar.id='scrollProgress';
+  document.body.appendChild(bar);
+  window.addEventListener('scroll',()=>{
+    const h=document.documentElement;
+    const pct=(h.scrollTop)/(h.scrollHeight-h.clientHeight)*100;
+    bar.style.width=pct+'%';
+  },{passive:true});
+}
+
+// 4. Nav shrinks/solidifies on scroll
+function initNavScroll(){
+  const nav=document.querySelector('nav');
+  if(!nav)return;
+  window.addEventListener('scroll',()=>{
+    if(window.scrollY>40)nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+  },{passive:true});
+}
+
+// Tag sections + cards for reveal once DOM + dynamic content is ready
+function tagReveal(){
+  document.querySelectorAll('section, .product-card, .app-card, .why-card').forEach((el,i)=>{
+    if(!el.classList.contains('hero')) el.classList.add('reveal');
+  });
+  initScrollReveal();
+}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  initTilt();
+  initScrollProgress();
+  initNavScroll();
+  setTimeout(tagReveal, 400); // wait for product cards to render
+});

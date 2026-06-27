@@ -1,12 +1,12 @@
 {
-  "name": "Volta — Power Your World",
+  "name": "Volta \u2014 Power Your World",
   "short_name": "Volta",
-  "description": "Volta — phones, appliances and electronics in Dar es Salaam. Order via WhatsApp.",
+  "description": "Volta \u2014 phones, appliances and electronics in Dar es Salaam. Order via WhatsApp.",
   "start_url": "./index.html",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#050505",
-  "theme_color": "#f5c518",
+  "background_color": "#100c0a",
+  "theme_color": "#e8a23d",
   "icons": [
     {
       "src": "icon-192.png",

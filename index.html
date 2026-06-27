@@ -7,11 +7,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="styles.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#e8a23d">
+<link rel="apple-touch-icon" href="icon-192.png">
 </head>
 <body>
 
 <nav>
-  <div class="logo" style="display:flex;align-items:center;gap:0.6rem;"><div style="width:28px;height:28px;background:#f5c518;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.8rem;">⚡</div>Volt<span>a</span></div>
+  <div class="logo" style="display:flex;align-items:center;gap:0.55rem;"><div style="width:22px;height:22px;background:var(--accent);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;">⚡</div>Volt<span>a</span></div>
   <ul class="nav-links">
     <li><a href="#categories" id="nav-brands">Brands</a></li>
     <li><a href="#products" id="nav-phones">Phones</a></li>
@@ -27,149 +30,46 @@
 
 <section class="hero">
   <canvas id="heroCanvas"></canvas>
-  <div id="particles"></div>
-  <div class="hero-content" style="width:100%;display:flex;flex-direction:column;align-items:center;text-align:center;padding:2rem 1.5rem 0;">
-
-    <!-- 3D VOLTA FLOATING LETTERS -->
-    <div style="
-      position:relative;
-      display:flex;align-items:center;justify-content:center;gap:clamp(4px,2vw,14px);
-      margin:0 auto 2.8rem;
-      width:100%;
-      perspective:600px;
-      transform-style:preserve-3d;
-    ">
-      <!-- Each letter is a 3D block -->
-      <div class="v3d-letter" style="animation-delay:0s;--lc:#f0b400;">V</div>
-      <!-- Special LIGHTNING O -->
-      <div class="v3d-letter v3d-O" style="animation-delay:0.15s;--lc:#f0b400;background:linear-gradient(160deg,#1a1400,#0a0800);color:#f0b400;position:relative;overflow:visible;">
-        <!-- O ring -->
-        <div style="
-          position:relative;
-          width:clamp(44px,10vw,95px);
-          height:clamp(44px,10vw,95px);
-          border-radius:50%;
-          border:clamp(5px,1.2vw,10px) solid #ffc41a;
-          display:flex;align-items:center;justify-content:center;
-          overflow:visible;
-          box-shadow:
-            0 0 24px rgba(255,196,26,1),
-            0 0 50px rgba(255,196,26,0.7),
-            0 0 90px rgba(255,196,26,0.35),
-            inset 0 0 24px rgba(255,196,26,0.25);
-          animation:ringPulse 1.8s ease-in-out infinite;
-        ">
-          <!-- Lightning bolt PIERCING through the O -->
-          <div style="
-            position:absolute;
-            top:50%;left:50%;
-            transform:translate(-50%,-50%) rotate(18deg) scale(1.9);
-            font-size:clamp(1.8rem,5vw,4rem);
-            filter:
-              drop-shadow(0 0 4px #fff)
-              drop-shadow(0 0 10px #fff)
-              drop-shadow(0 0 18px #ffe23a)
-              drop-shadow(0 0 32px #ffc41a)
-              drop-shadow(0 0 60px rgba(255,196,26,0.9));
-            animation:boltPierce 1.4s ease-in-out infinite;
-            z-index:5;
-            line-height:1;
-            pointer-events:none;
-          ">⚡</div>
-
-          <!-- Electric streak along the bolt path -->
-          <div style="
-            position:absolute;
-            top:50%;left:50%;
-            width:clamp(70px,16vw,150px);height:3px;
-            transform:translate(-50%,-50%) rotate(108deg);
-            background:linear-gradient(90deg,transparent,#fff,#ffe23a,#fff,transparent);
-            filter:blur(1px) drop-shadow(0 0 8px #ffc41a);
-            animation:streakFlash 1.4s ease-in-out infinite;
-            z-index:4;
-            pointer-events:none;
-          "></div>
-
-          <!-- Electric arc 1 -->
-          <div class="arc" style="animation-delay:0s;"></div>
-          <!-- Electric arc 2 -->
-          <div class="arc" style="animation-delay:0.6s;transform:rotate(60deg);"></div>
-          <!-- Electric arc 3 -->
-          <div class="arc" style="animation-delay:1.2s;transform:rotate(120deg);"></div>
-
-          <!-- Spark particles -->
-          <div class="spark" style="animation-delay:0.1s;top:0;left:50%;"></div>
-          <div class="spark" style="animation-delay:0.4s;top:50%;right:0;"></div>
-          <div class="spark" style="animation-delay:0.7s;bottom:0;left:50%;"></div>
-          <div class="spark" style="animation-delay:1s;top:50%;left:0;"></div>
-        </div>
-
-        <!-- Electricity glow burst -->
-        <div style="
-          position:absolute;inset:-20px;
-          border-radius:50%;
-          background:radial-gradient(circle,rgba(240,180,0,0.15),transparent 70%);
-          animation:burstGlow 1.8s ease-in-out infinite;
-          pointer-events:none;
-          z-index:-1;
-        "></div>
-      </div>
-      <div class="v3d-letter" style="animation-delay:0.3s;--lc:#f0b400;">L</div>
-      <div class="v3d-letter" style="animation-delay:0.45s;--lc:#f0b400;">T</div>
-      <div class="v3d-letter" style="animation-delay:0.6s;--lc:#f0b400;">A</div>
-      <!-- Glow floor reflection -->
-      <div style="
-        position:absolute;bottom:-20px;left:5%;right:5%;height:20px;
-        background:radial-gradient(ellipse,rgba(240,180,0,0.4),transparent 70%);
-        filter:blur(8px);
-        animation:glowPulse 3s ease-in-out infinite;
-      "></div>
+  <div class="hero-content">
+    <div class="volta3d" id="volta3d">
+      <span class="v3 vL" style="--i:0">V</span>
+      <span class="v3 vL vBolt" style="--i:1">O</span>
+      <span class="v3 vL" style="--i:2">L</span>
+      <span class="v3 vL" style="--i:3">T</span>
+      <span class="v3 vL" style="--i:4">A</span>
     </div>
-    <!-- ELECTRONICS HUB tagline -->
-    <div class="hub-tagline">Electronics Hub</div>
-    <p style="font-size:1.02rem;color:#9a9aa2;line-height:1.7;max-width:400px;margin:1.4rem auto 2rem;">
-      <span id="hero-sub">Dar es Salaam's home for phones, appliances &amp; electronics — genuine quality, fast service.</span>
-    </p>
-    <div class="hero-cta" style="justify-content:center;">
-      <a href="#products" class="btn-glow" id="hero-btn1">View Products</a>
-      <a href="https://wa.me/255688058564?text=Hi%20Volta!" target="_blank" class="btn-outline" id="hero-btn2">WhatsApp Now →</a>
+    <div class="hero-eyebrow">Dar es Salaam · Electronics</div>
+    <h1 class="hero-title">Technology,<br>delivered simply.</h1>
+    <p class="hero-sub-new" id="hero-sub">Phones, appliances and electronics — genuine, fairly priced, and a message away on WhatsApp.</p>
+    <div class="hero-cta">
+      <a href="#products" class="btn-primary" id="hero-btn1">Explore products</a>
+      <a href="https://wa.me/255688058564?text=Hi%20Volta!" target="_blank" class="btn-ghost" id="hero-btn2">Order on WhatsApp →</a>
+    </div>
+    <div class="hero-meta">
+      <div class="hero-meta-item"><span class="hmn">87</span><span class="hml">products in stock</span></div>
+      <div class="hero-meta-divider"></div>
+      <div class="hero-meta-item"><span class="hmn">100%</span><span class="hml">genuine quality</span></div>
+      <div class="hero-meta-divider"></div>
+      <div class="hero-meta-item"><span class="hmn">Fast</span><span class="hml">WhatsApp replies</span></div>
     </div>
   </div>
 </section>
 
-<div style="background:linear-gradient(135deg,#0a0a0a,#111);padding:1.5rem 2.5rem;text-align:center;border-top:1px solid rgba(240,180,0,0.2);border-bottom:1px solid rgba(240,180,0,0.2);">
-  <p style="font-size:0.78rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(240,180,0,0.7);margin:0;"><span>⚡ Setting a new standard in the electronics hub space · Premium &amp; Reliable</span></p>
-</div>
-<div class="stats-strip">
-  <div class="stat"><div class="stat-num">150+</div><div class="stat-label">Simu Zinapatikana</div></div>
-  <div class="stat"><div class="stat-num">6</div><div class="stat-label">Brands</div></div>
-  <div class="stat"><div class="stat-num">100%</div><div class="stat-label">Genuine</div></div>
-  <div class="stat"><div class="stat-num">Fast</div><div class="stat-label">WhatsApp Response</div></div>
-</div>
-
 <section id="categories">
-  <div class="s-label">Brands Tunazo</div>
+  <div class="s-label">Our Brands</div>
   <h2 class="s-title">Shop by Brand</h2>
-  <p class="s-sub">Gusa brand unayotaka — inawaka na kuonyesha bidhaa zake.</p>
+  <p class="s-sub">Tap a brand to see all available products.</p>
   <div class="cat-grid" id="brandGrid"></div>
 </section>
 
-<!-- ── CATEGORY TABS ── -->
-<div class="cat-tabs-wrap">
-  <div class="cat-tabs">
-    <button class="cat-tab active" id="tab-phones" onclick="switchTab('phones')">📱 Phones</button>
-    <button class="cat-tab" id="tab-appliances" onclick="switchTab('appliances')">🏠 Appliances</button>
-  </div>
-</div>
-
 <section id="products">
-  <div class="s-label" id="prod-label">Our Catalogue</div>
+  <div class="s-label" id="prod-label">In stock now</div>
   <h2 class="s-title" id="prod-title">Our Products</h2>
-  <p class="s-sub" id="prod-sub">Hover for the 3D effect. Tap "Specs" to see full details and features of each phone.</p>
+  <p class="s-sub" id="prod-sub">Tap Specs to see full details and features of each phone.</p>
   <div class="controls">
     <div class="search-wrap">
       <span class="si">🔍</span>
-      <input type="text" id="searchInput" placeholder="Search... iPhone 13, Pixel 7, S23..." id="searchInput" oninput="handleSearch()"/>
+      <input type="text" id="searchInput" placeholder="Tafuta... iPhone 13, Pixel 7, S23..." id="searchInput" oninput="handleSearch()"/>
     </div>
     <div class="filter-bar" id="filterBar"></div>
   </div>
@@ -181,7 +81,7 @@
 <section id="appliances" style="background:var(--black);">
   <div class="s-label" id="app-label">Home Appliances</div>
   <h2 class="s-title" id="app-title">Home Appliances</h2>
-  <p class="s-sub" id="app-sub">TVs, fridges, washing machines, blenders, fans, microwaves and sound systems. Best prices in Dar es Salaam. Order via WhatsApp.</p>
+  <p class="s-sub" id="app-sub">TVs, fridges, washing machines, blenders, fans, microwaves and sound systems. Best prices in Dar es Salaam.</p>
   <div class="filter-bar" style="margin-bottom:2rem;" id="appFilterBar">
     <button class="fb active" onclick="filterApps('all',this)">All</button>
     <button class="fb" onclick="filterApps('tv',this)">📺 TVs</button>
@@ -196,19 +96,19 @@
 </section>
 
 <section id="why">
-  <div class="s-label" id="why-label">Our Promise</div>
+  <div class="s-label" id="why-label">Ahadi Yetu</div>
   <h2 class="s-title" id="why-title">Why Volta?</h2>
   <p class="s-sub" id="why-sub">We know what you need — great phones, fair prices, fast service.</p>
   <div class="why-grid">
-    <div class="why-card"><div class="wi">✅</div><div class="wt" id="why1-t">100% Genuine</div><div class="wd" id="why1-d">No fakes. Every phone is tested before it's sold.</div></div>
-    <div class="why-card"><div class="wi">💬</div><div class="wt" id="why2-t">WhatsApp Direct</div><div class="wd" id="why2-d">Just message — we handle everything fast, no hassle.</div></div>
-    <div class="why-card"><div class="wi">💰</div><div class="wt" id="why3-t">Fair Prices</div><div class="wd" id="why3-d">Our prices are competitive. Open, honest negotiation welcome.</div></div>
+    <div class="why-card"><div class="wi">✅</div><div class="wt" id="why1-t">100% Genuine</div><div class="wd" id="why1-d">No fakes. Every phone is tested before it is sold.</div></div>
+    <div class="why-card"><div class="wi">💬</div><div class="wt" id="why2-t">WhatsApp Direct</div><div class="wd" id="why2-d">Just message us — we handle everything quickly and easily.</div></div>
+    <div class="why-card"><div class="wi">💰</div><div class="wt" id="why3-t">Fair Prices</div><div class="wd" id="why3-d">Our prices are competitive, and we are open to honest negotiation.</div></div>
     <div class="why-card"><div class="wi">🚀</div><div class="wt" id="why4-t">Fast Service</div><div class="wd" id="why4-d">We reply fast and can arrange delivery across Dar es Salaam.</div></div>
   </div>
 </section>
 
 <div class="cta">
-  <h2 id="cta-title">Got Questions?<br>Message Us Now!</h2>
+  <h2 id="cta-title">Una Maswali?<br>Tupigie Sasa!</h2>
   <p id="cta-sub">Chat with us on WhatsApp — we reply fast and are ready to help you find your perfect phone.</p>
   <a class="cta-wa" href="https://wa.me/255688058564?text=Hi%20Volta!%20Nataka%20kufanya%20order." target="_blank">
     <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
@@ -219,7 +119,7 @@
 
 <!-- ── LOCATION SECTION ── -->
 <section id="location" style="background:var(--gray);padding:5rem 2.5rem;">
-  <div class="s-label" id="loc-label">Find Us</div>
+  <div class="s-label" id="loc-label">Mahali Tulipo</div>
   <h2 class="s-title" id="loc-title">Find Us</h2>
   <p class="s-sub" id="loc-sub">Tuko Dar es Salaam — karibu uje au tupigie WhatsApp tukufikishie.</p>
 
@@ -311,5 +211,13 @@
 </div>
 
 <script src="script.js" defer></script>
+<script>
+// Register the service worker for offline + install
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+</script>
 </body>
 </html>
