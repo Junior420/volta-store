@@ -741,12 +741,12 @@ function toggleLang() {
 
 // Apply on load
 window.addEventListener('DOMContentLoaded', () => {
-  applyLang('en');
-  // Render all sections
-  renderBrands();
-  renderFilterBar();
-  applyFilters();
-  filterApps('all', document.querySelector('#appFilterBar .fb'));
+  // Render core content FIRST, each guarded so one failure can't block the rest
+  try { renderBrands(); } catch(e){ console.warn('renderBrands',e); }
+  try { renderFilterBar(); } catch(e){ console.warn('renderFilterBar',e); }
+  try { applyFilters(); } catch(e){ console.warn('applyFilters',e); }
+  try { filterApps('all', document.querySelector('#appFilterBar .fb')); } catch(e){ console.warn('filterApps',e); }
+  try { applyLang('en'); } catch(e){ console.warn('applyLang',e); }
 
   // Scroll reveal
   const obs = new IntersectionObserver(entries => {
@@ -781,8 +781,16 @@ function initScrollReveal(){
         revealObs.unobserve(e.target);
       }
     });
-  },{threshold:0.12, rootMargin:'0px 0px -60px 0px'});
-  document.querySelectorAll('.reveal').forEach(el=>revealObs.observe(el));
+  },{threshold:0.08, rootMargin:'0px 0px -40px 0px'});
+  document.querySelectorAll('.reveal').forEach(el=>{
+    // If already in view on load, reveal immediately (no flash / delay)
+    const r=el.getBoundingClientRect();
+    if(r.top < window.innerHeight && r.bottom > 0){
+      el.classList.add('revealed');
+    } else {
+      revealObs.observe(el);
+    }
+  });
 }
 
 // 2. Interactive 3D tilt on product cards (and any .tilt element)
@@ -828,7 +836,10 @@ function initNavScroll(){
 
 // Tag sections + cards for reveal once DOM + dynamic content is ready
 function tagReveal(){
-  document.querySelectorAll('section, .product-card, .app-card, .why-card').forEach((el,i)=>{
+  // Only section-level blocks get scroll-reveal. Cards stay visible by default
+  // (they're re-rendered by sync/filter, so depending on reveal causes them to
+  // vanish). Tilt + glass are their motion; reveal is just for big sections.
+  document.querySelectorAll('section').forEach((el)=>{
     if(!el.classList.contains('hero')) el.classList.add('reveal');
   });
   initScrollReveal();
@@ -838,5 +849,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   initTilt();
   initScrollProgress();
   initNavScroll();
-  setTimeout(tagReveal, 400); // wait for product cards to render
+  // Content is already rendered synchronously above; tag reveals now.
+  // A double rAF ensures layout is settled so in-view detection is accurate.
+  requestAnimationFrame(()=>requestAnimationFrame(tagReveal));
 });
