@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="styles.css">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#e8a23d">
+<meta name="theme-color" content="#f0b400">
 <link rel="apple-touch-icon" href="icon-192.png">
 </head>
 <body>
@@ -31,12 +31,25 @@
 <section class="hero">
   <canvas id="heroCanvas"></canvas>
   <div class="hero-content">
-    <div class="volta3d" id="volta3d">
-      <span class="v3 vL" style="--i:0">V</span>
-      <span class="v3 vL vBolt" style="--i:1">O</span>
-      <span class="v3 vL" style="--i:2">L</span>
-      <span class="v3 vL" style="--i:3">T</span>
-      <span class="v3 vL" style="--i:4">A</span>
+    <div class="volta3d" id="volta3d" style="display:flex;align-items:center;justify-content:center;gap:clamp(4px,2vw,14px);perspective:600px;transform-style:preserve-3d;margin-bottom:2.4rem;">
+      <div class="v3d-letter" style="animation-delay:0s;--lc:#f0b400;">V</div>
+      <!-- Lightning O -->
+      <div class="v3d-letter v3d-O" style="animation-delay:0.15s;--lc:#f0b400;color:#f0b400;position:relative;overflow:visible;">
+        <div style="position:relative;width:clamp(44px,10vw,95px);height:clamp(44px,10vw,95px);border-radius:50%;border:clamp(5px,1.2vw,10px) solid #f0b400;display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px rgba(240,180,0,0.9),0 0 40px rgba(240,180,0,0.5),0 0 80px rgba(240,180,0,0.2),inset 0 0 20px rgba(240,180,0,0.15);animation:ringPulse 1.8s ease-in-out infinite;">
+          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:clamp(2.2rem,6.5vw,4.8rem);filter:drop-shadow(0 0 4px #fff) drop-shadow(0 0 10px #fff) drop-shadow(0 0 18px #f0b400) drop-shadow(0 0 32px #f0b400) drop-shadow(0 0 55px #f0b400);animation:boltFlash 2s ease-in-out infinite;z-index:3;line-height:1;">⚡</div>
+          <div class="arc" style="animation-delay:0s;"></div>
+          <div class="arc" style="animation-delay:0.6s;transform:rotate(60deg);"></div>
+          <div class="arc" style="animation-delay:1.2s;transform:rotate(120deg);"></div>
+          <div class="spark" style="animation-delay:0.1s;top:0;left:50%;--sx:8px;--sy:-22px;"></div>
+          <div class="spark" style="animation-delay:0.4s;top:50%;right:0;--sx:22px;--sy:-8px;"></div>
+          <div class="spark" style="animation-delay:0.7s;bottom:0;left:50%;--sx:-8px;--sy:22px;"></div>
+          <div class="spark" style="animation-delay:1s;top:50%;left:0;--sx:-22px;--sy:8px;"></div>
+        </div>
+        <div style="position:absolute;inset:-20px;border-radius:50%;background:radial-gradient(circle,rgba(240,180,0,0.15),transparent 70%);animation:burstGlow 1.8s ease-in-out infinite;pointer-events:none;z-index:-1;"></div>
+      </div>
+      <div class="v3d-letter" style="animation-delay:0.3s;--lc:#f0b400;">L</div>
+      <div class="v3d-letter" style="animation-delay:0.45s;--lc:#f0b400;">T</div>
+      <div class="v3d-letter" style="animation-delay:0.6s;--lc:#f0b400;">A</div>
     </div>
     <div class="hero-eyebrow">Dar es Salaam · Electronics</div>
     <h1 class="hero-title">Technology,<br>delivered simply.</h1>
@@ -53,6 +66,7 @@
       <div class="hero-meta-item"><span class="hmn">Fast</span><span class="hml">WhatsApp replies</span></div>
     </div>
   </div>
+  <div id="scrollCue"><div class="cue-dot"></div><div class="cue-line"></div></div>
 </section>
 
 <section id="categories">

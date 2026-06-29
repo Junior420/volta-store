@@ -1,10 +1,20 @@
-// ── 3D wordmark mouse tilt ──
+// ── 3D wordmark mouse tilt (combined with scroll-zoom via shared state) ──
 const v3d=document.getElementById('volta3d');
+window._voltaTilt={rx:0,ry:0};
+window._voltaScroll={scale:1,ty:0,op:1};
+function applyVoltaTransform(){
+  if(!v3d)return;
+  const t=window._voltaTilt, s=window._voltaScroll;
+  v3d.style.transform=`scale(${s.scale}) translateY(${s.ty}px) rotateX(${t.rx}deg) rotateY(${t.ry}deg)`;
+  v3d.style.opacity=s.op;
+}
 if(v3d){
   document.addEventListener('mousemove',e=>{
-    const rx=(e.clientY/window.innerHeight-0.5)*-35;
-    const ry=(e.clientX/window.innerWidth-0.5)*50;
-    v3d.style.transform=`rotateX(${rx}deg) rotateY(${ry}deg)`;
+    // tilt only meaningful while hero in view (top of page)
+    if(window.scrollY>500)return;
+    window._voltaTilt.rx=(e.clientY/window.innerHeight-0.5)*-35;
+    window._voltaTilt.ry=(e.clientX/window.innerWidth-0.5)*50;
+    applyVoltaTransform();
   });
 }
 
@@ -17,9 +27,9 @@ document.addEventListener('mousemove',e=>{mouse.x=e.clientX;mouse.y=e.clientY;})
 
 // A few soft drifting light orbs — ambient
 const orbs=[
-  {x:0.28,y:0.34,r:0.42,t:0,sp:0.0015,col:[232,162,61],a:0.18},
-  {x:0.72,y:0.62,r:0.5,t:2,sp:0.0011,col:[232,162,61],a:0.12},
-  {x:0.5,y:0.5,r:0.35,t:4,sp:0.0018,col:[200,120,40],a:0.09},
+  {x:0.28,y:0.34,r:0.42,t:0,sp:0.0015,col:[240,180,0],a:0.18},
+  {x:0.72,y:0.62,r:0.5,t:2,sp:0.0011,col:[240,180,0],a:0.12},
+  {x:0.5,y:0.5,r:0.35,t:4,sp:0.0018,col:[240,180,0],a:0.09},
 ];
 // Floating depth particles for motion
 const parts=[];
@@ -53,7 +63,7 @@ function drawHero(){
     const r=depth*2.2;
     const a=(0.15+Math.sin(p.t)*0.12)*depth;
     ctx.beginPath();ctx.arc(wx,wy,r,0,Math.PI*2);
-    ctx.fillStyle=`rgba(245,200,120,${a})`;ctx.fill();
+    ctx.fillStyle=`rgba(255,220,80,${a})`;ctx.fill();
   });
   const v=ctx.createRadialGradient(W*0.5,H*0.45,H*0.3,W*0.5,H*0.5,H*0.9);
   v.addColorStop(0,'rgba(12,13,17,0)');v.addColorStop(1,'rgba(8,9,12,0.7)');
@@ -379,6 +389,12 @@ function renderProducts(list){
   const grid=document.getElementById('productsGrid'),none=document.getElementById('noResults');
   if(!list.length){grid.innerHTML='';none.style.display='block';return;}
   none.style.display='none';grid.innerHTML=list.map(cardHTML).join('');apply3DTilt();
+  // If this grid uses stagger reveal, ensure it's marked in-view after re-render
+  // (backend sync / filter) so cards never get stuck invisible.
+  if(grid.classList.contains('stagger')){
+    const r=grid.getBoundingClientRect();
+    if(r.top < window.innerHeight && r.bottom > 0) grid.classList.add('in');
+  }
 }
 function applyFilters(){
   let list=products;
@@ -827,22 +843,83 @@ function initScrollProgress(){
 // 4. Nav shrinks/solidifies on scroll
 function initNavScroll(){
   const nav=document.querySelector('nav');
-  if(!nav)return;
+  const cue=document.getElementById('scrollCue');
   window.addEventListener('scroll',()=>{
-    if(window.scrollY>40)nav.classList.add('scrolled');
-    else nav.classList.remove('scrolled');
+    const y=window.scrollY;
+    if(nav){ if(y>40)nav.classList.add('scrolled'); else nav.classList.remove('scrolled'); }
+    // Hero wordmark zooms + fades as you scroll past (cinematic exit)
+    if(v3d && window._voltaScroll){
+      const p=Math.min(y/600,1);
+      window._voltaScroll.scale=1+p*0.6;
+      window._voltaScroll.ty=p*40;
+      window._voltaScroll.op=1-p*0.9;
+      applyVoltaTransform();
+    }
+    if(cue){ cue.style.opacity=`${Math.max(0,0.6-y/200)}`; }
   },{passive:true});
 }
 
 // Tag sections + cards for reveal once DOM + dynamic content is ready
 function tagReveal(){
-  // Only section-level blocks get scroll-reveal. Cards stay visible by default
-  // (they're re-rendered by sync/filter, so depending on reveal causes them to
-  // vanish). Tilt + glass are their motion; reveal is just for big sections.
+  // Assign varied reveal types to each section for cinematic motion.
+  const types=['rv-up','rv-left','rv-right','rv-scale','rv-rotate'];
+  let i=0;
   document.querySelectorAll('section').forEach((el)=>{
-    if(!el.classList.contains('hero')) el.classList.add('reveal');
+    if(el.classList.contains('hero'))return;
+    // The whole section title gets a clip-rise; the body gets a directional reveal
+    const title=el.querySelector('.s-title');
+    if(title && !title.querySelector('.title-rise')){
+      title.innerHTML=`<span class="title-rise">${title.innerHTML}</span>`;
+    }
+    el.classList.add('rv', types[i % types.length]);
+    i++;
+    // Tag inner grids to stagger their children
+    el.querySelectorAll('.products-grid, .cat-grid, .app-grid, .why-grid, #brandGrid, #productsGrid').forEach(g=>g.classList.add('stagger'));
   });
-  initScrollReveal();
+  initRichReveal();
+  initParallax();
+}
+
+function initRichReveal(){
+  const obs=new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        e.target.classList.add('in');
+        // also fire any title-rise inside
+        e.target.querySelectorAll('.title-rise').forEach(t=>t.classList.add('in'));
+        obs.unobserve(e.target);
+      }
+    });
+  },{threshold:0.12, rootMargin:'0px 0px -50px 0px'});
+  document.querySelectorAll('.rv, .stagger').forEach(el=>{
+    const r=el.getBoundingClientRect();
+    if(r.top < window.innerHeight*0.92 && r.bottom > 0){
+      el.classList.add('in');
+      el.querySelectorAll('.title-rise').forEach(t=>t.classList.add('in'));
+    } else obs.observe(el);
+  });
+}
+
+// Parallax: elements drift at different speeds as you scroll
+function initParallax(){
+  const layers=[];
+  document.querySelectorAll('[data-parallax]').forEach(el=>{
+    layers.push({el, speed:parseFloat(el.dataset.parallax)});
+  });
+  // hero canvas + wordmark get gentle parallax automatically
+  const hero=document.querySelector('.hero-content');
+  if(hero)layers.push({el:hero, speed:0.18});
+  let ticking=false;
+  window.addEventListener('scroll',()=>{
+    if(ticking)return; ticking=true;
+    requestAnimationFrame(()=>{
+      const y=window.scrollY;
+      layers.forEach(l=>{
+        l.el.style.transform=`translateY(${y*l.speed}px)`;
+      });
+      ticking=false;
+    });
+  },{passive:true});
 }
 
 window.addEventListener('DOMContentLoaded',()=>{
