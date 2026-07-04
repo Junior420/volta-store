@@ -1,0 +1,26 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: volta
+      POSTGRES_PASSWORD: volta
+      POSTGRES_DB: volta
+    volumes:
+      - volta_db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  backend:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg2://volta:volta@db:5432/volta
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+
+volumes:
+  volta_db_data:

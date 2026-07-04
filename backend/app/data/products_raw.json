@@ -1,0 +1,299 @@
+[
+  {
+    "id": 0,
+    "cat": "iphone",
+    "cond": "used",
+    "name": "iPhone 11 64GB",
+    "short": "Used · Dual SIM · Black",
+    "price": "TZS 510,000",
+    "specKey": "iPhone 11"
+  },
+  {
+    "id": 1,
+    "cat": "iphone",
+    "cond": "used",
+    "name": "iPhone 11 128GB",
+    "short": "Used · Dual SIM · White",
+    "price": "TZS 560,000",
+    "specKey": "iPhone 11"
+  },
+  {
+    "id": 2,
+    "cat": "iphone",
+    "cond": "used",
+    "name": "iPhone 11 Pro Max 64GB",
+    "short": "Used · DM · Midnight Green",
+    "price": "TZS 690,000",
+    "specKey": "iPhone 11 Pro Max"
+  },
+  {
+    "id": 3,
+    "cat": "iphone",
+    "cond": "used",
+    "name": "iPhone 11 Pro Max 256GB",
+    "short": "Used · DM · Space Grey",
+    "price": "TZS 750,000",
+    "specKey": "iPhone 11 Pro Max"
+  },
+  {
+    "id": 4,
+    "cat": "iphone",
+    "cond": "used",
+    "name": "iPhone 12 Pro 128GB",
+    "short": "Used · DM · Pacific Blue",
+    "price": "TZS 760,000",
+    "specKey": "iPhone 12 Pro"
+  },
+  {
+    "id": 5,
+    "cat": "iphone",
+    "cond": "used",
+    "name": "iPhone 12 Pro 256GB",
+    "short": "Used · DM · Gold",
+    "price": "TZS 810,000",
+    "specKey": "iPhone 12 Pro"
+  },
+  {
+    "id": 6,
+    "cat": "iphone",
+    "cond": "used",
+    "name": "iPhone 12 Pro Max 128GB",
+    "short": "Used · DM · Silver",
+    "price": "TZS 840,000",
+    "specKey": "iPhone 12 Pro Max"
+  },
+  {
+    "id": 7,
+    "cat": "iphone",
+    "cond": "used",
+    "name": "iPhone 12 Pro Max 256GB",
+    "short": "Used · Clean · Graphite",
+    "price": "TZS 930,000",
+    "specKey": "iPhone 12 Pro Max"
+  },
+  {
+    "id": 8,
+    "cat": "iphone",
+    "cond": "used",
+    "name": "iPhone 13 128GB",
+    "short": "Used · DM · Midnight",
+    "price": "TZS 790,000",
+    "specKey": "iPhone 13"
+  },
+  {
+    "id": 9,
+    "cat": "iphone",
+    "cond": "used",
+    "name": "iPhone 13 Pro Max 128GB",
+    "short": "Used · DM · Alpine Green",
+    "price": "TZS 970,000",
+    "specKey": "iPhone 13 Pro Max"
+  },
+  {
+    "id": 10,
+    "cat": "samsung",
+    "cond": "new",
+    "name": "Samsung Note 20 5G",
+    "short": "Boxed 📦 · Mystic Black",
+    "price": "TZS 570,000",
+    "specKey": "Samsung Note 20 Ultra"
+  },
+  {
+    "id": 11,
+    "cat": "samsung",
+    "cond": "new",
+    "name": "Samsung A32 128GB",
+    "short": "Boxed · 2 SIMs 📦",
+    "price": "TZS 385,000",
+    "specKey": "Samsung A34"
+  },
+  {
+    "id": 12,
+    "cat": "samsung",
+    "cond": "new",
+    "name": "Samsung A34 128GB",
+    "short": "Boxed 📦 · Awesome Graphite",
+    "price": "TZS 570,000",
+    "specKey": "Samsung A34"
+  },
+  {
+    "id": 13,
+    "cat": "samsung",
+    "cond": "used",
+    "name": "Samsung S23 256GB",
+    "short": "Used · Clean · Phantom Black",
+    "price": "TZS 880,000",
+    "specKey": "Samsung S23"
+  },
+  {
+    "id": 14,
+    "cat": "samsung",
+    "cond": "used",
+    "name": "Samsung S22 256GB",
+    "short": "Used · Clean · Green",
+    "price": "TZS 610,000",
+    "specKey": "Samsung S22"
+  },
+  {
+    "id": 15,
+    "cat": "samsung",
+    "cond": "used",
+    "name": "Samsung S21 128GB",
+    "short": "Used · Clean · Phantom Grey",
+    "price": "TZS 510,000",
+    "specKey": "Samsung S21"
+  },
+  {
+    "id": 16,
+    "cat": "samsung",
+    "cond": "used",
+    "name": "Samsung S21 Ultra 128GB",
+    "short": "Used · Phantom Black",
+    "price": "TZS 625,000",
+    "specKey": "Samsung S21 Ultra"
+  },
+  {
+    "id": 17,
+    "cat": "samsung",
+    "cond": "used",
+    "name": "Samsung Note 20 Ultra 256GB",
+    "short": "Used · Mystic Bronze",
+    "price": "TZS 545,000",
+    "specKey": "Samsung Note 20 Ultra"
+  },
+  {
+    "id": 18,
+    "cat": "samsung",
+    "cond": "used",
+    "name": "Samsung A54 128GB",
+    "short": "Used · Awesome Graphite",
+    "price": "TZS 490,000",
+    "specKey": "Samsung A54"
+  },
+  {
+    "id": 19,
+    "cat": "samsung",
+    "cond": "used",
+    "name": "Samsung A34 128GB",
+    "short": "Used · Awesome Graphite",
+    "price": "TZS 450,000",
+    "specKey": "Samsung A34"
+  },
+  {
+    "id": 20,
+    "cat": "pixel",
+    "cond": "used",
+    "name": "Google Pixel 6a 128GB",
+    "short": "Used · Chalk",
+    "price": "TZS 440,000",
+    "specKey": "Google Pixel 6a"
+  },
+  {
+    "id": 21,
+    "cat": "pixel",
+    "cond": "used",
+    "name": "Google Pixel 7 256GB",
+    "short": "Used · Snow",
+    "price": "TZS 580,000",
+    "specKey": "Google Pixel 7"
+  },
+  {
+    "id": 22,
+    "cat": "pixel",
+    "cond": "used",
+    "name": "Google Pixel 7 Pro 512GB",
+    "short": "Used · Clean · Obsidian",
+    "price": "TZS 800,000",
+    "specKey": "Google Pixel 7 Pro"
+  },
+  {
+    "id": 23,
+    "cat": "pixel",
+    "cond": "used",
+    "name": "Google Pixel 8 128GB",
+    "short": "Used · Hazel",
+    "price": "TZS 770,000",
+    "specKey": "Google Pixel 8"
+  },
+  {
+    "id": 24,
+    "cat": "pixel",
+    "cond": "used",
+    "name": "Google Pixel 8 Pro 256GB",
+    "short": "Used · Porcelain",
+    "price": "TZS 1,020,000",
+    "specKey": "Google Pixel 8 Pro"
+  },
+  {
+    "id": 25,
+    "cat": "pixel",
+    "cond": "used",
+    "name": "Google Pixel 9 128GB",
+    "short": "Used · Obsidian",
+    "price": "TZS 1,170,000",
+    "specKey": "Google Pixel 9"
+  },
+  {
+    "id": 26,
+    "cat": "pixel",
+    "cond": "new",
+    "name": "Google Pixel 8 Pro 128GB",
+    "short": "Brand New 📦 · Bay",
+    "price": "TZS 1,080,000",
+    "specKey": "Google Pixel 8 Pro"
+  },
+  {
+    "id": 27,
+    "cat": "pixel",
+    "cond": "new",
+    "name": "Google Pixel 9 Pro XL 256GB",
+    "short": "Brand New 📦 · Obsidian",
+    "price": "TZS 1,720,000",
+    "specKey": "Google Pixel 9 Pro XL"
+  },
+  {
+    "id": 28,
+    "cat": "sony",
+    "cond": "used",
+    "name": "Sony Xperia 5 IV 128GB",
+    "short": "Used · Black",
+    "price": "TZS 425,000",
+    "specKey": "Sony Xperia 5 IV"
+  },
+  {
+    "id": 29,
+    "cat": "sony",
+    "cond": "used",
+    "name": "Sony Xperia 1 IV 256GB",
+    "short": "Used · Frosted Black",
+    "price": "TZS 570,000",
+    "specKey": "Sony Xperia 1 IV"
+  },
+  {
+    "id": 30,
+    "cat": "japanese",
+    "cond": "used",
+    "name": "Aquos R7 256GB",
+    "short": "Used · Clean · Black",
+    "price": "TZS 410,000",
+    "specKey": "Aquos R7"
+  },
+  {
+    "id": 31,
+    "cat": "redmi",
+    "cond": "new",
+    "name": "Redmi 14C 256GB",
+    "short": "Brand New · 16GB RAM 📦",
+    "price": "TZS 310,000",
+    "specKey": "Redmi 14C"
+  },
+  {
+    "id": 32,
+    "cat": "redmi",
+    "cond": "new",
+    "name": "Redmi 15C 256GB",
+    "short": "Brand New · 16GB RAM 📦",
+    "price": "TZS 340,000",
+    "specKey": "Redmi 15C"
+  }
+]
