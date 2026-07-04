@@ -1,0 +1,488 @@
+[
+  {
+    "cat": "tv",
+    "icon": "📺",
+    "name": "Hisense 32\" Smart TV",
+    "brand": "Hisense",
+    "specs": "HD Ready · VIDAA OS · Wi-Fi · YouTube/Netflix",
+    "price": "TZS 540,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "tv",
+    "icon": "📺",
+    "name": "Hisense 40\" Full HD Smart TV",
+    "brand": "Hisense",
+    "specs": "1080p · VIDAA OS · Wi-Fi · Bluetooth · HDMI×2",
+    "price": "TZS 730,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "tv",
+    "icon": "📺",
+    "name": "Hisense 43\" 4K UHD Smart TV",
+    "brand": "Hisense",
+    "specs": "4K Ultra HD · VIDAA OS · Dolby Vision · Wi-Fi",
+    "price": "TZS 1,150,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "tv",
+    "icon": "📺",
+    "name": "Hisense 50\" 4K QLED Smart TV",
+    "brand": "Hisense",
+    "specs": "4K QLED · Quantum Dot · HDR · Wi-Fi · Bluetooth",
+    "price": "TZS 1,450,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "tv",
+    "icon": "📺",
+    "name": "Hisense 55\" 4K UHD Smart TV",
+    "brand": "Hisense",
+    "specs": "4K Ultra HD · VIDAA · Dolby Audio · 3×HDMI",
+    "price": "TZS 1,800,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "tv",
+    "icon": "📺",
+    "name": "Samsung 43\" Full HD Smart TV",
+    "brand": "Samsung",
+    "specs": "Full HD · Tizen OS · PurColor · HDR · Wi-Fi",
+    "price": "TZS 980,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "tv",
+    "icon": "📺",
+    "name": "Samsung 55\" 4K QLED Smart TV",
+    "brand": "Samsung",
+    "specs": "4K QLED · Quantum Processor · HDR10+ · Tizen",
+    "price": "TZS 2,150,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "tv",
+    "icon": "📺",
+    "name": "LG 43\" Full HD Smart TV",
+    "brand": "LG",
+    "specs": "Full HD · WebOS · ThinQ AI · Bluetooth · Wi-Fi",
+    "price": "TZS 920,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "tv",
+    "icon": "📺",
+    "name": "LG 55\" 4K UHD Smart TV",
+    "brand": "LG",
+    "specs": "4K UHD · WebOS · Filmmaker Mode · Dolby Vision",
+    "price": "TZS 2,250,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "tv",
+    "icon": "📺",
+    "name": "TCL 32\" Smart TV",
+    "brand": "TCL",
+    "specs": "HD · Android TV · Google Assistant · Wi-Fi",
+    "price": "TZS 490,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "tv",
+    "icon": "📺",
+    "name": "TCL 43\" 4K Android TV",
+    "brand": "TCL",
+    "specs": "4K UHD · Android 11 · Google Play · Dolby Audio",
+    "price": "TZS 970,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "fridge",
+    "icon": "❄️",
+    "name": "Hisense 90L Single Door Fridge",
+    "brand": "Hisense",
+    "specs": "90L · Direct Cool · Energy Saving · Low Noise",
+    "price": "TZS 590,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "fridge",
+    "icon": "❄️",
+    "name": "Hisense 150L Single Door Fridge",
+    "brand": "Hisense",
+    "specs": "150L · Direct Cool · Mechanical Control · LED Light",
+    "price": "TZS 700,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "fridge",
+    "icon": "❄️",
+    "name": "Hisense 175L Double Door Fridge",
+    "brand": "Hisense",
+    "specs": "175L · No Frost · LED · Bottom Freezer",
+    "price": "TZS 870,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "fridge",
+    "icon": "❄️",
+    "name": "Hisense 245L Double Door Fridge",
+    "brand": "Hisense",
+    "specs": "245L · No Frost · Total No Frost · Humidity Control",
+    "price": "TZS 1,070,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "fridge",
+    "icon": "❄️",
+    "name": "Samsung 300L Double Door Fridge",
+    "brand": "Samsung",
+    "specs": "300L · Twin Cooling · No Frost · Digital Inverter",
+    "price": "TZS 1,450,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "fridge",
+    "icon": "❄️",
+    "name": "Samsung 400L Side-by-Side Fridge",
+    "brand": "Samsung",
+    "specs": "400L · Twin Cooling Plus · No Frost · Ice Maker",
+    "price": "TZS 2,250,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "fridge",
+    "icon": "❄️",
+    "name": "LG 190L Double Door Fridge",
+    "brand": "LG",
+    "specs": "190L · Smart Inverter · No Frost · Moist Balance Crisper",
+    "price": "TZS 980,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "fridge",
+    "icon": "❄️",
+    "name": "Midea 80L Bar Fridge",
+    "brand": "Midea",
+    "specs": "80L · Compact · Reversible Door · Quiet Operation",
+    "price": "TZS 480,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "washing",
+    "icon": "🫧",
+    "name": "Hisense 7KG Top Load Washer",
+    "brand": "Hisense",
+    "specs": "7KG · Fully Automatic · Bubble Clean · Smart Diagnosis",
+    "price": "TZS 760,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "washing",
+    "icon": "🫧",
+    "name": "Hisense 8KG Front Load Washer",
+    "brand": "Hisense",
+    "specs": "8KG · Front Load · 1200RPM · Inverter Motor · Steam",
+    "price": "TZS 1,100,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "washing",
+    "icon": "🫧",
+    "name": "Hisense 10KG Top Load Washer",
+    "brand": "Hisense",
+    "specs": "10KG · Fully Auto · 8 Wash Programs · Child Lock",
+    "price": "TZS 1,050,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "washing",
+    "icon": "🫧",
+    "name": "Midea 7KG Manual Twin Tub",
+    "brand": "Midea",
+    "specs": "7KG · Semi-Auto · Twin Tub · Drain Pump · Spin",
+    "price": "TZS 570,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "washing",
+    "icon": "🫧",
+    "name": "Midea 8KG Auto Top Load",
+    "brand": "Midea",
+    "specs": "8KG · Fully Automatic · 8 Programs · LED Display",
+    "price": "TZS 840,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "washing",
+    "icon": "🫧",
+    "name": "Midea 10KG Automatic Top Load",
+    "brand": "Midea",
+    "specs": "10KG · Fully Auto · Inverter · Auto Restart · Steam",
+    "price": "TZS 1,170,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "washing",
+    "icon": "🫧",
+    "name": "Samsung 7KG Front Load Washer",
+    "brand": "Samsung",
+    "specs": "7KG · Front Load · AddWash · Eco Bubble · 1400RPM",
+    "price": "TZS 1,250,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "washing",
+    "icon": "🫧",
+    "name": "LG 8KG Front Load Washer",
+    "brand": "LG",
+    "specs": "8KG · AI DD Technology · Steam · ThinQ Wi-Fi · A+++",
+    "price": "TZS 1,450,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "blender",
+    "icon": "🍹",
+    "name": "Kenwood Heavy Duty Blender 3.5L",
+    "brand": "Kenwood",
+    "specs": "3.5L · 1500W · Stainless Steel Blade · 3 Speeds",
+    "price": "TZS 195,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "blender",
+    "icon": "🍹",
+    "name": "Philips Daily Blender 2L",
+    "brand": "Philips",
+    "specs": "2L · 700W · 2 Speeds + Pulse · Ice Crushing",
+    "price": "TZS 180,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "blender",
+    "icon": "🍹",
+    "name": "Philips Viva Blender 2L",
+    "brand": "Philips",
+    "specs": "2L · 1200W · ProBlend Tech · 3 Speeds · BPA Free",
+    "price": "TZS 225,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "blender",
+    "icon": "🍹",
+    "name": "Kenwood 4-in-1 Juicer Extractor",
+    "brand": "Kenwood",
+    "specs": "Juicer + Mincer + Grinder + Blender · 800W · 2L",
+    "price": "TZS 260,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "blender",
+    "icon": "🍹",
+    "name": "Moulinex Easy Blender 1.5L",
+    "brand": "Moulinex",
+    "specs": "1.5L · 500W · Compact · Easy Clean · 2 Speeds",
+    "price": "TZS 145,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "blender",
+    "icon": "🍹",
+    "name": "Decakila Slow Juicer 500W",
+    "brand": "Decakila",
+    "specs": "500W · Cold Press · 75RPM · Preserves Nutrients",
+    "price": "TZS 310,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "blender",
+    "icon": "🍹",
+    "name": "Sokany Commercial Blender 2L",
+    "brand": "Sokany",
+    "specs": "2L · 2200W · Heavy Duty · 9500W Copper Motor",
+    "price": "TZS 185,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "fan",
+    "icon": "💨",
+    "name": "Dolphin 16\" Stand Fan",
+    "brand": "Dolphin",
+    "specs": "16\" · 3 Speed · Oscillating · Adjustable Height · 55W",
+    "price": "TZS 115,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "fan",
+    "icon": "💨",
+    "name": "Dolphin 18\" Pedestal Stand Fan",
+    "brand": "Dolphin",
+    "specs": "18\" · 5 Speed · Remote Control · Timer · 85W",
+    "price": "TZS 205,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "fan",
+    "icon": "💨",
+    "name": "Nikai Tower Fan 40\" Remote",
+    "brand": "Nikai",
+    "specs": "40\" · 45W · Remote · 3 Speeds · 59dB Silent · Timer",
+    "price": "TZS 250,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "fan",
+    "icon": "💨",
+    "name": "Dolphin Ceiling Fan 36\"",
+    "brand": "Dolphin",
+    "specs": "36\" · 5 Blades · Copper Motor · Low Voltage · Silent",
+    "price": "TZS 165,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "fan",
+    "icon": "💨",
+    "name": "Midea Rechargeable Stand Fan",
+    "brand": "Midea",
+    "specs": "16\" · Rechargeable · AC/DC · Remote · 8hr Battery",
+    "price": "TZS 230,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "fan",
+    "icon": "💨",
+    "name": "Mewe Rechargeable Stand Fan 18\"",
+    "brand": "Mewe",
+    "specs": "18\" · Remote Control · Solar Compatible · AC/DC",
+    "price": "TZS 195,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "fan",
+    "icon": "💨",
+    "name": "Dolphin 30\" Wall Fan Industrial",
+    "brand": "Dolphin",
+    "specs": "30\" · Super Quiet Motor · 3 Speeds · Heavy Duty",
+    "price": "TZS 280,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "microwave",
+    "icon": "📡",
+    "name": "Midea 20L Microwave Oven",
+    "brand": "Midea",
+    "specs": "20L · 700W · Reheat · Defrost · 5 Power Levels",
+    "price": "TZS 295,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "microwave",
+    "icon": "📡",
+    "name": "Hisense 20L Microwave Oven",
+    "brand": "Hisense",
+    "specs": "20L · 700W · 5 Power Levels · Defrost · Child Lock",
+    "price": "TZS 310,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "microwave",
+    "icon": "📡",
+    "name": "Midea 25L Digital Microwave",
+    "brand": "Midea",
+    "specs": "25L · 900W · Digital Display · 10 Power Levels · Grill",
+    "price": "TZS 380,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "microwave",
+    "icon": "📡",
+    "name": "Samsung 28L Convection Microwave",
+    "brand": "Samsung",
+    "specs": "28L · 900W · Convection · Grill · Slim Fry · LED",
+    "price": "TZS 750,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "microwave",
+    "icon": "📡",
+    "name": "LG 25L NeoChef Microwave",
+    "brand": "LG",
+    "specs": "25L · 1000W · Smart Inverter · EasyClean · Anti-Bacteria",
+    "price": "TZS 680,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "microwave",
+    "icon": "📡",
+    "name": "Kenwood 20L Microwave Oven",
+    "brand": "Kenwood",
+    "specs": "20L · 800W · 5 Power Levels · Defrost · Timer",
+    "price": "TZS 330,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "sound",
+    "icon": "🔊",
+    "name": "Sony Mini Hi-Fi System",
+    "brand": "Sony",
+    "specs": "80W · Bluetooth · USB · CD · FM Radio · LED Display",
+    "price": "TZS 450,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "sound",
+    "icon": "🔊",
+    "name": "LG XBoom 360 Portable Speaker",
+    "brand": "LG",
+    "specs": "120W · 360° Sound · Bluetooth 5.0 · IPX4 · LED",
+    "price": "TZS 650,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "sound",
+    "icon": "🔊",
+    "name": "Samsung Soundbar HW-T420",
+    "brand": "Samsung",
+    "specs": "150W · 2.1ch · Bluetooth · DTS Virtual:X · USB",
+    "price": "TZS 850,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "sound",
+    "icon": "🔊",
+    "name": "JBL PartyBox 110 Speaker",
+    "brand": "JBL",
+    "specs": "160W · Bluetooth · IPX4 · Dynamic Light Show · 12hr",
+    "price": "TZS 1,200,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "sound",
+    "icon": "🔊",
+    "name": "Philips Party Speaker TAX4207",
+    "brand": "Philips",
+    "specs": "700W · Bluetooth · USB · FM · Karaoke Ready · LED",
+    "price": "TZS 580,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "sound",
+    "icon": "🔊",
+    "name": "Nikai 3-in-1 Home Theatre 5.1",
+    "brand": "Nikai",
+    "specs": "5.1ch · 1000W · Bluetooth · USB · HDMI · FM Radio",
+    "price": "TZS 750,000",
+    "badge": "📦 New"
+  },
+  {
+    "cat": "sound",
+    "icon": "🔊",
+    "name": "Hisense Soundbar HS214",
+    "brand": "Hisense",
+    "specs": "120W · 2.1ch · Bluetooth · Optical · HDMI ARC",
+    "price": "TZS 480,000",
+    "badge": "📦 New"
+  }
+]
