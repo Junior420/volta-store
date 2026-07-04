@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: volta-backend
+    runtime: node
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: ADMIN_PASSWORD
+        sync: false # set this in the Render dashboard
+      - key: DATA_DIR
+        value: /var/data
+    disk:
+      name: volta-data
+      mountPath: /var/data
+      sizeGB: 1

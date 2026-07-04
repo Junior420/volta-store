@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Volta Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{--black:#0c0d11;--gray:#14151b;--gray2:#1b1d25;--accent:#f0b400;--white:#f5f5f5;--muted:#9a9daa;--green:#25D366;--red:#e05555;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--black);color:var(--white);font-family:'DM Sans',sans-serif;min-height:100vh;}
+h1,h2,h3,button{font-family:'Syne',sans-serif;}
+.wrap{max-width:1100px;margin:0 auto;padding:2rem 1.2rem;}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem;}
+.logo{font-weight:800;font-size:1.4rem;}.logo span{color:var(--accent);}
+.tabs{display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1.5rem;}
+.tab{background:var(--gray2);border:1px solid rgba(240,180,0,0.15);color:var(--muted);padding:0.55rem 1.2rem;border-radius:10px;cursor:pointer;font-weight:700;font-size:0.85rem;}
+.tab.active{background:var(--accent);color:var(--black);border-color:var(--accent);}
+.card{background:var(--gray);border:1px solid rgba(240,180,0,0.12);border-radius:14px;padding:1.4rem;margin-bottom:1rem;}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:0.8rem;margin-bottom:1.5rem;}
+.stat{background:var(--gray2);border:1px solid rgba(240,180,0,0.12);border-radius:12px;padding:1rem;text-align:center;}
+.stat .n{font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;color:var(--accent);}
+.stat .l{font-size:0.72rem;color:var(--muted);margin-top:0.2rem;}
+table{width:100%;border-collapse:collapse;font-size:0.84rem;}
+th{color:var(--accent);text-align:left;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.06em;padding:0.5rem 0.6rem;border-bottom:1px solid rgba(240,180,0,0.2);}
+td{padding:0.55rem 0.6rem;border-bottom:1px solid rgba(255,255,255,0.05);vertical-align:top;}
+tr:hover td{background:rgba(240,180,0,0.03);}
+input,select,textarea{width:100%;background:var(--gray2);border:1px solid rgba(240,180,0,0.2);color:var(--white);border-radius:9px;padding:0.6rem 0.8rem;font-family:inherit;font-size:0.88rem;}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);}
+label{display:block;font-size:0.72rem;color:var(--muted);margin:0.7rem 0 0.25rem;text-transform:uppercase;letter-spacing:0.05em;}
+.btn{background:var(--accent);color:var(--black);border:none;padding:0.65rem 1.4rem;border-radius:9px;font-weight:700;cursor:pointer;font-size:0.86rem;}
+.btn.ghost{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.15);}
+.btn.danger{background:transparent;color:var(--red);border:1px solid rgba(224,85,85,0.4);}
+.btn.small{padding:0.35rem 0.8rem;font-size:0.75rem;}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:0 1rem;}
+.badge{display:inline-block;padding:0.15rem 0.55rem;border-radius:20px;font-size:0.7rem;font-weight:600;}
+.b-new{background:rgba(240,180,0,0.15);color:var(--accent);}
+.b-contacted{background:rgba(66,133,244,0.15);color:#7ab0ff;}
+.b-completed{background:rgba(37,211,102,0.15);color:var(--green);}
+.b-cancelled{background:rgba(224,85,85,0.15);color:var(--red);}
+.b-out{background:rgba(224,85,85,0.15);color:var(--red);}
+.b-in{background:rgba(37,211,102,0.12);color:var(--green);}
+#login{max-width:380px;margin:14vh auto;}
+.error{color:var(--red);font-size:0.82rem;margin-top:0.6rem;min-height:1em;}
+.toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.9rem;gap:0.8rem;flex-wrap:wrap;}
+.hidden{display:none;}
+.tbl-wrap{overflow-x:auto;}
+dialog{background:var(--gray);color:var(--white);border:1px solid rgba(240,180,0,0.25);border-radius:16px;padding:1.6rem;max-width:520px;width:92%;}
+dialog::backdrop{background:rgba(0,0,0,0.7);}
+.muted{color:var(--muted);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- LOGIN -->
+  <div id="login">
+    <div class="card">
+      <h2 style="margin-bottom:0.3rem;">⚡ Volt<span style="color:var(--accent)">a</span> Admin</h2>
+      <p class="muted" style="font-size:0.85rem;">Enter the admin password to manage the store.</p>
+      <label>Password</label>
+      <input type="password" id="pw" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()"/>
+      <div class="error" id="loginErr"></div>
+      <button class="btn" style="margin-top:0.6rem;width:100%;" onclick="login()">Log in</button>
+    </div>
+  </div>
+
+  <!-- APP -->
+  <div id="app" class="hidden">
+    <header>
+      <div class="logo">⚡ Volt<span>a</span> Admin</div>
+      <div style="display:flex;gap:0.6rem;">
+        <a class="btn ghost" href="/" style="text-decoration:none;">View store</a>
+        <button class="btn ghost" onclick="logout()">Log out</button>
+      </div>
+    </header>
+
+    <div class="stats" id="stats"></div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="products" onclick="showTab('products',this)">📱 Products</button>
+      <button class="tab" data-tab="orders" onclick="showTab('orders',this)">🛒 Orders</button>
+    </div>
+
+    <div id="tab-products">
+      <div class="toolbar">
+        <input id="prodSearch" placeholder="Search products..." style="max-width:280px;" oninput="renderProducts()"/>
+        <button class="btn" onclick="openEditor()">+ Add product</button>
+      </div>
+      <div class="card tbl-wrap"><table>
+        <thead><tr><th>ID</th><th>Name</th><th>Type</th><th>Category</th><th>Price</th><th>Stock</th><th></th></tr></thead>
+        <tbody id="prodRows"></tbody>
+      </table></div>
+    </div>
+
+    <div id="tab-orders" class="hidden">
+      <div class="card tbl-wrap"><table>
+        <thead><tr><th>#</th><th>Date</th><th>Customer</th><th>Product / Message</th><th>Status</th><th></th></tr></thead>
+        <tbody id="orderRows"></tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+
+<!-- PRODUCT EDITOR -->
+<dialog id="editor">
+  <h3 id="edTitle" style="margin-bottom:0.4rem;">Add product</h3>
+  <input type="hidden" id="f_id"/>
+  <label>Type</label>
+  <select id="f_type" onchange="toggleTypeFields()">
+    <option value="phone">Phone</option>
+    <option value="appliance">Appliance</option>
+  </select>
+  <label>Name *</label><input id="f_name" placeholder="iPhone 13 128GB"/>
+  <label>Price (display) *</label><input id="f_price" placeholder="TZS 790,000"/>
+  <div class="row">
+    <div><label>Category</label><input id="f_category" placeholder="iphone / tv / fridge..."/></div>
+    <div><label>In stock</label><select id="f_stock"><option value="true">Yes</option><option value="false">No — hidden from site</option></select></div>
+  </div>
+  <div id="phoneFields">
+    <div class="row">
+      <div><label>Condition</label><select id="f_cond"><option value="used">Used</option><option value="new">New</option></select></div>
+      <div><label>Spec key</label><input id="f_speckey" placeholder="iPhone 13 (links spec sheet)"/></div>
+    </div>
+    <label>Short description</label><input id="f_short" placeholder="Used · DM · Midnight"/>
+  </div>
+  <div id="applianceFields" class="hidden">
+    <div class="row">
+      <div><label>Brand</label><input id="f_brand" placeholder="Hisense"/></div>
+      <div><label>Icon emoji</label><input id="f_icon" placeholder="📺"/></div>
+    </div>
+    <label>Specs line</label><input id="f_specs" placeholder="4K UHD · VIDAA OS · Wi-Fi"/>
+    <label>Badge</label><input id="f_badge" placeholder="📦 New"/>
+  </div>
+  <div class="error" id="edErr"></div>
+  <div style="display:flex;gap:0.6rem;justify-content:flex-end;margin-top:1rem;">
+    <button class="btn ghost" onclick="editor.close()">Cancel</button>
+    <button class="btn" onclick="saveProduct()">Save</button>
+  </div>
+</dialog>
+
+<script>
+const API='/api';
+let token=sessionStorage.getItem('volta_token')||'';
+let productsCache=[];
+const $=id=>document.getElementById(id);
+const editor=$('editor');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+async function api(path,opts={}){
+  opts.headers=Object.assign({'Content-Type':'application/json'},opts.headers||{});
+  if(token)opts.headers['Authorization']='Bearer '+token;
+  const r=await fetch(API+path,opts);
+  if(r.status===401&&path!=='/auth/login'){logout();throw new Error('Session expired');}
+  const data=await r.json().catch(()=>({}));
+  if(!r.ok)throw new Error(data.error||('HTTP '+r.status));
+  return data;
+}
+
+async function login(){
+  $('loginErr').textContent='';
+  try{
+    const d=await api('/auth/login',{method:'POST',body:JSON.stringify({password:$('pw').value})});
+    token=d.token;sessionStorage.setItem('volta_token',token);
+    boot();
+  }catch(e){$('loginErr').textContent=e.message;}
+}
+function logout(){token='';sessionStorage.removeItem('volta_token');$('app').classList.add('hidden');$('login').classList.remove('hidden');}
+
+async function boot(){
+  try{await loadStats();}catch(e){return;}
+  $('login').classList.add('hidden');$('app').classList.remove('hidden');
+  await Promise.all([loadProducts(),loadOrders()]);
+}
+
+async function loadStats(){
+  const s=await api('/stats');
+  $('stats').innerHTML=[
+    ['products_in_stock','In stock'],['phones','Phones'],['appliances','Appliances'],
+    ['orders_total','Orders'],['orders_new','New orders']
+  ].map(([k,l])=>`<div class="stat"><div class="n">${s[k]}</div><div class="l">${l}</div></div>`).join('');
+}
+
+function showTab(name,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  $('tab-products').classList.toggle('hidden',name!=='products');
+  $('tab-orders').classList.toggle('hidden',name!=='orders');
+}
+
+async function loadProducts(){
+  productsCache=await api('/products?all=1');
+  renderProducts();
+}
+function renderProducts(){
+  const q=$('prodSearch').value.toLowerCase();
+  const rows=productsCache
+    .filter(p=>!q||[p.name,p.brand,p.category,p.short_description].join(' ').toLowerCase().includes(q))
+    .map(p=>`<tr>
+      <td class="muted">${p.id}</td>
+      <td><strong>${esc(p.name)}</strong><br><span class="muted" style="font-size:0.75rem">${esc(p.short_description||p.specs||'')}</span></td>
+      <td>${p.product_type==='phone'?'📱 Phone':'🏠 Appliance'}</td>
+      <td class="muted">${esc(p.category||'—')}</td>
+      <td>${esc(p.price_display)}</td>
+      <td>${p.in_stock!==false?'<span class="badge b-in">In stock</span>':'<span class="badge b-out">Out</span>'}</td>
+      <td style="white-space:nowrap">
+        <button class="btn ghost small" onclick="openEditor(${p.id})">Edit</button>
+        <button class="btn danger small" onclick="removeProduct(${p.id},'${esc(p.name).replace(/'/g,"\\'")}')">Delete</button>
+      </td></tr>`).join('');
+  $('prodRows').innerHTML=rows||'<tr><td colspan="7" class="muted">No products found.</td></tr>';
+}
+
+function toggleTypeFields(){
+  const isPhone=$('f_type').value==='phone';
+  $('phoneFields').classList.toggle('hidden',!isPhone);
+  $('applianceFields').classList.toggle('hidden',isPhone);
+}
+
+function openEditor(id){
+  $('edErr').textContent='';
+  const p=id?productsCache.find(x=>x.id===id):null;
+  $('edTitle').textContent=p?'Edit product':'Add product';
+  $('f_id').value=p?p.id:'';
+  $('f_type').value=p?p.product_type:'phone';
+  $('f_name').value=p?p.name:'';
+  $('f_price').value=p?p.price_display:'';
+  $('f_category').value=p?(p.category||''):'';
+  $('f_stock').value=p&&p.in_stock===false?'false':'true';
+  $('f_cond').value=p&&p.condition?p.condition:'used';
+  $('f_speckey').value=p?(p.spec_key||''):'';
+  $('f_short').value=p?(p.short_description||''):'';
+  $('f_brand').value=p?(p.brand||''):'';
+  $('f_icon').value=p?(p.icon_emoji||''):'';
+  $('f_specs').value=p?(p.specs||''):'';
+  $('f_badge').value=p?(p.badge||''):'';
+  toggleTypeFields();
+  editor.showModal();
+}
+
+async function saveProduct(){
+  $('edErr').textContent='';
+  const id=$('f_id').value;
+  const body={
+    product_type:$('f_type').value,
+    name:$('f_name').value.trim(),
+    price_display:$('f_price').value.trim(),
+    category:$('f_category').value.trim()||null,
+    in_stock:$('f_stock').value==='true',
+    condition:$('f_cond').value,
+    spec_key:$('f_speckey').value.trim()||null,
+    short_description:$('f_short').value.trim()||null,
+    brand:$('f_brand').value.trim()||null,
+    icon_emoji:$('f_icon').value.trim()||null,
+    specs:$('f_specs').value.trim()||null,
+    badge:$('f_badge').value.trim()||null,
+  };
+  try{
+    if(id)await api('/products/'+id,{method:'PUT',body:JSON.stringify(body)});
+    else await api('/products',{method:'POST',body:JSON.stringify(body)});
+    editor.close();
+    await Promise.all([loadProducts(),loadStats()]);
+  }catch(e){$('edErr').textContent=e.message;}
+}
+
+async function removeProduct(id,name){
+  if(!confirm('Delete "'+name+'"? This cannot be undone.'))return;
+  await api('/products/'+id,{method:'DELETE'});
+  await Promise.all([loadProducts(),loadStats()]);
+}
+
+async function loadOrders(){
+  const orders=await api('/orders');
+  $('orderRows').innerHTML=orders.map(o=>`<tr>
+    <td class="muted">${o.id}</td>
+    <td class="muted" style="white-space:nowrap">${new Date(o.created_at).toLocaleString()}</td>
+    <td>${esc(o.customer_name||'—')}<br><span class="muted" style="font-size:0.75rem">${esc(o.phone||'')}</span></td>
+    <td>${esc(o.product_name||'')}<br><span class="muted" style="font-size:0.78rem">${esc(o.message||'')}</span></td>
+    <td><span class="badge b-${o.status}">${o.status}</span></td>
+    <td><select onchange="setOrderStatus(${o.id},this.value)" style="width:auto;font-size:0.75rem;padding:0.3rem 0.5rem;">
+      ${['new','contacted','completed','cancelled'].map(s=>`<option ${s===o.status?'selected':''}>${s}</option>`).join('')}
+    </select></td></tr>`).join('')||'<tr><td colspan="6" class="muted">No orders yet.</td></tr>';
+}
+async function setOrderStatus(id,status){
+  await api('/orders/'+id,{method:'PATCH',body:JSON.stringify({status})});
+  await Promise.all([loadOrders(),loadStats()]);
+}
+
+if(token)boot();
+</script>
+</body>
+</html>

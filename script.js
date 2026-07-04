@@ -780,9 +780,51 @@ window.addEventListener('DOMContentLoaded', () => {
 
 
 // LIVE BACKEND SYNC
-const VOLTA_API="https://volta-backend-94tq.onrender.com/api";
-function syncLiveProducts(){fetch(VOLTA_API+"/products/").then(r=>{if(!r.ok)throw 0;return r.json();}).then(data=>{if(!Array.isArray(data)||!data.length)return;const lp=[],la=[];data.forEach(p=>{if(p.product_type==="phone"){lp.push({id:p.id,cat:p.category,cond:p.condition,name:p.name,short:p.short_description,price:p.price_display,specKey:p.spec_key});}else{la.push({cat:p.category,icon:p.icon_emoji,name:p.name,brand:p.brand,specs:p.specs,price:p.price_display,badge:p.badge});}});if(lp.length){products.length=0;products.push(...lp);}if(la.length){appliances.length=0;appliances.push(...la);}applyFilters();filterApps("all",document.querySelector("#appFilterBar .fb"));}).catch(()=>{});}
+// Tries the same-origin API first (when the site is served by server/), then
+// falls back to the hosted backend. If neither responds, the built-in catalog
+// above keeps the site fully working as a static page.
+const VOLTA_API_CANDIDATES=["/api","https://volta-backend-94tq.onrender.com/api"];
+let VOLTA_API=null;
+async function syncLiveProducts(){
+  for(const base of VOLTA_API_CANDIDATES){
+    try{
+      const r=await fetch(base+"/products/");
+      if(!r.ok)continue;
+      const data=await r.json();
+      if(!Array.isArray(data)||!data.length)continue;
+      VOLTA_API=base;
+      const lp=[],la=[];
+      data.forEach(p=>{
+        if(p.product_type==="phone"){lp.push({id:p.id,cat:p.category,cond:p.condition,name:p.name,short:p.short_description,price:p.price_display,specKey:p.spec_key});}
+        else{la.push({cat:p.category,icon:p.icon_emoji,name:p.name,brand:p.brand,specs:p.specs,price:p.price_display,badge:p.badge});}
+      });
+      if(lp.length){products.length=0;products.push(...lp);}
+      if(la.length){appliances.length=0;appliances.push(...la);}
+      applyFilters();
+      filterApps("all",document.querySelector("#appFilterBar .fb"));
+      return;
+    }catch(e){/* try next */}
+  }
+}
 window.addEventListener("DOMContentLoaded",syncLiveProducts);
+
+// Record WhatsApp product inquiries as orders in the backend (fire-and-forget).
+document.addEventListener("click",e=>{
+  const a=e.target.closest('a[href*="wa.me"]');
+  if(!a||!VOLTA_API)return;
+  let productName=null;
+  try{
+    const text=new URL(a.href).searchParams.get("text")||"";
+    const m=text.match(/\*(.+?)\*/);
+    if(m)productName=m[1];
+  }catch(err){}
+  if(!productName)return; // only log product-specific inquiries, not generic chat buttons
+  fetch(VOLTA_API+"/orders/",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({product_name:productName,message:"WhatsApp inquiry from website"})
+  }).catch(()=>{});
+});
 
 // ═══════════════════════════════════════════
 //  NEXT-GEN ENHANCEMENTS

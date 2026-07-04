@@ -1,0 +1,564 @@
+{
+  "iPhone 11": {
+    "specs": {
+      "Display": "6.1\" LCD IPS, 1792×828",
+      "Chip": "Apple A13 Bionic",
+      "RAM": "4 GB",
+      "Battery": "3110 mAh",
+      "Camera": "12MP Wide + 12MP Ultra",
+      "Selfie": "12MP TrueDepth",
+      "OS": "iOS 13 → 16",
+      "Charging": "18W Fast",
+      "5G": "No (LTE)",
+      "Weight": "194g"
+    },
+    "caps": [
+      "Face ID",
+      "Dual Camera",
+      "4K Video",
+      "Dolby Atmos",
+      "NFC",
+      "Wi-Fi 6"
+    ]
+  },
+  "iPhone 11 Pro Max": {
+    "specs": {
+      "Display": "6.5\" OLED Super Retina XDR",
+      "Chip": "Apple A13 Bionic",
+      "RAM": "4 GB",
+      "Battery": "3969 mAh",
+      "Camera": "Triple 12MP Wide+Ultra+Tele",
+      "Selfie": "12MP TrueDepth",
+      "OS": "iOS 13 → 16",
+      "Charging": "18W Fast",
+      "5G": "No (LTE)",
+      "Weight": "226g"
+    },
+    "caps": [
+      "Face ID",
+      "Triple Camera",
+      "4K 60fps",
+      "Night Mode",
+      "Portrait Mode",
+      "NFC"
+    ]
+  },
+  "iPhone 12 Pro": {
+    "specs": {
+      "Display": "6.1\" OLED Super Retina XDR",
+      "Chip": "Apple A14 Bionic",
+      "RAM": "6 GB",
+      "Battery": "2815 mAh",
+      "Camera": "Triple 12MP + LiDAR",
+      "Selfie": "12MP TrueDepth",
+      "OS": "iOS 14 → 17",
+      "Charging": "20W MagSafe",
+      "5G": "Yes",
+      "Weight": "189g"
+    },
+    "caps": [
+      "Face ID",
+      "LiDAR Scanner",
+      "5G",
+      "MagSafe",
+      "ProRAW",
+      "Night Mode"
+    ]
+  },
+  "iPhone 12 Pro Max": {
+    "specs": {
+      "Display": "6.7\" OLED Super Retina XDR",
+      "Chip": "Apple A14 Bionic",
+      "RAM": "6 GB",
+      "Battery": "3687 mAh",
+      "Camera": "Triple 12MP + LiDAR",
+      "Selfie": "12MP TrueDepth",
+      "OS": "iOS 14 → 17",
+      "Charging": "20W MagSafe",
+      "5G": "Yes",
+      "Weight": "226g"
+    },
+    "caps": [
+      "Face ID",
+      "LiDAR",
+      "5G",
+      "MagSafe",
+      "ProRAW",
+      "Dolby Vision"
+    ]
+  },
+  "iPhone 13": {
+    "specs": {
+      "Display": "6.1\" OLED Super Retina XDR",
+      "Chip": "Apple A15 Bionic",
+      "RAM": "4 GB",
+      "Battery": "3227 mAh",
+      "Camera": "Dual 12MP Wide+Ultra",
+      "Selfie": "12MP",
+      "OS": "iOS 15 → 17",
+      "Charging": "20W MagSafe",
+      "5G": "Yes",
+      "Weight": "174g"
+    },
+    "caps": [
+      "5G",
+      "MagSafe",
+      "Cinematic Mode",
+      "Face ID",
+      "Night Mode",
+      "Dolby Vision"
+    ]
+  },
+  "iPhone 13 Pro Max": {
+    "specs": {
+      "Display": "6.7\" ProMotion 120Hz OLED",
+      "Chip": "Apple A15 Bionic",
+      "RAM": "6 GB",
+      "Battery": "4352 mAh",
+      "Camera": "Triple 12MP+LiDAR+3x Tele",
+      "Selfie": "12MP TrueDepth",
+      "OS": "iOS 15 → 17",
+      "Charging": "27W MagSafe",
+      "5G": "Yes",
+      "Weight": "240g"
+    },
+    "caps": [
+      "ProMotion 120Hz",
+      "LiDAR",
+      "5G",
+      "MagSafe",
+      "ProRAW",
+      "ProRes Video",
+      "Macro Photo"
+    ]
+  },
+  "Samsung S23": {
+    "specs": {
+      "Display": "6.1\" Dynamic AMOLED 120Hz",
+      "Chip": "Snapdragon 8 Gen 2",
+      "RAM": "8 GB",
+      "Battery": "3900 mAh",
+      "Camera": "Triple 50+12+10MP",
+      "Selfie": "12MP",
+      "OS": "Android 13 → 15",
+      "Charging": "25W",
+      "5G": "Yes",
+      "Weight": "168g"
+    },
+    "caps": [
+      "5G",
+      "120Hz Display",
+      "Night Mode",
+      "100x Zoom",
+      "Wi-Fi 6E",
+      "Bixby AI",
+      "DeX"
+    ]
+  },
+  "Samsung S22": {
+    "specs": {
+      "Display": "6.1\" Dynamic AMOLED 120Hz",
+      "Chip": "Snapdragon 8 Gen 1",
+      "RAM": "8 GB",
+      "Battery": "3700 mAh",
+      "Camera": "Triple 50+12+10MP",
+      "Selfie": "10MP",
+      "OS": "Android 12 → 14",
+      "Charging": "25W",
+      "5G": "Yes",
+      "Weight": "167g"
+    },
+    "caps": [
+      "5G",
+      "120Hz Adaptive",
+      "Expert RAW",
+      "30x Zoom",
+      "Wi-Fi 6E",
+      "NFC Pay"
+    ]
+  },
+  "Samsung S21": {
+    "specs": {
+      "Display": "6.2\" Dynamic AMOLED 120Hz",
+      "Chip": "Snapdragon 888",
+      "RAM": "8 GB",
+      "Battery": "4000 mAh",
+      "Camera": "Triple 64+12+10MP",
+      "Selfie": "10MP",
+      "OS": "Android 11 → 14",
+      "Charging": "25W",
+      "5G": "Yes",
+      "Weight": "169g"
+    },
+    "caps": [
+      "5G",
+      "120Hz",
+      "8K Video",
+      "Director View",
+      "Wi-Fi 6",
+      "NFC",
+      "DeX"
+    ]
+  },
+  "Samsung S21 Ultra": {
+    "specs": {
+      "Display": "6.8\" Dynamic AMOLED 120Hz",
+      "Chip": "Snapdragon 888",
+      "RAM": "12 GB",
+      "Battery": "5000 mAh",
+      "Camera": "Quad 108+12+10+10MP",
+      "Selfie": "40MP",
+      "OS": "Android 11 → 14",
+      "Charging": "45W",
+      "5G": "Yes",
+      "Weight": "229g"
+    },
+    "caps": [
+      "S Pen",
+      "108MP Camera",
+      "100x Zoom",
+      "8K Video",
+      "5G",
+      "Wi-Fi 6E"
+    ]
+  },
+  "Samsung Note 20 Ultra": {
+    "specs": {
+      "Display": "6.9\" Dynamic AMOLED 120Hz",
+      "Chip": "Snapdragon 865+",
+      "RAM": "12 GB",
+      "Battery": "4500 mAh",
+      "Camera": "Triple 108+12+12MP",
+      "Selfie": "10MP",
+      "OS": "Android 10 → 13",
+      "Charging": "45W",
+      "5G": "Yes",
+      "Weight": "208g"
+    },
+    "caps": [
+      "S Pen",
+      "108MP Camera",
+      "100x Zoom",
+      "8K Video",
+      "Wi-Fi 6",
+      "DeX"
+    ]
+  },
+  "Samsung A54": {
+    "specs": {
+      "Display": "6.4\" Super AMOLED 120Hz",
+      "Chip": "Exynos 1380",
+      "RAM": "8 GB",
+      "Battery": "5000 mAh",
+      "Camera": "Triple 50+12+5MP",
+      "Selfie": "32MP",
+      "OS": "Android 13 → 16",
+      "Charging": "25W",
+      "5G": "Yes",
+      "Weight": "202g"
+    },
+    "caps": [
+      "5G",
+      "120Hz AMOLED",
+      "IP67",
+      "OIS Camera",
+      "Wi-Fi 6",
+      "NFC",
+      "4yr Updates"
+    ]
+  },
+  "Samsung A34": {
+    "specs": {
+      "Display": "6.6\" Super AMOLED 120Hz",
+      "Chip": "Dimensity 1080",
+      "RAM": "8 GB",
+      "Battery": "5000 mAh",
+      "Camera": "Triple 48+8+5MP",
+      "Selfie": "13MP",
+      "OS": "Android 13 → 16",
+      "Charging": "25W",
+      "5G": "Yes",
+      "Weight": "199g"
+    },
+    "caps": [
+      "5G",
+      "120Hz AMOLED",
+      "IP67",
+      "OIS Camera",
+      "NFC",
+      "4yr Updates"
+    ]
+  },
+  "Google Pixel 6a": {
+    "specs": {
+      "Display": "6.1\" OLED 60Hz",
+      "Chip": "Google Tensor G1",
+      "RAM": "6 GB",
+      "Battery": "4410 mAh",
+      "Camera": "Dual 12.2+12MP",
+      "Selfie": "8MP",
+      "OS": "Android 12 → 15",
+      "Charging": "18W",
+      "5G": "Yes",
+      "Weight": "178g"
+    },
+    "caps": [
+      "Tensor AI",
+      "Magic Eraser",
+      "Real Tone",
+      "5G",
+      "Live Translate",
+      "Call Screen"
+    ]
+  },
+  "Google Pixel 7": {
+    "specs": {
+      "Display": "6.3\" OLED 90Hz",
+      "Chip": "Google Tensor G2",
+      "RAM": "8 GB",
+      "Battery": "4355 mAh",
+      "Camera": "Dual 50+12MP",
+      "Selfie": "10.8MP",
+      "OS": "Android 13 → 16",
+      "Charging": "20W",
+      "5G": "Yes",
+      "Weight": "197g"
+    },
+    "caps": [
+      "Tensor G2",
+      "Photo Unblur",
+      "Real Tone",
+      "5G",
+      "Call Screen",
+      "Macro Focus"
+    ]
+  },
+  "Google Pixel 7 Pro": {
+    "specs": {
+      "Display": "6.7\" LTPO OLED 120Hz",
+      "Chip": "Google Tensor G2",
+      "RAM": "12 GB",
+      "Battery": "5000 mAh",
+      "Camera": "Triple 50+48+12MP",
+      "Selfie": "10.8MP",
+      "OS": "Android 13 → 16",
+      "Charging": "30W",
+      "5G": "Yes",
+      "Weight": "212g"
+    },
+    "caps": [
+      "5x Optical Zoom",
+      "30x Super Res",
+      "Tensor G2",
+      "Photo Unblur",
+      "5G",
+      "Wi-Fi 6E"
+    ]
+  },
+  "Google Pixel 8": {
+    "specs": {
+      "Display": "6.2\" OLED 120Hz",
+      "Chip": "Google Tensor G3",
+      "RAM": "8 GB",
+      "Battery": "4575 mAh",
+      "Camera": "Dual 50+12MP",
+      "Selfie": "10.5MP",
+      "OS": "Android 14 → 17",
+      "Charging": "27W",
+      "5G": "Yes",
+      "Weight": "187g"
+    },
+    "caps": [
+      "Tensor G3",
+      "Best Take",
+      "Magic Eraser",
+      "Audio Eraser",
+      "5G",
+      "Wi-Fi 6E"
+    ]
+  },
+  "Google Pixel 8 Pro": {
+    "specs": {
+      "Display": "6.7\" LTPO OLED 1-120Hz",
+      "Chip": "Google Tensor G3",
+      "RAM": "12 GB",
+      "Battery": "5050 mAh",
+      "Camera": "Triple 50+48+48MP",
+      "Selfie": "10.5MP",
+      "OS": "Android 14 → 17",
+      "Charging": "30W",
+      "5G": "Yes",
+      "Weight": "213g"
+    },
+    "caps": [
+      "Pro Camera",
+      "Tensor G3",
+      "Best Take",
+      "Video Boost",
+      "5G",
+      "Wi-Fi 6E",
+      "IP68",
+      "7yr Updates"
+    ]
+  },
+  "Google Pixel 9": {
+    "specs": {
+      "Display": "6.3\" OLED 120Hz",
+      "Chip": "Google Tensor G4",
+      "RAM": "12 GB",
+      "Battery": "4700 mAh",
+      "Camera": "Dual 50+48MP",
+      "Selfie": "10.5MP",
+      "OS": "Android 14 → 18",
+      "Charging": "27W",
+      "5G": "Yes",
+      "Weight": "198g"
+    },
+    "caps": [
+      "Tensor G4",
+      "Gemini AI",
+      "Add Me Feature",
+      "Video Boost",
+      "5G",
+      "Wi-Fi 7",
+      "Satellite SOS"
+    ]
+  },
+  "Google Pixel 9 Pro XL": {
+    "specs": {
+      "Display": "6.8\" LTPO OLED 1-120Hz",
+      "Chip": "Google Tensor G4",
+      "RAM": "16 GB",
+      "Battery": "5060 mAh",
+      "Camera": "Triple 50+48+48MP",
+      "Selfie": "42MP",
+      "OS": "Android 14 → 18",
+      "Charging": "37W",
+      "5G": "Yes",
+      "Weight": "221g"
+    },
+    "caps": [
+      "Tensor G4",
+      "Gemini AI",
+      "48MP Tele",
+      "Video Boost",
+      "5G",
+      "Wi-Fi 7",
+      "IP68",
+      "7yr Updates"
+    ]
+  },
+  "Sony Xperia 1 IV": {
+    "specs": {
+      "Display": "6.5\" 4K OLED 120Hz",
+      "Chip": "Snapdragon 8 Gen 1",
+      "RAM": "12 GB",
+      "Battery": "5000 mAh",
+      "Camera": "Triple 12MP Variable Tele",
+      "Selfie": "12MP",
+      "OS": "Android 12 → 14",
+      "Charging": "30W",
+      "5G": "Yes",
+      "Weight": "185g"
+    },
+    "caps": [
+      "4K OLED",
+      "Variable Zoom",
+      "ProCinema",
+      "5G",
+      "3.5mm Jack",
+      "Hi-Res Audio",
+      "IP68"
+    ]
+  },
+  "Sony Xperia 5 IV": {
+    "specs": {
+      "Display": "6.1\" FHD+ OLED 120Hz",
+      "Chip": "Snapdragon 8 Gen 1",
+      "RAM": "8 GB",
+      "Battery": "5000 mAh",
+      "Camera": "Triple 12MP W+U+T",
+      "Selfie": "12MP",
+      "OS": "Android 12 → 14",
+      "Charging": "30W",
+      "5G": "Yes",
+      "Weight": "172g"
+    },
+    "caps": [
+      "Compact Flagship",
+      "120Hz OLED",
+      "5G",
+      "3.5mm Jack",
+      "Hi-Res Audio",
+      "IP68",
+      "Eye AF"
+    ]
+  },
+  "Aquos R7": {
+    "specs": {
+      "Display": "6.6\" Pro IGZO OLED 240Hz",
+      "Chip": "Snapdragon 8 Gen 1",
+      "RAM": "12 GB",
+      "Battery": "5000 mAh",
+      "Camera": "50MP Leica 1-inch",
+      "Selfie": "12.6MP",
+      "OS": "Android 12",
+      "Charging": "65W",
+      "5G": "Yes",
+      "Weight": "207g"
+    },
+    "caps": [
+      "Leica Camera",
+      "1-inch Sensor",
+      "240Hz Display",
+      "5G",
+      "IP68",
+      "Wi-Fi 6E",
+      "15W Wireless"
+    ]
+  },
+  "Redmi 14C": {
+    "specs": {
+      "Display": "6.88\" IPS LCD 90Hz",
+      "Chip": "MediaTek Helio G85",
+      "RAM": "16 GB",
+      "Battery": "5160 mAh",
+      "Camera": "50MP + 0.08MP",
+      "Selfie": "13MP",
+      "OS": "Android 14 + MIUI 14",
+      "Charging": "18W",
+      "5G": "No (LTE)",
+      "Weight": "211g"
+    },
+    "caps": [
+      "90Hz Display",
+      "Large Battery",
+      "AI Camera",
+      "Face Unlock",
+      "Dual SIM",
+      "MicroSD"
+    ]
+  },
+  "Redmi 15C": {
+    "specs": {
+      "Display": "6.88\" IPS LCD 90Hz",
+      "Chip": "Snapdragon 4 Gen 2",
+      "RAM": "16 GB",
+      "Battery": "5160 mAh",
+      "Camera": "50MP AI",
+      "Selfie": "13MP",
+      "OS": "Android 14 + MIUI 14",
+      "Charging": "18W",
+      "5G": "No (LTE)",
+      "Weight": "210g"
+    },
+    "caps": [
+      "Snapdragon 4 Gen 2",
+      "90Hz Display",
+      "50MP AI Camera",
+      "Large Battery",
+      "Dual SIM",
+      "MicroSD"
+    ]
+  }
+}
