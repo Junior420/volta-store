@@ -38,6 +38,22 @@ class DealInput(BaseModel):
     loan: Optional[LoanInput] = None
 
 
+class ComparableInput(BaseModel):
+    name: str
+    sale_price: float = Field(..., gt=0)
+    adjustments: dict[str, float] = Field(default_factory=dict,
+                                          description="Signed fractions of sale price, e.g. {'location': 0.05}")
+    weight: float = Field(1.0, ge=0)
+
+
+class ValuationRequest(BaseModel):
+    stabilized_noi: Optional[float] = Field(None, gt=0)
+    market_cap_rate: Optional[float] = Field(None, gt=0, lt=1)
+    deal: Optional[DealInput] = None
+    comparables: list[ComparableInput] = Field(default_factory=list)
+    approach_weights: Optional[dict[str, float]] = None
+
+
 class YearRowOut(BaseModel):
     year: int
     gross_potential_income: float

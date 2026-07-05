@@ -102,6 +102,12 @@
     <div class="check"><input type="checkbox" id="isCrowdfunded"><label for="isCrowdfunded" style="margin:0">Crowdfunded offering</label></div>
     <button type="submit" id="analyzeBtn">Analyze deal</button>
     <button type="button" class="secondary" id="pdfBtn">Download PDF report</button>
+    <h2 style="margin-top:20px">Saved deals</h2>
+    <select id="savedDeals"><option value="">— select a saved deal —</option></select>
+    <div class="row" style="margin-top:8px">
+      <button type="button" class="secondary" style="margin-top:0" id="saveBtn">Save current</button>
+      <button type="button" class="secondary" style="margin-top:0" id="loadBtn">Load selected</button>
+    </div>
     <div id="error"></div>
   </form>
 
@@ -110,6 +116,9 @@
     <div id="results">
       <div class="card"><h2>Key metrics</h2><div class="tiles" id="tiles"></div></div>
       <div class="card" style="margin-top:16px"><h2>Cash flow projection</h2><div class="scroll"><table id="cfTable"></table></div></div>
+      <div class="card" style="margin-top:16px"><h2>Scenarios</h2><div class="scroll"><table id="scenTable"></table></div></div>
+      <div class="card" style="margin-top:16px"><h2>Sensitivity — IRR drivers</h2><div class="scroll"><table id="tornTable"></table></div>
+        <h2 style="margin-top:14px">IRR: exit cap rate × rent growth</h2><div class="scroll"><table id="gridTable"></table></div></div>
       <div class="card" style="margin-top:16px"><h2>Exit &amp; taxes (draft Tanzania rule pack)</h2><div class="tiles" id="exitTiles"></div></div>
       <div class="card" style="margin-top:16px"><h2>Compliance checklist</h2><ul id="flags"></ul>
         <h2 style="margin-top:14px">Transfer procedure</h2><ul id="steps"></ul>

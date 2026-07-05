@@ -11,10 +11,10 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 
-from . import rulepack
+from . import insights, rulepack, store
 from .analysis import analyze
 from .report import build_pdf
-from .schemas import AnalysisResult, DealInput
+from .schemas import AnalysisResult, DealInput, ValuationRequest
 
 app = FastAPI(title="Ardhi Analytics", version="0.1.0",
               description="Real estate finance & investment analysis — Tanzania-first.")
@@ -41,6 +41,55 @@ def analyze_deal(deal: DealInput) -> AnalysisResult:
         return analyze(deal)
     except (ValueError, FileNotFoundError) as e:
         raise HTTPException(status_code=422, detail=str(e))
+
+
+@app.post("/api/scenarios")
+def scenarios(deal: DealInput) -> dict:
+    try:
+        return insights.scenarios(deal)
+    except (ValueError, FileNotFoundError) as e:
+        raise HTTPException(status_code=422, detail=str(e))
+
+
+@app.post("/api/sensitivity")
+def sensitivity(deal: DealInput) -> dict:
+    try:
+        return insights.sensitivity(deal)
+    except (ValueError, FileNotFoundError) as e:
+        raise HTTPException(status_code=422, detail=str(e))
+
+
+@app.post("/api/valuation")
+def valuation(req: ValuationRequest) -> dict:
+    try:
+        return insights.valuation(req)
+    except (ValueError, FileNotFoundError) as e:
+        raise HTTPException(status_code=422, detail=str(e))
+
+
+@app.post("/api/deals")
+def save_deal(deal: DealInput) -> dict:
+    return store.save_deal(deal.model_dump())
+
+
+@app.get("/api/deals")
+def list_deals() -> list[dict]:
+    return store.list_deals()
+
+
+@app.get("/api/deals/{deal_id}")
+def get_deal(deal_id: str) -> dict:
+    deal = store.get_deal(deal_id)
+    if deal is None:
+        raise HTTPException(status_code=404, detail="deal not found")
+    return deal
+
+
+@app.delete("/api/deals/{deal_id}")
+def delete_deal(deal_id: str) -> dict:
+    if not store.delete_deal(deal_id):
+        raise HTTPException(status_code=404, detail="deal not found")
+    return {"deleted": deal_id}
 
 
 @app.post("/api/report")

@@ -110,18 +110,106 @@ async function post(path) {
   return res;
 }
 
+function renderScenarios(data, hasLoan) {
+  const irrKey = hasLoan ? "levered_irr" : "unlevered_irr";
+  const head = "<tr><th>Scenario</th><th>IRR</th><th>NPV</th><th>Equity multiple</th><th>DSCR (yr 1)</th></tr>";
+  const rows = ["pessimistic", "base", "optimistic"].map((name) => {
+    const s = data.scenarios[name];
+    return `<tr><td>${name[0].toUpperCase() + name.slice(1)}</td><td>${pctFmt(s[irrKey])}</td>` +
+      `<td>${fmt(s.levered_npv)}</td><td>${s.equity_multiple.toFixed(2)}x</td>` +
+      `<td>${s.dscr_year1 != null ? s.dscr_year1.toFixed(2) : "n/a"}</td></tr>`;
+  }).join("");
+  document.getElementById("scenTable").innerHTML = head + rows;
+}
+
+function renderSensitivity(data) {
+  const head = "<tr><th>Driver</th><th>Downside IRR</th><th>Base IRR</th><th>Upside IRR</th><th>Swing</th></tr>";
+  const rows = data.tornado.map((r) =>
+    `<tr><td>${r.param.replace("loan.", "").replaceAll("_", " ")}</td><td>${pctFmt(r.downside)}</td>` +
+    `<td>${pctFmt(r.base)}</td><td>${pctFmt(r.upside)}</td><td>${pctFmt(r.swing)}</td></tr>`).join("");
+  document.getElementById("tornTable").innerHTML = head + rows;
+
+  const g = data.grid;
+  const gHead = "<tr><th>exit cap \\ growth</th>" +
+    g.col_values.map((v) => `<th>${pctFmt(v)}</th>`).join("") + "</tr>";
+  const gRows = g.matrix.map((row, i) =>
+    `<tr><td>${pctFmt(g.row_values[i])}</td>` +
+    row.map((v) => `<td>${pctFmt(v)}</td>`).join("") + "</tr>").join("");
+  document.getElementById("gridTable").innerHTML = gHead + gRows;
+}
+
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   const btn = document.getElementById("analyzeBtn");
   btn.disabled = true;
   try {
-    render(await (await post("/api/analyze")).json());
+    const hasLoan = document.getElementById("useLoan").checked;
+    const [analysis, scen, sens] = await Promise.all([
+      post("/api/analyze").then((r) => r.json()),
+      post("/api/scenarios").then((r) => r.json()),
+      post("/api/sensitivity").then((r) => r.json()),
+    ]);
+    render(analysis);
+    renderScenarios(scen, hasLoan);
+    renderSensitivity(sens);
   } catch (err) {
     errBox.textContent = err.message;
   } finally {
     btn.disabled = false;
   }
 });
+
+async function refreshSavedDeals() {
+  const res = await fetch("/api/deals");
+  const deals = await res.json();
+  const sel = document.getElementById("savedDeals");
+  sel.innerHTML = '<option value="">— select a saved deal —</option>' +
+    deals.map((d) => `<option value="${d.id}">${d.name} (${d.created_at.slice(0, 10)})</option>`).join("");
+}
+
+function fillForm(deal) {
+  const set = (name, v) => { const el = form.elements[name]; if (el && v != null) el.value = v; };
+  const setPct = (name, v) => { if (v != null) set(name, Math.round(v * 10000) / 100); };
+  set("name", deal.name); set("use", deal.use); set("tenure", deal.tenure);
+  set("purchase_price", deal.purchase_price);
+  set("gross_rent_annual", deal.gross_rent_annual);
+  set("operating_expenses_annual", deal.operating_expenses_annual);
+  set("hold_years", deal.hold_years);
+  setPct("vacancy_rate", deal.vacancy_rate); setPct("rent_growth", deal.rent_growth);
+  setPct("expense_growth", deal.expense_growth); setPct("exit_cap_rate", deal.exit_cap_rate);
+  setPct("selling_costs_rate", deal.selling_costs_rate); setPct("discount_rate", deal.discount_rate);
+  document.getElementById("buyerResident").checked = !!deal.buyer_resident;
+  document.getElementById("isCrowdfunded").checked = !!deal.is_crowdfunded;
+  const hasLoan = !!deal.loan;
+  document.getElementById("useLoan").checked = hasLoan;
+  document.getElementById("loanFields").style.display = hasLoan ? "" : "none";
+  if (hasLoan) {
+    setPct("ltv", deal.loan.ltv); setPct("annual_rate", deal.loan.annual_rate);
+    set("term_years", deal.loan.term_years);
+    set("interest_only_years", deal.loan.interest_only_years);
+  }
+}
+
+document.getElementById("saveBtn").addEventListener("click", async () => {
+  errBox.textContent = "";
+  try {
+    await post("/api/deals");
+    await refreshSavedDeals();
+  } catch (err) { errBox.textContent = err.message; }
+});
+
+document.getElementById("loadBtn").addEventListener("click", async () => {
+  errBox.textContent = "";
+  const id = document.getElementById("savedDeals").value;
+  if (!id) return;
+  try {
+    const res = await fetch(`/api/deals/${id}`);
+    if (!res.ok) throw new Error("could not load deal");
+    fillForm(await res.json());
+  } catch (err) { errBox.textContent = err.message; }
+});
+
+refreshSavedDeals().catch(() => {});
 
 document.getElementById("pdfBtn").addEventListener("click", async () => {
   const btn = document.getElementById("pdfBtn");

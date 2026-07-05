@@ -19,7 +19,12 @@ Enter a rental/commercial property deal → one click →
 - Tanzania rule pack v1 (draft): stamp duty, CGT single instalment,
   rent withholding tax, transfer procedure checklist, tenure/foreign-buyer
   compliance flags
-- One-click PDF investment appraisal report
+- One-click PDF investment appraisal report (with scenario & sensitivity sections)
+- Scenario comparison (pessimistic / base / optimistic) and one-way + two-way
+  sensitivity analysis (`/api/scenarios`, `/api/sensitivity`)
+- Valuation engine: income approach (direct cap + DCF) and sales comparison
+  with adjustment grids and cross-approach reconciliation (`/api/valuation`)
+- Saved deals (SQLite, `/api/deals` CRUD)
 - Simple web UI (no build step)
 
 ## Run it
@@ -65,6 +70,6 @@ ardhi/backend/
 
 ## Next (from the blueprint)
 
-Phase 1: valuation engine (income + sales comparison), scenario/sensitivity
-analysis, BOT/NBS data connectors, comparables DB, auth & saved deals,
-report templates for valuers and banks, Swahili localization.
+Remaining Phase 1: BOT/NBS live data connectors, comparables database with
+contribution workflow, auth & multi-user, report templates for valuers and
+banks, Monte Carlo simulation, Swahili localization.

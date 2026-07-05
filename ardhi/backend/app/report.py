@@ -6,6 +6,7 @@ from datetime import date
 
 from fpdf import FPDF
 
+from . import insights
 from .schemas import AnalysisResult
 
 INK = (30, 41, 59)
@@ -114,6 +115,40 @@ def build_pdf(r: AnalysisResult) -> bytes:
     pdf.kv("Net proceeds to equity", _fmt(r.sale.net_sale_proceeds_levered, cur))
     pdf.kv("Est. capital gains tax (single instalment)",
            f"{_fmt(r.disposal_taxes['capital_gains_tax'], cur)} at {_pct(r.disposal_taxes['cgt_rate'])}")
+
+    pdf.section("Scenario Comparison")
+    scen = insights.scenarios(r.deal)["scenarios"]
+    irr_key = "levered_irr" if r.deal.loan else "unlevered_irr"
+    pdf.set_font("Helvetica", "B", 8)
+    for h, w in zip(["Scenario", "IRR", "NPV", "Equity multiple", "DSCR (yr 1)"],
+                    [35, 30, 45, 35, 30]):
+        pdf.cell(w, 6, h, border="B")
+    pdf.ln()
+    pdf.set_font("Helvetica", "", 8)
+    for name in ("pessimistic", "base", "optimistic"):
+        s = scen[name]
+        dscr_txt = f"{s['dscr_year1']:.2f}" if s.get("dscr_year1") else "n/a"
+        for val, w in zip([name.capitalize(), _pct(s.get(irr_key)), _fmt(s["levered_npv"], cur),
+                           f"{s['equity_multiple']:.2f}x", dscr_txt],
+                          [35, 30, 45, 35, 30]):
+            pdf.cell(w, 6, val)
+        pdf.ln()
+
+    pdf.section("Sensitivity (one-way, IRR)")
+    rows = insights.sensitivity(r.deal)["tornado"]
+    pdf.set_font("Helvetica", "B", 8)
+    for h, w in zip(["Driver", "Downside IRR", "Base IRR", "Upside IRR", "Swing"],
+                    [55, 32, 32, 32, 24]):
+        pdf.cell(w, 6, h, border="B")
+    pdf.ln()
+    pdf.set_font("Helvetica", "", 8)
+    for row in rows:
+        label = row["param"].replace("loan.", "").replace("_", " ")
+        for val, w in zip([label, _pct(row["downside"]), _pct(row["base"]),
+                           _pct(row["upside"]), _pct(row["swing"])],
+                          [55, 32, 32, 32, 24]):
+            pdf.cell(w, 6, val)
+        pdf.ln()
 
     pdf.section("Acquisition Costs (Tanzania draft rule pack)")
     for k, v in r.acquisition_costs.items():

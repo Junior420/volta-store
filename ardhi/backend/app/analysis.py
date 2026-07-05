@@ -10,9 +10,9 @@ from . import rulepack
 from .schemas import AnalysisResult, DealInput, SaleOut, YearRowOut
 
 
-def analyze(deal: DealInput) -> AnalysisResult:
+def to_assumptions(deal: DealInput) -> tuple[Assumptions, dict]:
+    """Build engine assumptions (with rule-pack acquisition costs) from a deal."""
     pack = rulepack.load(deal.jurisdiction)
-
     acq = rulepack.acquisition_costs(pack, deal.purchase_price)
 
     loan_terms = None
@@ -27,7 +27,7 @@ def analyze(deal: DealInput) -> AnalysisResult:
             interest_only_years=deal.loan.interest_only_years,
         )
 
-    pf = build_pro_forma(Assumptions(
+    return Assumptions(
         purchase_price=deal.purchase_price,
         acquisition_costs=acq["total"],
         gross_rent_annual=deal.gross_rent_annual,
@@ -41,7 +41,13 @@ def analyze(deal: DealInput) -> AnalysisResult:
         selling_costs_rate=deal.selling_costs_rate,
         discount_rate=deal.discount_rate,
         loan=loan_terms,
-    ))
+    ), acq
+
+
+def analyze(deal: DealInput) -> AnalysisResult:
+    pack = rulepack.load(deal.jurisdiction)
+    assumptions, acq = to_assumptions(deal)
+    pf = build_pro_forma(assumptions)
 
     disposal = rulepack.disposal_taxes(
         pack, pf.sale.gross_sale_price,
