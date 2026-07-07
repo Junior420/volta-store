@@ -56,6 +56,23 @@ dialog::backdrop{background:rgba(0,0,0,0.7);}
 .specrow input{margin:0;}
 .strike{text-decoration:line-through;color:var(--muted);font-size:0.78rem;}
 .disc-badge{background:rgba(224,85,85,0.15);color:var(--red);font-size:0.7rem;font-weight:700;padding:0.1rem 0.45rem;border-radius:8px;margin-left:0.4rem;}
+
+/* Analytics */
+.chart-wrap{position:relative;}
+.bars{display:flex;align-items:flex-end;gap:2px;height:160px;border-bottom:1px solid rgba(255,255,255,0.08);padding-top:1.4rem;}
+.bar{flex:1;background:var(--accent);border-radius:3px 3px 0 0;min-height:2px;cursor:pointer;transition:opacity 0.15s;}
+.bar:hover{opacity:0.7;}
+.bar.zero{background:rgba(255,255,255,0.06);}
+.chart-axis{display:flex;justify-content:space-between;font-size:0.68rem;color:var(--muted);margin-top:0.4rem;}
+.tooltip{position:absolute;background:var(--black);border:1px solid rgba(240,180,0,0.3);border-radius:8px;padding:0.4rem 0.6rem;font-size:0.75rem;pointer-events:none;white-space:nowrap;transform:translate(-50%,-100%);margin-top:-8px;z-index:5;}
+.rank-row{display:flex;align-items:center;gap:0.6rem;margin-bottom:0.5rem;font-size:0.82rem;}
+.rank-label{width:38%;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rank-bar-wrap{flex:1;background:rgba(255,255,255,0.05);border-radius:5px;height:18px;position:relative;overflow:hidden;}
+.rank-bar{background:var(--accent);height:100%;border-radius:5px;}
+.rank-val{width:22%;text-align:right;flex-shrink:0;color:var(--muted);font-size:0.76rem;}
+.analytics-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:1rem;}
+@media (max-width:820px){.analytics-grid{grid-template-columns:1fr;}}
+.view-toggle{font-size:0.72rem;color:var(--accent);cursor:pointer;text-decoration:underline;}
 </style>
 </head>
 <body>
@@ -78,6 +95,7 @@ dialog::backdrop{background:rgba(0,0,0,0.7);}
     <header>
       <div class="logo">⚡ Volt<span>a</span> Admin</div>
       <div style="display:flex;gap:0.6rem;">
+        <button class="btn ghost" onclick="downloadBackup()">⬇ Backup</button>
         <a class="btn ghost" href="/" style="text-decoration:none;">View store</a>
         <button class="btn ghost" onclick="logout()">Log out</button>
       </div>
@@ -88,6 +106,7 @@ dialog::backdrop{background:rgba(0,0,0,0.7);}
     <div class="tabs">
       <button class="tab active" data-tab="products" onclick="showTab('products',this)">📱 Products</button>
       <button class="tab" data-tab="orders" onclick="showTab('orders',this)">🛒 Orders</button>
+      <button class="tab" data-tab="analytics" onclick="showTab('analytics',this)">📊 Analytics</button>
     </div>
 
     <div id="tab-products">
@@ -106,6 +125,37 @@ dialog::backdrop{background:rgba(0,0,0,0.7);}
         <thead><tr><th>#</th><th>Date</th><th>Customer</th><th>Product / Message</th><th>Status</th><th></th></tr></thead>
         <tbody id="orderRows"></tbody>
       </table></div>
+    </div>
+
+    <div id="tab-analytics" class="hidden">
+      <div class="toolbar">
+        <div class="muted" style="font-size:0.8rem;">Revenue counts orders marked <strong>completed</strong>. Confirm inquiries on the Orders tab to see them here.</div>
+        <select id="analyticsDays" style="max-width:160px;" onchange="loadAnalytics()">
+          <option value="7">Last 7 days</option>
+          <option value="14" selected>Last 14 days</option>
+          <option value="30">Last 30 days</option>
+          <option value="90">Last 90 days</option>
+        </select>
+      </div>
+      <div class="stats" id="analyticsStats"></div>
+      <div class="analytics-grid">
+        <div class="card">
+          <div class="toolbar" style="margin-bottom:0.6rem;">
+            <h3 style="font-size:0.9rem;">Revenue by day</h3>
+            <span class="view-toggle" onclick="toggleRevenueView()" id="revenueViewToggle">View as table</span>
+          </div>
+          <div id="revenueChart" class="chart-wrap"></div>
+          <div id="revenueTable" class="hidden tbl-wrap"></div>
+        </div>
+        <div class="card">
+          <h3 style="font-size:0.9rem;margin-bottom:0.8rem;">Top products (by revenue)</h3>
+          <div id="topProducts"><span class="muted" style="font-size:0.8rem;">No completed orders yet.</span></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:1rem;">
+        <h3 style="font-size:0.9rem;margin-bottom:0.8rem;">Top categories (by revenue)</h3>
+        <div id="topCategories"><span class="muted" style="font-size:0.8rem;">No completed orders yet.</span></div>
+      </div>
     </div>
   </div>
 </div>
@@ -217,6 +267,8 @@ function showTab(name,btn){
   btn.classList.add('active');
   $('tab-products').classList.toggle('hidden',name!=='products');
   $('tab-orders').classList.toggle('hidden',name!=='orders');
+  $('tab-analytics').classList.toggle('hidden',name!=='analytics');
+  if(name==='analytics')loadAnalytics();
 }
 
 async function loadProducts(){
@@ -374,6 +426,93 @@ async function loadOrders(){
 async function setOrderStatus(id,status){
   await api('/orders/'+id,{method:'PATCH',body:JSON.stringify({status})});
   await Promise.all([loadOrders(),loadStats()]);
+  if(!$('tab-analytics').classList.contains('hidden'))loadAnalytics();
+}
+
+// ── Analytics ──
+const fmtTZS=n=>'TZS '+Math.round(n||0).toLocaleString('en-US');
+const fmtDateShort=iso=>new Date(iso+'T00:00:00').toLocaleDateString(undefined,{month:'short',day:'numeric'});
+
+async function loadAnalytics(){
+  const days=$('analyticsDays').value;
+  const a=await api('/analytics?days='+days);
+  window._lastAnalytics=a;
+  $('analyticsStats').innerHTML=[
+    [fmtTZS(a.revenue_total),'Total revenue'],
+    [fmtTZS(a.avg_order_value),'Avg order value'],
+    [(a.conversion_rate*100).toFixed(1)+'%','Conversion rate'],
+    [a.orders_completed,'Completed orders'],
+  ].map(([n,l])=>`<div class="stat"><div class="n">${n}</div><div class="l">${l}</div></div>`).join('');
+  renderRevenueChart(a.revenue_by_day);
+  renderRankList('topProducts',a.top_products,p=>p.name);
+  renderRankList('topCategories',a.top_categories,c=>c.category||'Uncategorized');
+  if(revenueViewIsTable)renderRevenueTable(a.revenue_by_day);
+}
+
+function renderRevenueChart(days){
+  const max=Math.max(1,...days.map(d=>d.revenue));
+  const bars=days.map(d=>{
+    const h=Math.max(2,Math.round((d.revenue/max)*150));
+    return `<div class="bar${d.revenue===0?' zero':''}" style="height:${h}px" data-date="${d.date}" data-revenue="${d.revenue}" data-count="${d.count}"></div>`;
+  }).join('');
+  $('revenueChart').innerHTML=`<div class="bars" id="revBars">${bars}</div>
+    <div class="chart-axis"><span>${days[0]?fmtDateShort(days[0].date):''}</span><span>${days.length>1?fmtDateShort(days[days.length-1].date):''}</span></div>`;
+  $('revBars').querySelectorAll('.bar').forEach(bar=>{
+    bar.addEventListener('mouseenter',e=>{
+      const d=bar.dataset;
+      showTooltip(e.currentTarget,`${fmtDateShort(d.date)}<br>${fmtTZS(d.revenue)}${d.count!=='0'?` · ${d.count} sale${d.count!=='1'?'s':''}`:''}`);
+    });
+    bar.addEventListener('mouseleave',hideTooltip);
+  });
+}
+
+let tooltipEl=null;
+function showTooltip(target,html){
+  if(!tooltipEl){tooltipEl=document.createElement('div');tooltipEl.className='tooltip';document.body.appendChild(tooltipEl);}
+  tooltipEl.innerHTML=html;
+  const r=target.getBoundingClientRect();
+  tooltipEl.style.left=(r.left+r.width/2+window.scrollX)+'px';
+  tooltipEl.style.top=(r.top+window.scrollY)+'px';
+  tooltipEl.style.display='block';
+}
+function hideTooltip(){if(tooltipEl)tooltipEl.style.display='none';}
+
+function renderRankList(elId,items,labelFn){
+  const el=$(elId);
+  if(!items||!items.length){el.innerHTML='<span class="muted" style="font-size:0.8rem;">No completed orders yet.</span>';return;}
+  const max=Math.max(...items.map(i=>i.revenue));
+  el.innerHTML=items.map(i=>`<div class="rank-row">
+    <div class="rank-label" title="${esc(labelFn(i))}">${esc(labelFn(i))}</div>
+    <div class="rank-bar-wrap"><div class="rank-bar" style="width:${max?Math.round(i.revenue/max*100):0}%"></div></div>
+    <div class="rank-val">${fmtTZS(i.revenue)}</div>
+  </div>`).join('');
+}
+
+let revenueViewIsTable=false;
+function renderRevenueTable(days){
+  $('revenueTable').innerHTML=`<table><thead><tr><th>Date</th><th>Revenue</th><th>Sales</th></tr></thead><tbody>
+    ${days.map(d=>`<tr><td>${fmtDateShort(d.date)}</td><td>${fmtTZS(d.revenue)}</td><td>${d.count}</td></tr>`).join('')}
+  </tbody></table>`;
+}
+function toggleRevenueView(){
+  revenueViewIsTable=!revenueViewIsTable;
+  $('revenueChart').classList.toggle('hidden',revenueViewIsTable);
+  $('revenueTable').classList.toggle('hidden',!revenueViewIsTable);
+  $('revenueViewToggle').textContent=revenueViewIsTable?'View as chart':'View as table';
+  if(revenueViewIsTable&&window._lastAnalytics)renderRevenueTable(window._lastAnalytics.revenue_by_day);
+}
+
+async function downloadBackup(){
+  try{
+    const r=await fetch(API+'/admin/backup',{headers:{'Authorization':'Bearer '+token}});
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const blob=await r.blob();
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download='volta-backup-'+Date.now()+'.json';
+    document.body.appendChild(a);a.click();a.remove();
+    URL.revokeObjectURL(url);
+  }catch(e){alert('Backup failed: '+e.message);}
 }
 
 if(token)boot();

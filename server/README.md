@@ -37,6 +37,15 @@ ADMIN_PASSWORD=your-secret npm start
   to the storefront, no code changes needed.
 - 🛒 **Orders** — every product-specific "WhatsApp" click on the website is
   logged as an inquiry; track each one through new → contacted → completed.
+  Marking an order **completed** snapshots the product's price as a confirmed
+  sale — that's what feeds the Analytics tab.
+- 📊 **Analytics** — total revenue, average order value, conversion rate,
+  revenue by day (7/14/30/90-day ranges, with a table-view toggle), and top
+  products/categories by revenue. Only counts completed orders, so it stays
+  accurate even as prices change over time.
+- ⬇ **Backup** — the product/order data lives in JSON files on a single disk
+  with no automatic backups; the Backup button in the header downloads a full
+  JSON snapshot on demand. Worth doing periodically until real backups exist.
 
 ## API
 
@@ -63,6 +72,11 @@ Admin (send `Authorization: Bearer <token>` from `POST /api/auth/login`):
 | GET    | `/api/orders/`        | List orders (`?status=` filter)   |
 | PATCH  | `/api/orders/:id`     | Update order status               |
 | GET    | `/api/stats`          | Dashboard counts                  |
+| GET    | `/api/analytics`      | Revenue/conversion stats (`?days=7\|14\|30\|90`) |
+| GET    | `/api/admin/backup`   | Full JSON export of products/specs/orders |
+
+Rate limits: 10 login attempts / 15 min, 20 order submissions / hour, 30
+uploads / hour — all per IP.
 
 Product shape (matches what the frontend's `syncLiveProducts()` expects):
 
