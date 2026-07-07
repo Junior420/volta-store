@@ -2,21 +2,18 @@ services:
   - type: web
     name: volta-backend
     runtime: node
+    plan: free
     rootDir: server
     buildCommand: npm install
     startCommand: npm start
     envVars:
       - key: ADMIN_PASSWORD
         sync: false # set this in the Render dashboard
-      - key: DATA_DIR
-        value: /var/data
+      - key: MONGODB_URI
+        sync: false # from your MongoDB Atlas free (M0) cluster — see server/README.md
       - key: CLICKPESA_CLIENT_ID
         sync: false # from your ClickPesa merchant dashboard, optional until you set up payments
       - key: CLICKPESA_API_KEY
         sync: false
       - key: CLICKPESA_CHECKSUM_KEY
         sync: false # optional, but strongly recommended once configured
-    disk:
-      name: volta-data
-      mountPath: /var/data
-      sizeGB: 1
