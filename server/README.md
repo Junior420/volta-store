@@ -46,6 +46,34 @@ ADMIN_PASSWORD=your-secret npm start
 - ⬇ **Backup** — the product/order data lives in JSON files on a single disk
   with no automatic backups; the Backup button in the header downloads a full
   JSON snapshot on demand. Worth doing periodically until real backups exist.
+- 💳 **Payments** — the sales flow stays WhatsApp-first (customer inquires,
+  you negotiate and confirm there). Two ways to record payment:
+  - **Mark paid via…** dropdown in the Orders tab (cash / mobile money / bank
+    transfer) — for when you collect payment yourself, no external account
+    needed. Marks the order paid and completed immediately.
+  - **Send link** — generates a real [ClickPesa](https://clickpesa.com)
+    checkout link (M-Pesa, Tigo Pesa, Airtel Money, cards) for that order's
+    price, to paste into the WhatsApp chat. Payment status updates
+    automatically via webhook once the customer pays. Optional — only appears
+    functional once ClickPesa is configured (see below).
+
+  The Analytics tab breaks revenue down by payment method either way.
+
+  Requires a ClickPesa merchant account (sign up at clickpesa.com — business
+  KYC, bank account). Once you have one, set these env vars:
+
+  ```bash
+  CLICKPESA_CLIENT_ID=...       # from your ClickPesa dashboard → app settings
+  CLICKPESA_API_KEY=...
+  CLICKPESA_CHECKSUM_KEY=...    # optional but strongly recommended — verifies webhooks are really from ClickPesa
+  PUBLIC_BASE_URL=...           # your public server URL, so ClickPesa can call back /api/payments/webhook
+  ```
+
+  On Render, `PUBLIC_BASE_URL` is auto-detected from Render's own
+  `RENDER_EXTERNAL_URL` — you only need to set the three `CLICKPESA_*` values
+  in the dashboard (already stubbed into `render.yaml`). Until these are set,
+  the "Send link" button returns a clear "not configured" error instead of
+  failing silently.
 
 ## API
 
@@ -74,9 +102,17 @@ Admin (send `Authorization: Bearer <token>` from `POST /api/auth/login`):
 | GET    | `/api/stats`          | Dashboard counts                  |
 | GET    | `/api/analytics`      | Revenue/conversion stats (`?days=7\|14\|30\|90`) |
 | GET    | `/api/admin/backup`   | Full JSON export of products/specs/orders |
+| POST   | `/api/orders/:id/payment-link` | Generate a ClickPesa checkout link for that order |
+| PATCH  | `/api/orders/:id/payment` | Manually mark an order paid (`{method: cash\|mobile_money\|bank_transfer}`) |
+
+Unauthenticated (called by ClickPesa, verified via checksum instead of a login):
+
+| Method | Path                     | Description                     |
+|--------|--------------------------|----------------------------------|
+| POST   | `/api/payments/webhook`  | Payment status updates from ClickPesa |
 
 Rate limits: 10 login attempts / 15 min, 20 order submissions / hour, 30
-uploads / hour — all per IP.
+uploads / hour, 30 payment links / hour, 120 webhook deliveries / hour — all per IP.
 
 Product shape (matches what the frontend's `syncLiveProducts()` expects):
 

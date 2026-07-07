@@ -40,6 +40,10 @@ label{display:block;font-size:0.72rem;color:var(--muted);margin:0.7rem 0 0.25rem
 .b-cancelled{background:rgba(224,85,85,0.15);color:var(--red);}
 .b-out{background:rgba(224,85,85,0.15);color:var(--red);}
 .b-in{background:rgba(37,211,102,0.12);color:var(--green);}
+.b-unpaid{background:rgba(255,255,255,0.06);color:var(--muted);}
+.b-link_sent{background:rgba(66,133,244,0.15);color:#7ab0ff;}
+.b-paid{background:rgba(37,211,102,0.15);color:var(--green);}
+.b-failed{background:rgba(224,85,85,0.15);color:var(--red);}
 #login{max-width:380px;margin:14vh auto;}
 .error{color:var(--red);font-size:0.82rem;margin-top:0.6rem;min-height:1em;}
 .toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.9rem;gap:0.8rem;flex-wrap:wrap;}
@@ -122,7 +126,7 @@ dialog::backdrop{background:rgba(0,0,0,0.7);}
 
     <div id="tab-orders" class="hidden">
       <div class="card tbl-wrap"><table>
-        <thead><tr><th>#</th><th>Date</th><th>Customer</th><th>Product / Message</th><th>Status</th><th></th></tr></thead>
+        <thead><tr><th>#</th><th>Date</th><th>Customer</th><th>Product / Message</th><th>Status</th><th>Payment</th></tr></thead>
         <tbody id="orderRows"></tbody>
       </table></div>
     </div>
@@ -152,9 +156,15 @@ dialog::backdrop{background:rgba(0,0,0,0.7);}
           <div id="topProducts"><span class="muted" style="font-size:0.8rem;">No completed orders yet.</span></div>
         </div>
       </div>
-      <div class="card" style="margin-top:1rem;">
-        <h3 style="font-size:0.9rem;margin-bottom:0.8rem;">Top categories (by revenue)</h3>
-        <div id="topCategories"><span class="muted" style="font-size:0.8rem;">No completed orders yet.</span></div>
+      <div class="analytics-grid" style="margin-top:1rem;">
+        <div class="card">
+          <h3 style="font-size:0.9rem;margin-bottom:0.8rem;">Top categories (by revenue)</h3>
+          <div id="topCategories"><span class="muted" style="font-size:0.8rem;">No completed orders yet.</span></div>
+        </div>
+        <div class="card">
+          <h3 style="font-size:0.9rem;margin-bottom:0.8rem;">Revenue by payment method</h3>
+          <div id="paymentMethods"><span class="muted" style="font-size:0.8rem;">No completed orders yet.</span></div>
+        </div>
       </div>
     </div>
   </div>
@@ -411,17 +421,61 @@ async function removeProduct(id,name){
   await Promise.all([loadProducts(),loadStats()]);
 }
 
+let ordersCache=[];
 async function loadOrders(){
-  const orders=await api('/orders');
-  $('orderRows').innerHTML=orders.map(o=>`<tr>
+  ordersCache=await api('/orders');
+  $('orderRows').innerHTML=ordersCache.map(o=>`<tr>
     <td class="muted">${o.id}</td>
     <td class="muted" style="white-space:nowrap">${new Date(o.created_at).toLocaleString()}</td>
     <td>${esc(o.customer_name||'—')}<br><span class="muted" style="font-size:0.75rem">${esc(o.phone||'')}</span></td>
-    <td>${esc(o.product_name||'')}<br><span class="muted" style="font-size:0.78rem">${esc(o.message||'')}</span></td>
-    <td><span class="badge b-${o.status}">${o.status}</span></td>
-    <td><select onchange="setOrderStatus(${o.id},this.value)" style="width:auto;font-size:0.75rem;padding:0.3rem 0.5rem;">
-      ${['new','contacted','completed','cancelled'].map(s=>`<option ${s===o.status?'selected':''}>${s}</option>`).join('')}
-    </select></td></tr>`).join('')||'<tr><td colspan="6" class="muted">No orders yet.</td></tr>';
+    <td>${esc(o.product_name||'')}<br><span class="muted" style="font-size:0.78rem">${esc(o.message||o.price_display||'')}</span></td>
+    <td><span class="badge b-${o.status}">${o.status}</span>
+      <select onchange="setOrderStatus(${o.id},this.value)" style="width:auto;font-size:0.75rem;padding:0.3rem 0.5rem;margin-top:0.3rem;">
+        ${['new','contacted','completed','cancelled'].map(s=>`<option ${s===o.status?'selected':''}>${s}</option>`).join('')}
+      </select></td>
+    <td>${paymentCellHTML(o)}</td></tr>`).join('')||'<tr><td colspan="6" class="muted">No orders yet.</td></tr>';
+}
+
+const PAYMENT_METHOD_LABEL={cash:'Cash',mobile_money:'Mobile money',bank_transfer:'Bank transfer',clickpesa:'ClickPesa'};
+
+function paymentCellHTML(o){
+  const badge=`<span class="badge b-${o.payment_status||'unpaid'}">${(o.payment_status||'unpaid').replace('_',' ')}</span>`;
+  if(!o.price_amount){
+    return `${badge}<div class="muted" style="font-size:0.7rem;margin-top:0.3rem;">No price (message-only inquiry)</div>`;
+  }
+  if(o.payment_status==='paid'){
+    return `${badge}<div class="muted" style="font-size:0.72rem;margin-top:0.2rem;">via ${PAYMENT_METHOD_LABEL[o.payment_method]||o.payment_method||'—'}</div>`;
+  }
+  const linkRow=o.payment_link?`<div style="margin-top:0.3rem;"><button class="btn ghost small" onclick="copyPaymentLink('${esc(o.payment_link)}')">Copy link</button></div>`:'';
+  return `${badge}
+    <div style="margin-top:0.3rem;"><button class="btn small" onclick="sendPaymentLink(${o.id})">💳 Send link</button></div>${linkRow}
+    <select onchange="if(this.value)markPaid(${o.id},this.value);this.value=''" style="width:auto;font-size:0.72rem;padding:0.25rem 0.4rem;margin-top:0.3rem;">
+      <option value="">Mark paid via…</option>
+      <option value="cash">Cash</option>
+      <option value="mobile_money">Mobile money</option>
+      <option value="bank_transfer">Bank transfer</option>
+    </select>`;
+}
+
+async function sendPaymentLink(id){
+  try{
+    const order=await api('/orders/'+id+'/payment-link',{method:'POST'});
+    await Promise.all([loadOrders(),loadStats()]);
+    if(order.payment_link)copyPaymentLink(order.payment_link);
+  }catch(e){alert('Could not create payment link: '+e.message);}
+}
+
+async function markPaid(id,method){
+  try{
+    await api('/orders/'+id+'/payment',{method:'PATCH',body:JSON.stringify({method})});
+    await Promise.all([loadOrders(),loadStats()]);
+    if(!$('tab-analytics').classList.contains('hidden'))loadAnalytics();
+  }catch(e){alert('Could not mark as paid: '+e.message);}
+}
+
+function copyPaymentLink(link){
+  navigator.clipboard?.writeText(link).catch(()=>{});
+  prompt('Payment link (copied to clipboard) — paste this into WhatsApp:',link);
 }
 async function setOrderStatus(id,status){
   await api('/orders/'+id,{method:'PATCH',body:JSON.stringify({status})});
@@ -446,6 +500,7 @@ async function loadAnalytics(){
   renderRevenueChart(a.revenue_by_day);
   renderRankList('topProducts',a.top_products,p=>p.name);
   renderRankList('topCategories',a.top_categories,c=>c.category||'Uncategorized');
+  renderRankList('paymentMethods',a.payment_methods,m=>PAYMENT_METHOD_LABEL[m.method]||m.method||'Unrecorded');
   if(revenueViewIsTable)renderRevenueTable(a.revenue_by_day);
 }
 
