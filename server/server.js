@@ -8,6 +8,9 @@ const multer = require('multer');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const db = require('./db');
+const clickpesa = require('./clickpesa');
+
+const PUBLIC_BASE_URL = process.env.PUBLIC_BASE_URL || process.env.RENDER_EXTERNAL_URL || '';
 
 const UPLOADS_DIR = path.join(db.DATA_DIR, 'uploads');
 fs.mkdirSync(UPLOADS_DIR, { recursive: true });
@@ -142,6 +145,10 @@ app.post('/api/orders', orderLimiter, (req, res) => {
     price_amount: product ? priceAmount(product.price_display) : 0,
     message: String(message || '').slice(0, 1000) || null,
     status: 'new',
+    payment_status: 'unpaid',
+    payment_link: null,
+    payment_order_reference: null,
+    payment_reference: null,
     created_at: now,
     updated_at: now,
   };
@@ -271,6 +278,65 @@ app.patch('/api/orders/:id', requireAdmin, (req, res) => {
   order.updated_at = new Date().toISOString();
   db.write('orders', orders);
   res.json(order);
+});
+
+// ── Payments (ClickPesa) ─────────────────────────────────────────
+// Orders are confirmed over WhatsApp first (unchanged flow); this just lets
+// the admin generate a real payment link for that order's price once the
+// deal is agreed, instead of collecting cash/mobile money by hand.
+const paymentLinkLimiter = rateLimit({ windowMs: 60 * 60 * 1000, limit: 30, standardHeaders: true, legacyHeaders: false });
+const webhookLimiter = rateLimit({ windowMs: 60 * 60 * 1000, limit: 120, standardHeaders: true, legacyHeaders: false });
+
+app.post('/api/orders/:id/payment-link', requireAdmin, paymentLinkLimiter, async (req, res) => {
+  if (!clickpesa.isConfigured()) {
+    return res.status(503).json({ error: 'ClickPesa is not configured on this server yet (missing CLICKPESA_CLIENT_ID/API_KEY)' });
+  }
+  const orders = db.read('orders');
+  const order = orders.find(o => o.id === Number(req.params.id));
+  if (!order) return res.status(404).json({ error: 'Order not found' });
+  if (!order.price_amount) return res.status(400).json({ error: 'This order has no price to charge (it has no linked product)' });
+  if (!PUBLIC_BASE_URL) return res.status(503).json({ error: 'PUBLIC_BASE_URL is not set — required so ClickPesa can call back this server' });
+
+  const orderReference = `VOLTA${order.id}-${Date.now().toString(36).toUpperCase()}`;
+  try {
+    const { checkoutLink } = await clickpesa.createCheckoutLink({
+      totalPrice: order.price_amount,
+      orderReference,
+      orderCurrency: 'TZS',
+      customerName: order.customer_name || undefined,
+      customerPhone: order.phone ? order.phone.replace(/[^\d]/g, '') : undefined,
+      description: order.product_name || undefined,
+      callbackUrl: `${PUBLIC_BASE_URL}/api/payments/webhook`,
+    });
+    order.payment_status = 'link_sent';
+    order.payment_link = checkoutLink;
+    order.payment_order_reference = orderReference;
+    order.updated_at = new Date().toISOString();
+    db.write('orders', orders);
+    res.status(201).json(order);
+  } catch (err) {
+    res.status(502).json({ error: 'ClickPesa error: ' + err.message });
+  }
+});
+
+// ClickPesa calls this when a payment's status changes. No admin auth here
+// (ClickPesa can't log in) — authenticity comes from the checksum instead.
+app.post('/api/payments/webhook', webhookLimiter, (req, res) => {
+  const payload = (req.body && req.body.data) || req.body || {};
+  if (clickpesa.isConfigured() && process.env.CLICKPESA_CHECKSUM_KEY && !clickpesa.verifyChecksum(payload)) {
+    return res.status(401).json({ error: 'Invalid checksum' });
+  }
+  const orders = db.read('orders');
+  const order = orders.find(o => o.payment_order_reference === payload.orderReference);
+  if (!order) return res.status(404).json({ error: 'No matching order for this orderReference' });
+
+  const statusMap = { SUCCESS: 'paid', FAILED: 'failed', CANCELED: 'failed', PROCESSING: 'link_sent' };
+  order.payment_status = statusMap[payload.status] || order.payment_status;
+  order.payment_reference = payload.paymentReference || order.payment_reference;
+  if (order.payment_status === 'paid' && order.status !== 'completed') order.status = 'completed';
+  order.updated_at = new Date().toISOString();
+  db.write('orders', orders);
+  res.sendStatus(200);
 });
 
 app.get('/api/analytics', requireAdmin, (req, res) => {
