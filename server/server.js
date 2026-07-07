@@ -2,8 +2,13 @@
 // Run: npm install && npm start   (from the server/ directory)
 const express = require('express');
 const crypto = require('crypto');
+const fs = require('fs');
 const path = require('path');
+const multer = require('multer');
 const db = require('./db');
+
+const UPLOADS_DIR = path.join(db.DATA_DIR, 'uploads');
+fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 
 const PORT = process.env.PORT || 3000;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'volta2026';
@@ -114,14 +119,29 @@ app.post('/api/orders', (req, res) => {
 });
 
 // ── Admin API ─────────────────────────────────────────────────────
-app.post('/api/products', requireAdmin, (req, res) => {
-  const b = req.body || {};
-  if (!b.name || !b.product_type || !b.price_display) {
-    return res.status(400).json({ error: 'name, product_type and price_display are required' });
+
+// Detailed specs is a flat string->string map (e.g. {"Display":"6.1\" OLED"}).
+// Capabilities is a short list of feature tags (e.g. ["5G","MagSafe"]).
+function cleanDetailedSpecs(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  const out = {};
+  for (const [key, val] of Object.entries(value)) {
+    const k = String(key).trim().slice(0, 40);
+    const v = String(val).trim().slice(0, 120);
+    if (k && v) out[k] = v;
+    if (Object.keys(out).length >= 30) break;
   }
-  const products = db.read('products');
-  const product = {
-    id: db.nextId(products),
+  return Object.keys(out).length ? out : null;
+}
+
+function cleanCapabilities(value) {
+  if (!Array.isArray(value)) return null;
+  const out = value.map(v => String(v).trim().slice(0, 40)).filter(Boolean).slice(0, 20);
+  return out.length ? out : null;
+}
+
+function buildProductFields(b) {
+  return {
     product_type: b.product_type === 'appliance' ? 'appliance' : 'phone',
     category: b.category || null,
     condition: b.condition || null,
@@ -132,9 +152,22 @@ app.post('/api/products', requireAdmin, (req, res) => {
     icon_emoji: b.icon_emoji || null,
     badge: b.badge || null,
     price_display: String(b.price_display),
+    original_price_display: b.original_price_display ? String(b.original_price_display) : null,
+    image_url: b.image_url || null,
+    detailed_specs: cleanDetailedSpecs(b.detailed_specs),
+    capabilities: cleanCapabilities(b.capabilities),
     spec_key: b.spec_key || null,
     in_stock: b.in_stock !== false,
   };
+}
+
+app.post('/api/products', requireAdmin, (req, res) => {
+  const b = req.body || {};
+  if (!b.name || !b.product_type || !b.price_display) {
+    return res.status(400).json({ error: 'name, product_type and price_display are required' });
+  }
+  const products = db.read('products');
+  const product = { id: db.nextId(products), ...buildProductFields(b) };
   products.push(product);
   db.write('products', products);
   res.status(201).json(product);
@@ -145,9 +178,12 @@ app.put('/api/products/:id', requireAdmin, (req, res) => {
   const idx = products.findIndex(p => p.id === Number(req.params.id));
   if (idx === -1) return res.status(404).json({ error: 'Product not found' });
   const allowed = ['product_type', 'category', 'condition', 'name', 'short_description',
-    'brand', 'specs', 'icon_emoji', 'badge', 'price_display', 'spec_key', 'in_stock'];
+    'brand', 'specs', 'icon_emoji', 'badge', 'price_display', 'original_price_display',
+    'image_url', 'detailed_specs', 'capabilities', 'spec_key', 'in_stock'];
+  const merged = { ...products[idx], ...req.body };
+  const fields = buildProductFields(merged);
   for (const key of allowed) {
-    if (key in (req.body || {})) products[idx][key] = req.body[key];
+    products[idx][key] = fields[key];
   }
   db.write('products', products);
   res.json(products[idx]);
@@ -160,6 +196,30 @@ app.delete('/api/products/:id', requireAdmin, (req, res) => {
   const [removed] = products.splice(idx, 1);
   db.write('products', products);
   res.json(removed);
+});
+
+// ── Product image uploads ────────────────────────────────────────
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => cb(null, UPLOADS_DIR),
+    filename: (req, file, cb) => {
+      const ext = path.extname(file.originalname).toLowerCase().replace(/[^a-z0-9.]/g, '');
+      cb(null, `${Date.now()}-${crypto.randomBytes(6).toString('hex')}${ext}`);
+    },
+  }),
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    if (!/^image\/(png|jpe?g|webp|gif)$/.test(file.mimetype)) return cb(new Error('Only image files are allowed'));
+    cb(null, true);
+  },
+});
+
+app.post('/api/uploads', requireAdmin, (req, res) => {
+  upload.single('image')(req, res, (err) => {
+    if (err) return res.status(400).json({ error: err.message });
+    if (!req.file) return res.status(400).json({ error: 'No image file provided (field name: image)' });
+    res.status(201).json({ url: `/uploads/${req.file.filename}` });
+  });
 });
 
 app.get('/api/orders', requireAdmin, (req, res) => {
@@ -194,6 +254,7 @@ app.get('/api/stats', requireAdmin, (req, res) => {
 });
 
 // ── Static files ──────────────────────────────────────────────────
+app.use('/uploads', express.static(UPLOADS_DIR));
 app.use('/admin', express.static(path.join(__dirname, 'admin')));
 app.use(express.static(path.join(__dirname, '..'), { index: 'index.html' }));
 

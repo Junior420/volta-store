@@ -45,9 +45,17 @@ label{display:block;font-size:0.72rem;color:var(--muted);margin:0.7rem 0 0.25rem
 .toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.9rem;gap:0.8rem;flex-wrap:wrap;}
 .hidden{display:none;}
 .tbl-wrap{overflow-x:auto;}
-dialog{background:var(--gray);color:var(--white);border:1px solid rgba(240,180,0,0.25);border-radius:16px;padding:1.6rem;max-width:520px;width:92%;}
+dialog{background:var(--gray);color:var(--white);border:1px solid rgba(240,180,0,0.25);border-radius:16px;padding:1.6rem;max-width:560px;width:92%;max-height:86vh;overflow-y:auto;}
 dialog::backdrop{background:rgba(0,0,0,0.7);}
 .muted{color:var(--muted);}
+.thumb{width:40px;height:40px;border-radius:8px;object-fit:cover;background:var(--gray2);}
+.thumb-ph{width:40px;height:40px;border-radius:8px;background:var(--gray2);display:flex;align-items:center;justify-content:center;font-size:1.1rem;}
+.imgpick{display:flex;align-items:center;gap:0.8rem;}
+.imgpick .thumb,.imgpick .thumb-ph{width:64px;height:64px;}
+.specrow{display:grid;grid-template-columns:1fr 1fr auto;gap:0.5rem;margin-bottom:0.4rem;align-items:center;}
+.specrow input{margin:0;}
+.strike{text-decoration:line-through;color:var(--muted);font-size:0.78rem;}
+.disc-badge{background:rgba(224,85,85,0.15);color:var(--red);font-size:0.7rem;font-weight:700;padding:0.1rem 0.45rem;border-radius:8px;margin-left:0.4rem;}
 </style>
 </head>
 <body>
@@ -88,7 +96,7 @@ dialog::backdrop{background:rgba(0,0,0,0.7);}
         <button class="btn" onclick="openEditor()">+ Add product</button>
       </div>
       <div class="card tbl-wrap"><table>
-        <thead><tr><th>ID</th><th>Name</th><th>Type</th><th>Category</th><th>Price</th><th>Stock</th><th></th></tr></thead>
+        <thead><tr><th>ID</th><th>Img</th><th>Name</th><th>Type</th><th>Category</th><th>Price</th><th>Stock</th><th></th></tr></thead>
         <tbody id="prodRows"></tbody>
       </table></div>
     </div>
@@ -112,7 +120,22 @@ dialog::backdrop{background:rgba(0,0,0,0.7);}
     <option value="appliance">Appliance</option>
   </select>
   <label>Name *</label><input id="f_name" placeholder="iPhone 13 128GB"/>
-  <label>Price (display) *</label><input id="f_price" placeholder="TZS 790,000"/>
+
+  <label>Product photo</label>
+  <div class="imgpick">
+    <img id="f_imgPreview" class="thumb hidden"/>
+    <div id="f_imgPlaceholder" class="thumb-ph">📷</div>
+    <div style="flex:1">
+      <input type="file" id="f_imageFile" accept="image/png,image/jpeg,image/webp,image/gif" onchange="uploadImage(this)"/>
+      <div class="muted" id="imgStatus" style="font-size:0.72rem;margin-top:0.3rem;">No photo yet — falls back to the built-in graphic on the site.</div>
+    </div>
+  </div>
+  <input type="hidden" id="f_image"/>
+
+  <div class="row">
+    <div><label>Price (display) *</label><input id="f_price" placeholder="TZS 790,000"/></div>
+    <div><label>Original price (optional — shows discount)</label><input id="f_origprice" placeholder="TZS 900,000"/></div>
+  </div>
   <div class="row">
     <div><label>Category</label><input id="f_category" placeholder="iphone / tv / fridge..."/></div>
     <div><label>In stock</label><select id="f_stock"><option value="true">Yes</option><option value="false">No — hidden from site</option></select></div>
@@ -132,6 +155,14 @@ dialog::backdrop{background:rgba(0,0,0,0.7);}
     <label>Specs line</label><input id="f_specs" placeholder="4K UHD · VIDAA OS · Wi-Fi"/>
     <label>Badge</label><input id="f_badge" placeholder="📦 New"/>
   </div>
+
+  <label>Capabilities <span class="muted" style="text-transform:none">(comma-separated tags, e.g. 5G, MagSafe, Face ID)</span></label>
+  <input id="f_caps" placeholder="5G, MagSafe, Face ID, Night Mode"/>
+
+  <label style="margin-top:1rem;">Detailed specs</label>
+  <div id="specRows"></div>
+  <button type="button" class="btn ghost small" onclick="addSpecRow()">+ Add spec row</button>
+
   <div class="error" id="edErr"></div>
   <div style="display:flex;gap:0.6rem;justify-content:flex-end;margin-top:1rem;">
     <button class="btn ghost" onclick="editor.close()">Cancel</button>
@@ -198,22 +229,70 @@ function renderProducts(){
     .filter(p=>!q||[p.name,p.brand,p.category,p.short_description].join(' ').toLowerCase().includes(q))
     .map(p=>`<tr>
       <td class="muted">${p.id}</td>
+      <td>${p.image_url?`<img class="thumb" src="${esc(p.image_url)}"/>`:`<div class="thumb-ph">${esc(p.icon_emoji||'📦')}</div>`}</td>
       <td><strong>${esc(p.name)}</strong><br><span class="muted" style="font-size:0.75rem">${esc(p.short_description||p.specs||'')}</span></td>
       <td>${p.product_type==='phone'?'📱 Phone':'🏠 Appliance'}</td>
       <td class="muted">${esc(p.category||'—')}</td>
-      <td>${esc(p.price_display)}</td>
+      <td>${esc(p.price_display)}${p.original_price_display?`<br><span class="strike">${esc(p.original_price_display)}</span><span class="disc-badge">SALE</span>`:''}</td>
       <td>${p.in_stock!==false?'<span class="badge b-in">In stock</span>':'<span class="badge b-out">Out</span>'}</td>
       <td style="white-space:nowrap">
         <button class="btn ghost small" onclick="openEditor(${p.id})">Edit</button>
         <button class="btn danger small" onclick="removeProduct(${p.id},'${esc(p.name).replace(/'/g,"\\'")}')">Delete</button>
       </td></tr>`).join('');
-  $('prodRows').innerHTML=rows||'<tr><td colspan="7" class="muted">No products found.</td></tr>';
+  $('prodRows').innerHTML=rows||'<tr><td colspan="8" class="muted">No products found.</td></tr>';
 }
 
 function toggleTypeFields(){
   const isPhone=$('f_type').value==='phone';
   $('phoneFields').classList.toggle('hidden',!isPhone);
   $('applianceFields').classList.toggle('hidden',isPhone);
+}
+
+function setImagePreview(url){
+  $('f_image').value=url||'';
+  if(url){
+    $('f_imgPreview').src=url;$('f_imgPreview').classList.remove('hidden');
+    $('f_imgPlaceholder').classList.add('hidden');
+  }else{
+    $('f_imgPreview').classList.add('hidden');
+    $('f_imgPlaceholder').classList.remove('hidden');
+  }
+}
+
+async function uploadImage(input){
+  const file=input.files&&input.files[0];
+  if(!file)return;
+  $('imgStatus').textContent='Uploading...';
+  try{
+    const fd=new FormData();
+    fd.append('image',file);
+    const r=await fetch(API+'/uploads',{method:'POST',headers:token?{'Authorization':'Bearer '+token}:{},body:fd});
+    const data=await r.json().catch(()=>({}));
+    if(!r.ok)throw new Error(data.error||('HTTP '+r.status));
+    setImagePreview(data.url);
+    $('imgStatus').textContent='Uploaded ✓';
+  }catch(e){
+    $('imgStatus').textContent='Upload failed: '+e.message;
+  }
+}
+
+function addSpecRow(key='',value=''){
+  const row=document.createElement('div');
+  row.className='specrow';
+  row.innerHTML=`<input class="spec-k" placeholder="Display" value="${esc(key)}"/>
+    <input class="spec-v" placeholder="6.1&quot; OLED, 120Hz" value="${esc(value)}"/>
+    <button type="button" class="btn danger small" onclick="this.closest('.specrow').remove()">✕</button>`;
+  $('specRows').appendChild(row);
+}
+
+function readSpecRows(){
+  const out={};
+  $('specRows').querySelectorAll('.specrow').forEach(row=>{
+    const k=row.querySelector('.spec-k').value.trim();
+    const v=row.querySelector('.spec-v').value.trim();
+    if(k&&v)out[k]=v;
+  });
+  return out;
 }
 
 function openEditor(id){
@@ -224,6 +303,7 @@ function openEditor(id){
   $('f_type').value=p?p.product_type:'phone';
   $('f_name').value=p?p.name:'';
   $('f_price').value=p?p.price_display:'';
+  $('f_origprice').value=p?(p.original_price_display||''):'';
   $('f_category').value=p?(p.category||''):'';
   $('f_stock').value=p&&p.in_stock===false?'false':'true';
   $('f_cond').value=p&&p.condition?p.condition:'used';
@@ -233,6 +313,12 @@ function openEditor(id){
   $('f_icon').value=p?(p.icon_emoji||''):'';
   $('f_specs').value=p?(p.specs||''):'';
   $('f_badge').value=p?(p.badge||''):'';
+  $('f_caps').value=p&&Array.isArray(p.capabilities)?p.capabilities.join(', '):'';
+  setImagePreview(p?p.image_url:'');
+  $('specRows').innerHTML='';
+  const detailed=p&&p.detailed_specs?p.detailed_specs:{};
+  const entries=Object.entries(detailed);
+  if(entries.length){entries.forEach(([k,v])=>addSpecRow(k,v));}else{addSpecRow();}
   toggleTypeFields();
   editor.showModal();
 }
@@ -240,10 +326,13 @@ function openEditor(id){
 async function saveProduct(){
   $('edErr').textContent='';
   const id=$('f_id').value;
+  const caps=$('f_caps').value.split(',').map(s=>s.trim()).filter(Boolean);
   const body={
     product_type:$('f_type').value,
     name:$('f_name').value.trim(),
     price_display:$('f_price').value.trim(),
+    original_price_display:$('f_origprice').value.trim()||null,
+    image_url:$('f_image').value||null,
     category:$('f_category').value.trim()||null,
     in_stock:$('f_stock').value==='true',
     condition:$('f_cond').value,
@@ -253,6 +342,8 @@ async function saveProduct(){
     icon_emoji:$('f_icon').value.trim()||null,
     specs:$('f_specs').value.trim()||null,
     badge:$('f_badge').value.trim()||null,
+    capabilities:caps.length?caps:null,
+    detailed_specs:readSpecRows(),
   };
   try{
     if(id)await api('/products/'+id,{method:'PUT',body:JSON.stringify(body)});

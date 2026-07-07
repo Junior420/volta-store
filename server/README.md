@@ -30,7 +30,11 @@ ADMIN_PASSWORD=your-secret npm start
 ## Admin panel
 
 - 📱 **Products** — add, edit, delete phones and appliances; mark items out of
-  stock (hidden from the site without deleting them).
+  stock (hidden from the site without deleting them). Each product can carry
+  a real photo (uploaded from the editor), a discount (original + sale price,
+  shown as a strikethrough + "SALE" badge on the site), a per-product detailed
+  spec table (key/value rows), and a list of capability tags — all pushed live
+  to the storefront, no code changes needed.
 - 🛒 **Orders** — every product-specific "WhatsApp" click on the website is
   logged as an inquiry; track each one through new → contacted → completed.
 
@@ -55,6 +59,7 @@ Admin (send `Authorization: Bearer <token>` from `POST /api/auth/login`):
 | POST   | `/api/products/`      | Create product                    |
 | PUT    | `/api/products/:id`   | Update product                    |
 | DELETE | `/api/products/:id`   | Delete product                    |
+| POST   | `/api/uploads`        | Upload a product photo (`multipart/form-data`, field `image`, max 5MB) → `{url}` |
 | GET    | `/api/orders/`        | List orders (`?status=` filter)   |
 | PATCH  | `/api/orders/:id`     | Update order status               |
 | GET    | `/api/stats`          | Dashboard counts                  |
@@ -70,7 +75,11 @@ Product shape (matches what the frontend's `syncLiveProducts()` expects):
   "name": "iPhone 11 64GB",
   "short_description": "Used · Dual SIM · Black",
   "price_display": "TZS 510,000",
-  "spec_key": "iPhone 11",            // phones: links to /api/specs
+  "original_price_display": null,     // set to show a strikethrough discount price
+  "image_url": null,                  // from POST /api/uploads, or any absolute URL
+  "detailed_specs": null,             // {"Display":"6.1\" OLED", ...} shown in the specs modal
+  "capabilities": null,               // ["5G","MagSafe",...] shown as tags
+  "spec_key": "iPhone 11",            // phones: fallback specs if detailed_specs is unset
   "brand": "Hisense",                 // appliances only
   "specs": "4K UHD · VIDAA OS",       // appliances only
   "icon_emoji": "📺",                 // appliances only
