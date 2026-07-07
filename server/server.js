@@ -2,7 +2,6 @@
 // Run: npm install && npm start   (from the server/ directory)
 const express = require('express');
 const crypto = require('crypto');
-const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
 const helmet = require('helmet');
@@ -12,32 +11,25 @@ const clickpesa = require('./clickpesa');
 
 const PUBLIC_BASE_URL = process.env.PUBLIC_BASE_URL || process.env.RENDER_EXTERNAL_URL || '';
 
-const UPLOADS_DIR = path.join(db.DATA_DIR, 'uploads');
-fs.mkdirSync(UPLOADS_DIR, { recursive: true });
-
 const PORT = process.env.PORT || 3000;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'volta2026';
 if (!process.env.ADMIN_PASSWORD) {
   console.warn('⚠️  ADMIN_PASSWORD not set — using the default "volta2026". Set it in production!');
 }
 
-db.ensureSeeded('products', []);
-db.ensureSeeded('specs', {});
-db.ensureSeeded('orders', []);
-
 const app = express();
 
 // Security headers. CSP is left off on purpose: the storefront and admin
 // panel rely on inline onclick handlers throughout, which a real CSP would
 // break; cross-origin-resource-policy is relaxed because the storefront may
-// be hosted separately (e.g. GitHub Pages) from this API + its /uploads.
+// be hosted separately (e.g. GitHub Pages) from this API.
 app.use(helmet({
   contentSecurityPolicy: false,
   crossOriginResourcePolicy: { policy: 'cross-origin' },
   crossOriginEmbedderPolicy: false,
 }));
 
-app.use(express.json({ limit: '1mb' }));
+app.use(express.json({ limit: '2mb' }));
 
 // CORS — the storefront may be hosted elsewhere (e.g. GitHub Pages).
 app.use((req, res, next) => {
@@ -48,7 +40,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// Rate limits on endpoints that are either public or could fill the disk.
+// Rate limits on endpoints that are either public or could be abused.
 const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 10, standardHeaders: true, legacyHeaders: false });
 const orderLimiter = rateLimit({ windowMs: 60 * 60 * 1000, limit: 20, standardHeaders: true, legacyHeaders: false });
 const uploadLimiter = rateLimit({ windowMs: 60 * 60 * 1000, limit: 30, standardHeaders: true, legacyHeaders: false });
@@ -95,8 +87,8 @@ function isAdmin(req) {
   return !!expiry && expiry >= Date.now();
 }
 
-app.get('/api/products', (req, res) => {
-  let items = db.read('products');
+app.get('/api/products', async (req, res) => {
+  let items = await db.read('products');
   if (!(req.query.all && isAdmin(req))) items = items.filter(p => p.in_stock !== false);
   const { type, category, q } = req.query;
   if (type) items = items.filter(p => p.product_type === type);
@@ -109,13 +101,14 @@ app.get('/api/products', (req, res) => {
   res.json(items);
 });
 
-app.get('/api/products/:id', (req, res) => {
-  const item = db.read('products').find(p => p.id === Number(req.params.id));
+app.get('/api/products/:id', async (req, res) => {
+  const products = await db.read('products');
+  const item = products.find(p => p.id === Number(req.params.id));
   if (!item) return res.status(404).json({ error: 'Product not found' });
   res.json(item);
 });
 
-app.get('/api/specs', (req, res) => res.json(db.read('specs')));
+app.get('/api/specs', async (req, res) => res.json(await db.read('specs')));
 
 function priceAmount(priceDisplay) {
   const digits = String(priceDisplay || '').replace(/[^\d]/g, '');
@@ -126,13 +119,14 @@ function priceAmount(priceDisplay) {
 // references a real product we snapshot its price/category so completed
 // orders can be totaled up later in /api/analytics — prices change over
 // time, so the order must keep what it was worth *at the time of inquiry*.
-app.post('/api/orders', orderLimiter, (req, res) => {
+app.post('/api/orders', orderLimiter, async (req, res) => {
   const { customer_name, phone, product_id, product_name, message } = req.body || {};
   if (!product_name && !product_id && !message) {
     return res.status(400).json({ error: 'Provide at least product_id, product_name or message' });
   }
-  const product = product_id != null ? db.read('products').find(p => p.id === Number(product_id)) : null;
-  const orders = db.read('orders');
+  const products = await db.read('products');
+  const product = product_id != null ? products.find(p => p.id === Number(product_id)) : null;
+  const orders = await db.read('orders');
   const now = new Date().toISOString();
   const order = {
     id: db.nextId(orders),
@@ -154,7 +148,7 @@ app.post('/api/orders', orderLimiter, (req, res) => {
     updated_at: now,
   };
   orders.push(order);
-  db.write('orders', orders);
+  await db.write('orders', orders);
   res.status(201).json(order);
 });
 
@@ -201,20 +195,20 @@ function buildProductFields(b) {
   };
 }
 
-app.post('/api/products', requireAdmin, (req, res) => {
+app.post('/api/products', requireAdmin, async (req, res) => {
   const b = req.body || {};
   if (!b.name || !b.product_type || !b.price_display) {
     return res.status(400).json({ error: 'name, product_type and price_display are required' });
   }
-  const products = db.read('products');
+  const products = await db.read('products');
   const product = { id: db.nextId(products), ...buildProductFields(b) };
   products.push(product);
-  db.write('products', products);
+  await db.write('products', products);
   res.status(201).json(product);
 });
 
-app.put('/api/products/:id', requireAdmin, (req, res) => {
-  const products = db.read('products');
+app.put('/api/products/:id', requireAdmin, async (req, res) => {
+  const products = await db.read('products');
   const idx = products.findIndex(p => p.id === Number(req.params.id));
   if (idx === -1) return res.status(404).json({ error: 'Product not found' });
   const allowed = ['product_type', 'category', 'condition', 'name', 'short_description',
@@ -225,29 +219,29 @@ app.put('/api/products/:id', requireAdmin, (req, res) => {
   for (const key of allowed) {
     products[idx][key] = fields[key];
   }
-  db.write('products', products);
+  await db.write('products', products);
   res.json(products[idx]);
 });
 
-app.delete('/api/products/:id', requireAdmin, (req, res) => {
-  const products = db.read('products');
+app.delete('/api/products/:id', requireAdmin, async (req, res) => {
+  const products = await db.read('products');
   const idx = products.findIndex(p => p.id === Number(req.params.id));
   if (idx === -1) return res.status(404).json({ error: 'Product not found' });
   const [removed] = products.splice(idx, 1);
-  db.write('products', products);
+  await db.write('products', products);
   res.json(removed);
 });
 
 // ── Product image uploads ────────────────────────────────────────
+// No persistent disk on the free tier, and MongoDB's free tier doesn't
+// suit file storage either — so images are kept in-memory just long enough
+// to base64-encode them, then stored directly as a data: URL on the
+// product itself. Keeps images alive across restarts/redeploys with zero
+// extra infrastructure, at the cost of a smaller size limit (they ride
+// along in every products list response) and no separate /uploads host.
 const upload = multer({
-  storage: multer.diskStorage({
-    destination: (req, file, cb) => cb(null, UPLOADS_DIR),
-    filename: (req, file, cb) => {
-      const ext = path.extname(file.originalname).toLowerCase().replace(/[^a-z0-9.]/g, '');
-      cb(null, `${Date.now()}-${crypto.randomBytes(6).toString('hex')}${ext}`);
-    },
-  }),
-  limits: { fileSize: 5 * 1024 * 1024 },
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 600 * 1024 },
   fileFilter: (req, file, cb) => {
     if (!/^image\/(png|jpe?g|webp|gif)$/.test(file.mimetype)) return cb(new Error('Only image files are allowed'));
     cb(null, true);
@@ -256,19 +250,23 @@ const upload = multer({
 
 app.post('/api/uploads', requireAdmin, uploadLimiter, (req, res) => {
   upload.single('image')(req, res, (err) => {
-    if (err) return res.status(400).json({ error: err.message });
+    if (err) {
+      const msg = err.code === 'LIMIT_FILE_SIZE' ? 'Image must be under 600KB' : err.message;
+      return res.status(400).json({ error: msg });
+    }
     if (!req.file) return res.status(400).json({ error: 'No image file provided (field name: image)' });
-    res.status(201).json({ url: `/uploads/${req.file.filename}` });
+    const dataUrl = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+    res.status(201).json({ url: dataUrl });
   });
 });
 
-app.get('/api/orders', requireAdmin, (req, res) => {
-  const orders = db.read('orders').slice().reverse(); // newest first
+app.get('/api/orders', requireAdmin, async (req, res) => {
+  const orders = (await db.read('orders')).slice().reverse(); // newest first
   res.json(req.query.status ? orders.filter(o => o.status === req.query.status) : orders);
 });
 
-app.patch('/api/orders/:id', requireAdmin, (req, res) => {
-  const orders = db.read('orders');
+app.patch('/api/orders/:id', requireAdmin, async (req, res) => {
+  const orders = await db.read('orders');
   const order = orders.find(o => o.id === Number(req.params.id));
   if (!order) return res.status(404).json({ error: 'Order not found' });
   const status = req.body && req.body.status;
@@ -277,7 +275,7 @@ app.patch('/api/orders/:id', requireAdmin, (req, res) => {
   }
   order.status = status;
   order.updated_at = new Date().toISOString();
-  db.write('orders', orders);
+  await db.write('orders', orders);
   res.json(order);
 });
 
@@ -292,7 +290,7 @@ app.post('/api/orders/:id/payment-link', requireAdmin, paymentLinkLimiter, async
   if (!clickpesa.isConfigured()) {
     return res.status(503).json({ error: 'ClickPesa is not configured on this server yet (missing CLICKPESA_CLIENT_ID/API_KEY)' });
   }
-  const orders = db.read('orders');
+  const orders = await db.read('orders');
   const order = orders.find(o => o.id === Number(req.params.id));
   if (!order) return res.status(404).json({ error: 'Order not found' });
   if (!order.price_amount) return res.status(400).json({ error: 'This order has no price to charge (it has no linked product)' });
@@ -313,7 +311,7 @@ app.post('/api/orders/:id/payment-link', requireAdmin, paymentLinkLimiter, async
     order.payment_link = checkoutLink;
     order.payment_order_reference = orderReference;
     order.updated_at = new Date().toISOString();
-    db.write('orders', orders);
+    await db.write('orders', orders);
     res.status(201).json(order);
   } catch (err) {
     res.status(502).json({ error: 'ClickPesa error: ' + err.message });
@@ -323,12 +321,12 @@ app.post('/api/orders/:id/payment-link', requireAdmin, paymentLinkLimiter, async
 // For cash / mobile money collected in person or over the phone — no
 // ClickPesa account needed, just a record of how the sale was actually paid.
 const PAYMENT_METHODS = ['cash', 'mobile_money', 'bank_transfer'];
-app.patch('/api/orders/:id/payment', requireAdmin, (req, res) => {
+app.patch('/api/orders/:id/payment', requireAdmin, async (req, res) => {
   const method = req.body && req.body.method;
   if (!PAYMENT_METHODS.includes(method)) {
     return res.status(400).json({ error: `method must be one of: ${PAYMENT_METHODS.join(', ')}` });
   }
-  const orders = db.read('orders');
+  const orders = await db.read('orders');
   const order = orders.find(o => o.id === Number(req.params.id));
   if (!order) return res.status(404).json({ error: 'Order not found' });
 
@@ -336,18 +334,18 @@ app.patch('/api/orders/:id/payment', requireAdmin, (req, res) => {
   order.payment_method = method;
   if (order.status !== 'completed') order.status = 'completed';
   order.updated_at = new Date().toISOString();
-  db.write('orders', orders);
+  await db.write('orders', orders);
   res.json(order);
 });
 
 // ClickPesa calls this when a payment's status changes. No admin auth here
 // (ClickPesa can't log in) — authenticity comes from the checksum instead.
-app.post('/api/payments/webhook', webhookLimiter, (req, res) => {
+app.post('/api/payments/webhook', webhookLimiter, async (req, res) => {
   const payload = (req.body && req.body.data) || req.body || {};
   if (clickpesa.isConfigured() && process.env.CLICKPESA_CHECKSUM_KEY && !clickpesa.verifyChecksum(payload)) {
     return res.status(401).json({ error: 'Invalid checksum' });
   }
-  const orders = db.read('orders');
+  const orders = await db.read('orders');
   const order = orders.find(o => o.payment_order_reference === payload.orderReference);
   if (!order) return res.status(404).json({ error: 'No matching order for this orderReference' });
 
@@ -359,13 +357,13 @@ app.post('/api/payments/webhook', webhookLimiter, (req, res) => {
     if (order.status !== 'completed') order.status = 'completed';
   }
   order.updated_at = new Date().toISOString();
-  db.write('orders', orders);
+  await db.write('orders', orders);
   res.sendStatus(200);
 });
 
-app.get('/api/analytics', requireAdmin, (req, res) => {
+app.get('/api/analytics', requireAdmin, async (req, res) => {
   const days = Math.min(90, Math.max(7, Number(req.query.days) || 14));
-  const orders = db.read('orders');
+  const orders = await db.read('orders');
   const completed = orders.filter(o => o.status === 'completed');
 
   const revenueTotal = completed.reduce((sum, o) => sum + (o.price_amount || 0), 0);
@@ -418,9 +416,9 @@ app.get('/api/analytics', requireAdmin, (req, res) => {
   });
 });
 
-app.get('/api/stats', requireAdmin, (req, res) => {
-  const products = db.read('products');
-  const orders = db.read('orders');
+app.get('/api/stats', requireAdmin, async (req, res) => {
+  const products = await db.read('products');
+  const orders = await db.read('orders');
   res.json({
     products_total: products.length,
     products_in_stock: products.filter(p => p.in_stock !== false).length,
@@ -431,27 +429,37 @@ app.get('/api/stats', requireAdmin, (req, res) => {
   });
 });
 
-// The JSON database lives on a single disk with no automatic backups —
-// this gives the admin an on-demand export they can save off-platform.
-app.get('/api/admin/backup', requireAdmin, (req, res) => {
+// MongoDB Atlas free tier includes its own backups, but this gives the
+// admin an on-demand export they can save off-platform too.
+app.get('/api/admin/backup', requireAdmin, async (req, res) => {
   const backup = {
     exported_at: new Date().toISOString(),
-    products: db.read('products'),
-    specs: db.read('specs'),
-    orders: db.read('orders'),
+    products: await db.read('products'),
+    specs: await db.read('specs'),
+    orders: await db.read('orders'),
   };
   res.set('Content-Disposition', `attachment; filename="volta-backup-${Date.now()}.json"`);
   res.json(backup);
 });
 
 // ── Static files ──────────────────────────────────────────────────
-app.use('/uploads', express.static(UPLOADS_DIR));
 app.use('/admin', express.static(path.join(__dirname, 'admin')));
 app.use(express.static(path.join(__dirname, '..'), { index: 'index.html' }));
 
 app.use('/api', (req, res) => res.status(404).json({ error: 'Not found' }));
 
-app.listen(PORT, () => {
-  console.log(`⚡ Volta backend running on http://localhost:${PORT}`);
-  console.log(`   Storefront: http://localhost:${PORT}/  ·  Admin: http://localhost:${PORT}/admin`);
+async function start() {
+  await db.ensureSeeded('products', []);
+  await db.ensureSeeded('specs', {});
+  await db.ensureSeeded('orders', []);
+
+  app.listen(PORT, () => {
+    console.log(`⚡ Volta backend running on http://localhost:${PORT}`);
+    console.log(`   Storefront: http://localhost:${PORT}/  ·  Admin: http://localhost:${PORT}/admin`);
+  });
+}
+
+start().catch(err => {
+  console.error('Failed to start:', err);
+  process.exit(1);
 });

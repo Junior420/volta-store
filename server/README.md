@@ -2,14 +2,19 @@
 
 Node.js/Express backend for the Volta storefront. It serves the website, a
 products API, order capture, and an admin panel — with all data stored in
-simple JSON files (no database server needed).
+MongoDB (a free Atlas cluster works fine, no paid hosting required).
 
 ## Quick start
+
+Needs a MongoDB connection string — see **Database setup** below for a real
+Atlas cluster, or for quick local development without an Atlas account:
 
 ```bash
 cd server
 npm install
-npm start
+npm run dev:db        # starts a throwaway local MongoDB, prints a connection string
+# in another terminal:
+MONGODB_URI="mongodb://127.0.0.1:27117/volta" npm start
 ```
 
 Then open:
@@ -17,15 +22,29 @@ Then open:
 - **Storefront:** http://localhost:3000/
 - **Admin panel:** http://localhost:3000/admin — default password `volta2026`
 
-On first boot the server seeds itself with the full catalog (87 products +
-25 spec sheets) extracted from the website. After that, everything is managed
-from the admin panel and stored in `server/data/` (git-ignored).
+On first boot the server seeds the database with the full catalog (87
+products + 25 spec sheets) extracted from the website. After that, everything
+is managed from the admin panel.
 
 Set a real admin password in production:
 
 ```bash
-ADMIN_PASSWORD=your-secret npm start
+ADMIN_PASSWORD=your-secret MONGODB_URI="..." npm start
 ```
+
+## Database setup (MongoDB Atlas, free)
+
+1. Sign up at [mongodb.com/cloud/atlas/register](https://www.mongodb.com/cloud/atlas/register) — no credit card required
+2. Create a cluster: choose the **M0 Free** tier, any region close to you
+3. **Database Access** (left sidebar) → **Add New Database User** → username/password auth, save the password somewhere safe
+4. **Network Access** (left sidebar) → **Add IP Address** → **Allow Access from Anywhere** (`0.0.0.0/0`) — needed since Render's outbound IP isn't fixed on the free plan
+5. Back on the cluster page → **Connect** → **Drivers** → copy the connection string, looks like:
+   ```
+   mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/?retryWrites=true&w=majority
+   ```
+6. Replace `<username>`/`<password>` with the values from step 3 — that whole string is your `MONGODB_URI`
+
+No disk, no separate database server to run, and it survives every restart/redeploy.
 
 ## Admin panel
 
@@ -43,9 +62,9 @@ ADMIN_PASSWORD=your-secret npm start
   revenue by day (7/14/30/90-day ranges, with a table-view toggle), and top
   products/categories by revenue. Only counts completed orders, so it stays
   accurate even as prices change over time.
-- ⬇ **Backup** — the product/order data lives in JSON files on a single disk
-  with no automatic backups; the Backup button in the header downloads a full
-  JSON snapshot on demand. Worth doing periodically until real backups exist.
+- ⬇ **Backup** — MongoDB Atlas keeps its own backups, but the Backup button in
+  the header also downloads a full JSON snapshot on demand, for an extra
+  off-platform copy.
 - 💳 **Payments** — the sales flow stays WhatsApp-first (customer inquires,
   you negotiate and confirm there). Two ways to record payment:
   - **Mark paid via…** dropdown in the Orders tab (cash / mobile money / bank
@@ -96,7 +115,7 @@ Admin (send `Authorization: Bearer <token>` from `POST /api/auth/login`):
 | POST   | `/api/products/`      | Create product                    |
 | PUT    | `/api/products/:id`   | Update product                    |
 | DELETE | `/api/products/:id`   | Delete product                    |
-| POST   | `/api/uploads`        | Upload a product photo (`multipart/form-data`, field `image`, max 5MB) → `{url}` |
+| POST   | `/api/uploads`        | Upload a product photo (`multipart/form-data`, field `image`, max 600KB) → `{url}` (a `data:` URL, stored directly on the product — no file storage needed) |
 | GET    | `/api/orders/`        | List orders (`?status=` filter)   |
 | PATCH  | `/api/orders/:id`     | Update order status               |
 | GET    | `/api/stats`          | Dashboard counts                  |
@@ -126,7 +145,7 @@ Product shape (matches what the frontend's `syncLiveProducts()` expects):
   "short_description": "Used · Dual SIM · Black",
   "price_display": "TZS 510,000",
   "original_price_display": null,     // set to show a strikethrough discount price
-  "image_url": null,                  // from POST /api/uploads, or any absolute URL
+  "image_url": null,                  // a data: URL from POST /api/uploads, or any absolute URL
   "detailed_specs": null,             // {"Display":"6.1\" OLED", ...} shown in the specs modal
   "capabilities": null,               // ["5G","MagSafe",...] shown as tags
   "spec_key": "iPhone 11",            // phones: fallback specs if detailed_specs is unset
@@ -145,13 +164,22 @@ by this server), then falls back to the hosted backend URL in
 `VOLTA_API_CANDIDATES`. If no backend responds, the site still works using its
 built-in catalog — so the GitHub Pages static deployment never breaks.
 
-## Deploying (Render)
+## Deploying (Render, free tier)
 
-The repo includes `render.yaml` — create a new **Blueprint** on
-[render.com](https://render.com), point it at this repo, and set
-`ADMIN_PASSWORD` in the dashboard. The persistent disk keeps your products and
-orders across deploys. After deploying, update the URL in
-`VOLTA_API_CANDIDATES` in `script.js` if it differs from the current one.
+The repo includes `render.yaml`, set to Render's **Free** instance type — no
+payment method needed, since storage now lives in MongoDB Atlas instead of a
+paid persistent disk.
+
+1. Set up MongoDB Atlas first (see **Database setup** above) and have your
+   `MONGODB_URI` ready
+2. Create a new **Blueprint** on [render.com](https://render.com), point it
+   at this repo
+3. Fill in the env vars it asks for: `ADMIN_PASSWORD` (a real one) and
+   `MONGODB_URI` (from step 1) — leave `CLICKPESA_*` blank for now
+4. Deploy. First build takes a few minutes
+
+After deploying, update the URL in `VOLTA_API_CANDIDATES` in `script.js` if
+it differs from the current one.
 
 Any other Node host works the same way: `cd server && npm install && npm start`
-(set `PORT`, `ADMIN_PASSWORD`, and point `DATA_DIR` at persistent storage).
+(set `PORT`, `ADMIN_PASSWORD`, `MONGODB_URI`).
