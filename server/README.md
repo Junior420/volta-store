@@ -47,12 +47,17 @@ ADMIN_PASSWORD=your-secret npm start
   with no automatic backups; the Backup button in the header downloads a full
   JSON snapshot on demand. Worth doing periodically until real backups exist.
 - 💳 **Payments** — the sales flow stays WhatsApp-first (customer inquires,
-  you negotiate and confirm there). Once you've agreed a deal, click
-  **Send link** in the Orders tab to generate a real
-  [ClickPesa](https://clickpesa.com) checkout link (M-Pesa, Tigo Pesa, Airtel
-  Money, cards) for that order's price, and paste it into the WhatsApp chat.
-  The order's payment status updates automatically via webhook once the
-  customer pays, and a successful payment auto-marks the order completed.
+  you negotiate and confirm there). Two ways to record payment:
+  - **Mark paid via…** dropdown in the Orders tab (cash / mobile money / bank
+    transfer) — for when you collect payment yourself, no external account
+    needed. Marks the order paid and completed immediately.
+  - **Send link** — generates a real [ClickPesa](https://clickpesa.com)
+    checkout link (M-Pesa, Tigo Pesa, Airtel Money, cards) for that order's
+    price, to paste into the WhatsApp chat. Payment status updates
+    automatically via webhook once the customer pays. Optional — only appears
+    functional once ClickPesa is configured (see below).
+
+  The Analytics tab breaks revenue down by payment method either way.
 
   Requires a ClickPesa merchant account (sign up at clickpesa.com — business
   KYC, bank account). Once you have one, set these env vars:
@@ -98,6 +103,7 @@ Admin (send `Authorization: Bearer <token>` from `POST /api/auth/login`):
 | GET    | `/api/analytics`      | Revenue/conversion stats (`?days=7\|14\|30\|90`) |
 | GET    | `/api/admin/backup`   | Full JSON export of products/specs/orders |
 | POST   | `/api/orders/:id/payment-link` | Generate a ClickPesa checkout link for that order |
+| PATCH  | `/api/orders/:id/payment` | Manually mark an order paid (`{method: cash\|mobile_money\|bank_transfer}`) |
 
 Unauthenticated (called by ClickPesa, verified via checksum instead of a login):
 

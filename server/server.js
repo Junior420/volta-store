@@ -146,6 +146,7 @@ app.post('/api/orders', orderLimiter, (req, res) => {
     message: String(message || '').slice(0, 1000) || null,
     status: 'new',
     payment_status: 'unpaid',
+    payment_method: null,
     payment_link: null,
     payment_order_reference: null,
     payment_reference: null,
@@ -319,6 +320,26 @@ app.post('/api/orders/:id/payment-link', requireAdmin, paymentLinkLimiter, async
   }
 });
 
+// For cash / mobile money collected in person or over the phone — no
+// ClickPesa account needed, just a record of how the sale was actually paid.
+const PAYMENT_METHODS = ['cash', 'mobile_money', 'bank_transfer'];
+app.patch('/api/orders/:id/payment', requireAdmin, (req, res) => {
+  const method = req.body && req.body.method;
+  if (!PAYMENT_METHODS.includes(method)) {
+    return res.status(400).json({ error: `method must be one of: ${PAYMENT_METHODS.join(', ')}` });
+  }
+  const orders = db.read('orders');
+  const order = orders.find(o => o.id === Number(req.params.id));
+  if (!order) return res.status(404).json({ error: 'Order not found' });
+
+  order.payment_status = 'paid';
+  order.payment_method = method;
+  if (order.status !== 'completed') order.status = 'completed';
+  order.updated_at = new Date().toISOString();
+  db.write('orders', orders);
+  res.json(order);
+});
+
 // ClickPesa calls this when a payment's status changes. No admin auth here
 // (ClickPesa can't log in) — authenticity comes from the checksum instead.
 app.post('/api/payments/webhook', webhookLimiter, (req, res) => {
@@ -333,7 +354,10 @@ app.post('/api/payments/webhook', webhookLimiter, (req, res) => {
   const statusMap = { SUCCESS: 'paid', FAILED: 'failed', CANCELED: 'failed', PROCESSING: 'link_sent' };
   order.payment_status = statusMap[payload.status] || order.payment_status;
   order.payment_reference = payload.paymentReference || order.payment_reference;
-  if (order.payment_status === 'paid' && order.status !== 'completed') order.status = 'completed';
+  if (order.payment_status === 'paid') {
+    order.payment_method = 'clickpesa';
+    if (order.status !== 'completed') order.status = 'completed';
+  }
   order.updated_at = new Date().toISOString();
   db.write('orders', orders);
   res.sendStatus(200);
@@ -390,6 +414,7 @@ app.get('/api/analytics', requireAdmin, (req, res) => {
     revenue_by_day: [...buckets.values()],
     top_products: topBy(o => o.product_name).map(g => ({ name: g.key, revenue: g.revenue, count: g.count })),
     top_categories: topBy(o => o.category).map(g => ({ category: g.key, revenue: g.revenue, count: g.count })),
+    payment_methods: topBy(o => o.payment_method).map(g => ({ method: g.key, revenue: g.revenue, count: g.count })),
   });
 });
 
