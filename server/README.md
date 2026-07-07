@@ -30,9 +30,22 @@ ADMIN_PASSWORD=your-secret npm start
 ## Admin panel
 
 - 📱 **Products** — add, edit, delete phones and appliances; mark items out of
-  stock (hidden from the site without deleting them).
+  stock (hidden from the site without deleting them). Each product can carry
+  a real photo (uploaded from the editor), a discount (original + sale price,
+  shown as a strikethrough + "SALE" badge on the site), a per-product detailed
+  spec table (key/value rows), and a list of capability tags — all pushed live
+  to the storefront, no code changes needed.
 - 🛒 **Orders** — every product-specific "WhatsApp" click on the website is
   logged as an inquiry; track each one through new → contacted → completed.
+  Marking an order **completed** snapshots the product's price as a confirmed
+  sale — that's what feeds the Analytics tab.
+- 📊 **Analytics** — total revenue, average order value, conversion rate,
+  revenue by day (7/14/30/90-day ranges, with a table-view toggle), and top
+  products/categories by revenue. Only counts completed orders, so it stays
+  accurate even as prices change over time.
+- ⬇ **Backup** — the product/order data lives in JSON files on a single disk
+  with no automatic backups; the Backup button in the header downloads a full
+  JSON snapshot on demand. Worth doing periodically until real backups exist.
 
 ## API
 
@@ -55,9 +68,15 @@ Admin (send `Authorization: Bearer <token>` from `POST /api/auth/login`):
 | POST   | `/api/products/`      | Create product                    |
 | PUT    | `/api/products/:id`   | Update product                    |
 | DELETE | `/api/products/:id`   | Delete product                    |
+| POST   | `/api/uploads`        | Upload a product photo (`multipart/form-data`, field `image`, max 5MB) → `{url}` |
 | GET    | `/api/orders/`        | List orders (`?status=` filter)   |
 | PATCH  | `/api/orders/:id`     | Update order status               |
 | GET    | `/api/stats`          | Dashboard counts                  |
+| GET    | `/api/analytics`      | Revenue/conversion stats (`?days=7\|14\|30\|90`) |
+| GET    | `/api/admin/backup`   | Full JSON export of products/specs/orders |
+
+Rate limits: 10 login attempts / 15 min, 20 order submissions / hour, 30
+uploads / hour — all per IP.
 
 Product shape (matches what the frontend's `syncLiveProducts()` expects):
 
@@ -70,7 +89,11 @@ Product shape (matches what the frontend's `syncLiveProducts()` expects):
   "name": "iPhone 11 64GB",
   "short_description": "Used · Dual SIM · Black",
   "price_display": "TZS 510,000",
-  "spec_key": "iPhone 11",            // phones: links to /api/specs
+  "original_price_display": null,     // set to show a strikethrough discount price
+  "image_url": null,                  // from POST /api/uploads, or any absolute URL
+  "detailed_specs": null,             // {"Display":"6.1\" OLED", ...} shown in the specs modal
+  "capabilities": null,               // ["5G","MagSafe",...] shown as tags
+  "spec_key": "iPhone 11",            // phones: fallback specs if detailed_specs is unset
   "brand": "Hisense",                 // appliances only
   "specs": "4K UHD · VIDAA OS",       // appliances only
   "icon_emoji": "📺",                 // appliances only
