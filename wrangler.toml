@@ -3,15 +3,14 @@ compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = "."
 
-# Bindings below are used by `wrangler pages dev` for local development.
-# For the deployed (dashboard git-connected) Pages project, add the same
-# three bindings under Settings → Functions in the Cloudflare dashboard —
-# see CLOUDFLARE_DEPLOY.md for exact steps.
+# These bindings apply automatically on `wrangler pages deploy`. The IDs are
+# not secrets — the API token that grants access to them is what's sensitive,
+# and that lives outside the repo.
 
 [[d1_databases]]
 binding = "DB"
-database_name = "volta"
-database_id = "local"
+database_name = "volta-store-backend"
+database_id = "2663ab71-1a83-4d15-b51f-0c0449832bb9"
 
 [[r2_buckets]]
 binding = "UPLOADS"
@@ -19,4 +18,4 @@ bucket_name = "volta-uploads"
 
 [[kv_namespaces]]
 binding = "SESSIONS"
-id = "local"
+id = "4a80d49e84814b3e98f47835be8f03fb"

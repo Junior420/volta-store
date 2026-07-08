@@ -798,10 +798,11 @@ window.addEventListener('DOMContentLoaded', () => {
 
 
 // LIVE BACKEND SYNC
-// Tries the same-origin API first (when the site is served by server/), then
-// falls back to the hosted backend. If neither responds, the built-in catalog
-// above keeps the site fully working as a static page.
-const VOLTA_API_CANDIDATES=["/api","https://volta-backend-94tq.onrender.com/api"];
+// Tries the same-origin API first (when the site is served by the backend
+// itself, e.g. on Cloudflare Pages), then falls back to the hosted backend
+// (for the GitHub Pages copy of the storefront). If neither responds, the
+// built-in catalog above keeps the site fully working as a static page.
+const VOLTA_API_CANDIDATES=["/api","https://volta-store.pages.dev/api"];
 let VOLTA_API=null;
 async function syncLiveProducts(){
   for(const base of VOLTA_API_CANDIDATES){
