@@ -831,3 +831,19 @@ nav.scrolled{padding-top:0.7rem;padding-bottom:0.7rem;background:rgba(12,13,17,0
   50%{box-shadow:0 0 30px rgba(255,220,50,1),0 0 60px rgba(240,180,0,0.8),0 0 120px rgba(240,180,0,0.4),inset 0 0 30px rgba(240,180,0,0.3);}
 }
 @keyframes burstGlow{0%,100%{opacity:0.5;transform:scale(1);}50%{opacity:1;transform:scale(1.3);}}
+
+/* ── Mobile wordmark fix ──
+   On phones the 5 letter cards sit only a few px apart, so the desktop
+   float animation (±6° 3D rotations, -16px bobbing, staggered per letter)
+   makes them visually collide and clip into each other's glow. Keep a
+   gentle bob on small screens, drop the rotations, and pull the lightning
+   ring's halo in so it stops swallowing the neighbouring letters. */
+@media(max-width:640px){
+  .v3d-letter{animation-name:floatBlockCalm;}
+  #volta3d{gap:8px!important;}
+  .v3d-O > div{box-shadow:0 0 14px rgba(240,180,0,0.7),inset 0 0 10px rgba(240,180,0,0.15)!important;animation:none!important;}
+}
+@keyframes floatBlockCalm{
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-6px);}
+}
