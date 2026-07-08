@@ -802,7 +802,10 @@ window.addEventListener('DOMContentLoaded', () => {
 // itself, e.g. on Cloudflare Pages), then falls back to the hosted backend
 // (for the GitHub Pages copy of the storefront). If neither responds, the
 // built-in catalog above keeps the site fully working as a static page.
-const VOLTA_API_CANDIDATES=["/api","https://volta-store.pages.dev/api"];
+// Two hosted fallbacks on different domains: some ISPs' DNS filters block
+// *.pages.dev, so the workers.dev mirror (same app, same database) covers
+// visitors on those networks.
+const VOLTA_API_CANDIDATES=["/api","https://volta-store.pages.dev/api","https://volta.bulemoerick.workers.dev/api"];
 let VOLTA_API=null;
 async function syncLiveProducts(){
   for(const base of VOLTA_API_CANDIDATES){

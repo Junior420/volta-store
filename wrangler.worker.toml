@@ -1,0 +1,26 @@
+# Worker mirror config — deployed with `wrangler deploy -c wrangler.worker.toml`.
+# The main wrangler.toml stays dedicated to the Cloudflare Pages project;
+# this one serves the identical app at volta.<subdomain>.workers.dev for
+# networks whose DNS filters block *.pages.dev.
+name = "volta"
+main = "worker.js"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+[assets]
+directory = "."
+binding = "ASSETS"
+run_worker_first = ["/api/*", "/uploads/*"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "volta-store-backend"
+database_id = "2663ab71-1a83-4d15-b51f-0c0449832bb9"
+
+[[r2_buckets]]
+binding = "UPLOADS"
+bucket_name = "volta-uploads"
+
+[[kv_namespaces]]
+binding = "SESSIONS"
+id = "4a80d49e84814b3e98f47835be8f03fb"
