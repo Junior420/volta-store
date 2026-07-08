@@ -1,5 +1,5 @@
 // Volta service worker — enables installability and basic offline support.
-const CACHE = 'volta-v2';
+const CACHE = 'volta-v3';
 const CORE_ASSETS = [
   './',
   './index.html',

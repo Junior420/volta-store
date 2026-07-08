@@ -863,7 +863,7 @@ function initScrollReveal(){
         revealObs.unobserve(e.target);
       }
     });
-  },{threshold:0.08, rootMargin:'0px 0px -40px 0px'});
+  },{threshold:0, rootMargin:'0px 0px -40px 0px'});
   document.querySelectorAll('.reveal').forEach(el=>{
     // If already in view on load, reveal immediately (no flash / delay)
     const r=el.getBoundingClientRect();
@@ -956,7 +956,11 @@ function initRichReveal(){
         obs.unobserve(e.target);
       }
     });
-  },{threshold:0.12, rootMargin:'0px 0px -50px 0px'});
+  // threshold 0 (any visible pixel), not a fraction: on phones the product
+  // sections stack into one very tall column, and a fractional threshold can
+  // exceed what a small viewport can ever show at once — the reveal would
+  // never fire and the section stayed permanently invisible on mobile.
+  },{threshold:0, rootMargin:'0px 0px -50px 0px'});
   document.querySelectorAll('.rv, .stagger').forEach(el=>{
     const r=el.getBoundingClientRect();
     if(r.top < window.innerHeight*0.92 && r.bottom > 0){
