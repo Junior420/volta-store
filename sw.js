@@ -1,5 +1,5 @@
 // Volta service worker — enables installability and basic offline support.
-const CACHE = 'volta-v1';
+const CACHE = 'volta-v2';
 const CORE_ASSETS = [
   './',
   './index.html',
@@ -32,7 +32,7 @@ self.addEventListener('fetch', event => {
   const url = event.request.url;
 
   // Never cache the backend API — always go to network, fail gracefully.
-  if (url.includes('onrender.com')) {
+  if (url.includes('/api/') || url.includes('onrender.com') || url.includes('pages.dev')) {
     event.respondWith(fetch(event.request).catch(() => new Response('[]', {
       headers: { 'Content-Type': 'application/json' }
     })));
